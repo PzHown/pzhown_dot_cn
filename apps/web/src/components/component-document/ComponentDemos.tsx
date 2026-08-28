@@ -31,6 +31,27 @@ function DemoStack({ children, className = '' }: { children: React.ReactNode; cl
   return <div className={`tw:grid tw:gap-3 ${className}`}>{children}</div>
 }
 
+function ClientMounted({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div
+        data-client-mount-placeholder
+        className="tw:grid tw:min-h-24 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/30 tw:text-xs tw:text-muted-foreground"
+      >
+        客户端组件加载中…
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
+
 function StateLabel({ children }: { children: React.ReactNode }) {
   return (
     <span className="tw:mb-1 tw:block tw:text-[10px] tw:font-semibold tw:uppercase tw:tracking-[0.14em] tw:text-muted-foreground">
@@ -242,7 +263,7 @@ function AvatarDemo() {
         </Piece>
       ))}
       <Piece name="Avatar">
-        <Piece name="AvatarImage" src="/favicon.svg" alt="PzHown" />
+        <Piece name="AvatarImage" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%2312171f%22/%3E%3Ctext x=%2232%22 y=%2240%22 text-anchor=%22middle%22 font-size=%2222%22 font-family=%22sans-serif%22 fill=%22white%22%3EPH%3C/text%3E%3C/svg%3E" alt="PzHown" />
         <Piece name="AvatarFallback">PH</Piece>
       </Piece>
       <Piece name="AvatarGroup">
@@ -269,11 +290,8 @@ function BreadcrumbDemo() {
     <Piece name="Breadcrumb">
       <Piece name="BreadcrumbList">
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbLink" href="#breadcrumb">首页</Piece></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbLink" href="#breadcrumb">设计系统</Piece></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbEllipsis" /></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbPage">组件文档</Piece></Piece>
       </Piece>
     </Piece>
@@ -426,9 +444,8 @@ function CollapsibleDemo() {
 function ComboboxDemo() {
   return (
     <DemoStack className="tw:max-w-sm">
-      <Piece name="Combobox" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}> 
+      <Piece name="Combobox" aria-label="技术选择" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}> 
         <Piece name="ComboboxInput" placeholder="搜索技术…" />
-        <Piece name="ComboboxTrigger" />
         <Piece name="ComboboxContent">
           <Piece name="ComboboxList">
             <Piece name="ComboboxItem" id="astro" textValue="Astro">Astro</Piece>
@@ -438,7 +455,7 @@ function ComboboxDemo() {
           <Piece name="ComboboxEmpty">没有匹配结果</Piece>
         </Piece>
       </Piece>
-      <Piece name="Combobox" isDisabled>
+      <Piece name="Combobox" aria-label="禁用技术选择" isDisabled>
         <Piece name="ComboboxInput" placeholder="禁用状态" />
       </Piece>
       <LiveHint>输入、展开、选中、无结果、键盘导航均保留真实交互。</LiveHint>
@@ -468,7 +485,7 @@ function ContextMenuDemo() {
   return (
     <DemoStack>
       <Piece name="ContextMenuTrigger">
-        <div className="tw:grid tw:h-28 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</div>
+        <Piece name="Button" variant="outline" className="tw:grid tw:h-28 tw:w-full tw:place-items-center tw:rounded-xl tw:border-dashed tw:bg-muted/50 tw:text-sm tw:font-normal tw:text-muted-foreground">在这里右键</Piece>
         <Piece name="ContextMenu">
           <Piece name="ContextMenuItem">复制</Piece>
           <Piece name="ContextMenuItem" isDisabled>禁用项</Piece>
@@ -634,9 +651,11 @@ function InputGroupDemo() {
 }
 
 function InputOTPDemo() {
+  const [value, setValue] = React.useState('1263')
+
   return (
     <DemoStack>
-      <Piece name="InputOTP" maxLength={6} defaultValue="1263">
+      <Piece name="InputOTP" maxLength={6} value={value} onChange={setValue}>
         <Piece name="InputOTPGroup">
           {[0, 1, 2].map((index) => <Piece key={index} name="InputOTPSlot" index={index} />)}
         </Piece>
@@ -816,17 +835,23 @@ function QuestionnaireDemo() {
             <Piece name="QuestionnaireChoices" type="radio">
               <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>
               <Piece name="QuestionnaireChoice" value="b">移动端</Piece>
-              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>
+              <Piece name="QuestionnaireChoice" value="c" disabled>禁用选项</Piece>
             </Piece>
-            <div className="tw:grid tw:gap-2 tw:pt-2">
-              <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />
-              <Piece name="QuestionnaireError">示例错误信息</Piece>
-            </div>
           </Piece>
           <Piece name="QuestionnaireActions">
             <Piece name="QuestionnairePrevious" />
             <Piece name="QuestionnaireSkip" />
             <Piece name="QuestionnaireNext" />
+          </Piece>
+        </Piece>
+      </div>
+      <div className="tw:rounded-xl tw:border tw:border-border tw:p-4">
+        <Piece name="Questionnaire">
+          <Piece name="QuestionnaireItem" id="text">
+            <Piece name="QuestionnaireTitle">自由输入</Piece>
+            <Piece name="QuestionnaireDescription">单独展示文本输入与错误状态，避免把不同题型混进同一 Item。</Piece>
+            <Piece name="QuestionnaireInput" aria-label="问卷文本输入" placeholder="文本输入状态" aria-invalid="true" />
+            <Piece name="QuestionnaireError">示例错误信息</Piece>
           </Piece>
         </Piece>
       </div>
@@ -872,17 +897,15 @@ function ScrollAreaDemo() {
 function SelectDemo() {
   return (
     <DemoStack className="tw:max-w-sm">
-      <Piece name="Select" placeholder="请选择">
+      <Piece name="Select" aria-label="组件选项" placeholder="请选择">
         <Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece>
         <Piece name="SelectContent">
-          <Piece name="SelectList">
-            <Piece name="SelectItem" id="a">选项 A</Piece>
-            <Piece name="SelectItem" id="b">选项 B</Piece>
-            <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>
-          </Piece>
+          <Piece name="SelectItem" id="a">选项 A</Piece>
+          <Piece name="SelectItem" id="b">选项 B</Piece>
+          <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>
         </Piece>
       </Piece>
-      <Piece name="Select" isDisabled placeholder="禁用选择框"><Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece></Piece>
+      <Piece name="Select" aria-label="禁用组件选项" isDisabled placeholder="禁用选择框"><Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece></Piece>
       <LiveHint>打开后可检查 focused、selected、disabled 与空列表状态。</LiveHint>
     </DemoStack>
   )
@@ -986,20 +1009,27 @@ function SwitchDemo() {
 }
 
 function TableDemo() {
+  // React Aria Table collection currently triggers a recoverable React 19 SSR
+  // hydration error in Astro. Keep the workaround scoped to this demo so the
+  // other 57 components retain normal SSR + hydration.
   return (
-    <Piece name="Table" aria-label="组件状态表">
-      <Piece name="TableHeader">
-        <Piece name="TableHead" id="component">组件</Piece>
-        <Piece name="TableHead" id="state">状态</Piece>
-        <Piece name="TableHead" id="note">备注</Piece>
-      </Piece>
-      <Piece name="TableBody">
-        <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
-        <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
-        <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
-      </Piece>
-      <Piece name="TableCaption">组件状态表</Piece>
-    </Piece>
+    <ClientMounted>
+      <DemoStack>
+        <Piece name="Table" aria-label="组件状态表">
+          <Piece name="TableHeader">
+            <Piece name="TableHead" id="component" isRowHeader>组件</Piece>
+            <Piece name="TableHead" id="state">状态</Piece>
+            <Piece name="TableHead" id="note">备注</Piece>
+          </Piece>
+          <Piece name="TableBody">
+            <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
+            <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
+            <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
+          </Piece>
+        </Piece>
+        <Piece name="TableCaption">组件状态表</Piece>
+      </DemoStack>
+    </ClientMounted>
   )
 }
 

@@ -95,7 +95,7 @@ export const componentDocs: ComponentDoc[] = [
     title: '面包屑',
     category: '导航与结构',
     description: '表达当前位置在层级结构中的路径，并提供回到上级的路径。',
-    composition: ['Breadcrumb', '└─ BreadcrumbList', '   ├─ BreadcrumbItem', '   │  ├─ BreadcrumbLink', '   │  └─ BreadcrumbPage', '   ├─ BreadcrumbSeparator', '   └─ BreadcrumbEllipsis'],
+    composition: ['Breadcrumb', '└─ BreadcrumbList', '   └─ BreadcrumbItem × n', '      ├─ BreadcrumbLink / BreadcrumbPage / BreadcrumbEllipsis', '      └─ separator 由 BreadcrumbItem 自动生成'],
     states: ['链接', '当前页', '省略'],
   },
   {
@@ -500,7 +500,7 @@ export const componentDocs: ComponentDoc[] = [
     title: '表格',
     category: '数据与反馈',
     description: '以行列关系呈现结构化数据，保持标题、数值和扫描路径清晰。',
-    composition: ['Table', '├─ TableHeader', '│  └─ TableRow / TableHead', '├─ TableBody', '│  └─ TableRow / TableCell', '└─ TableFooter / TableCaption'],
+    composition: ['Table', '├─ TableHeader', '│  └─ TableHead', '├─ TableBody', '│  └─ TableRow / TableCell', '└─ TableFooter', 'TableCaption · 作为 Table 的兄弟节点'],
     states: ['表头', '普通行', '悬停行', '选中行', '空数据'],
   },
   {
