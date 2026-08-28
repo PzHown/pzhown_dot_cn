@@ -42,7 +42,6 @@ export function ProgressiveBlur({
             WebkitBackdropFilter: blur,
             mask: layer.mask,
             WebkitMask: layer.mask,
-            background: 'rgb(255 255 255 / 0.001)',
           }
 
           return <div className="pzhown-progressive-blur__layer" key={index} style={layerStyle} />
