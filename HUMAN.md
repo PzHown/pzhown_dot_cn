@@ -37,6 +37,8 @@ SQLite（本地）/ PostgreSQL（生产）
   ↓
 不同设备怎么排
   ↓
+空间关系、视觉重心和视线怎么组织
+  ↓
 怎么看出能操作
   ↓
 最终长什么样
@@ -53,6 +55,7 @@ SQLite（本地）/ PostgreSQL（生产）
 | 感知阅读 | [`perceptual-reading/HUMAN.md`](./.agents/skills/perceptual-reading/HUMAN.md) | [`SKILL.md`](./.agents/skills/perceptual-reading/SKILL.md) |
 | 内容呈现 | [`content-presentation/HUMAN.md`](./.agents/skills/content-presentation/HUMAN.md) | [`SKILL.md`](./.agents/skills/content-presentation/SKILL.md) |
 | 跨设备布局 | [`adaptive-layout/HUMAN.md`](./.agents/skills/adaptive-layout/HUMAN.md) | [`SKILL.md`](./.agents/skills/adaptive-layout/SKILL.md) |
+| 空间构图 | [`spatial-composition/HUMAN.md`](./.agents/skills/spatial-composition/HUMAN.md) | [`SKILL.md`](./.agents/skills/spatial-composition/SKILL.md) |
 | 交互可供性 | [`interaction-affordance/HUMAN.md`](./.agents/skills/interaction-affordance/HUMAN.md) | [`SKILL.md`](./.agents/skills/interaction-affordance/SKILL.md) |
 | Apple-inspired 视觉语言 | [`apple-design/HUMAN.md`](./.agents/skills/apple-design/HUMAN.md) | [`SKILL.md`](./.agents/skills/apple-design/SKILL.md) |
 | 交互与动效 | [`interaction-motion/HUMAN.md`](./.agents/skills/interaction-motion/HUMAN.md) | [`SKILL.md`](./.agents/skills/interaction-motion/SKILL.md) |
