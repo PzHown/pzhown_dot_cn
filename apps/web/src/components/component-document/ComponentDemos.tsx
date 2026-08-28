@@ -444,9 +444,8 @@ function CollapsibleDemo() {
 function ComboboxDemo() {
   return (
     <DemoStack className="tw:max-w-sm">
-      <Piece name="Combobox" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}> 
+      <Piece name="Combobox" aria-label="技术选择" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}> 
         <Piece name="ComboboxInput" placeholder="搜索技术…" />
-        <Piece name="ComboboxTrigger" />
         <Piece name="ComboboxContent">
           <Piece name="ComboboxList">
             <Piece name="ComboboxItem" id="astro" textValue="Astro">Astro</Piece>
@@ -456,7 +455,7 @@ function ComboboxDemo() {
           <Piece name="ComboboxEmpty">没有匹配结果</Piece>
         </Piece>
       </Piece>
-      <Piece name="Combobox" isDisabled>
+      <Piece name="Combobox" aria-label="禁用技术选择" isDisabled>
         <Piece name="ComboboxInput" placeholder="禁用状态" />
       </Piece>
       <LiveHint>输入、展开、选中、无结果、键盘导航均保留真实交互。</LiveHint>
@@ -486,7 +485,7 @@ function ContextMenuDemo() {
   return (
     <DemoStack>
       <Piece name="ContextMenuTrigger">
-        <div className="tw:grid tw:h-28 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</div>
+        <button type="button" className="tw:grid tw:h-28 tw:w-full tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</button>
         <Piece name="ContextMenu">
           <Piece name="ContextMenuItem">复制</Piece>
           <Piece name="ContextMenuItem" isDisabled>禁用项</Piece>
@@ -898,17 +897,15 @@ function ScrollAreaDemo() {
 function SelectDemo() {
   return (
     <DemoStack className="tw:max-w-sm">
-      <Piece name="Select" placeholder="请选择">
+      <Piece name="Select" aria-label="组件选项" placeholder="请选择">
         <Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece>
         <Piece name="SelectContent">
-          <Piece name="SelectList">
-            <Piece name="SelectItem" id="a">选项 A</Piece>
-            <Piece name="SelectItem" id="b">选项 B</Piece>
-            <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>
-          </Piece>
+          <Piece name="SelectItem" id="a">选项 A</Piece>
+          <Piece name="SelectItem" id="b">选项 B</Piece>
+          <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>
         </Piece>
       </Piece>
-      <Piece name="Select" isDisabled placeholder="禁用选择框"><Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece></Piece>
+      <Piece name="Select" aria-label="禁用组件选项" isDisabled placeholder="禁用选择框"><Piece name="SelectTrigger"><Piece name="SelectValue" /></Piece></Piece>
       <LiveHint>打开后可检查 focused、selected、disabled 与空列表状态。</LiveHint>
     </DemoStack>
   )
