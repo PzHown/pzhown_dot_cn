@@ -25,70 +25,117 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Astro
-        run: pnpm --filter @pzhown/web build
+      - name: Install Playwright package only
+        run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
-      - name: Install Playwright for diagnostic only
+      - name: Isolate hydration crash by component groups
         run: |
-          pnpm add -Dw playwright@latest --ignore-workspace-root-check
-          pnpm exec playwright install --with-deps chromium
+          set -u
+          cp apps/web/src/components/component-document/ComponentsDocument.tsx /tmp/ComponentsDocument.original.tsx
 
-      - name: Start preview
-        run: |
-          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
-          echo $! > /tmp/astro-preview.pid
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:4321/components >/dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat /tmp/astro-preview.log
-          exit 1
+          set_slice() {
+            local start="$1"
+            local end="$2"
+            cp /tmp/ComponentsDocument.original.tsx apps/web/src/components/component-document/ComponentsDocument.tsx
+            START="$start" END="$end" node <<'NODE'
+          const fs = require('fs')
+          const path = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          const start = Number(process.env.START)
+          const end = Number(process.env.END)
+          let source = fs.readFileSync(path, 'utf8')
+          const begin = source.indexOf('  const filtered = normalized\n')
+          const finish = source.indexOf('\n\n  return (', begin)
+          if (begin < 0 || finish < 0) throw new Error('filtered block not found')
+          source = source.slice(0, begin) + `  const filtered = componentDocs.slice(${start}, ${end})` + source.slice(finish)
+          fs.writeFileSync(path, source)
+          NODE
+          }
 
-      - name: Open components page in Chromium
-        run: |
-          node <<'NODE'
+          browser_test() {
+            EXPECTED="$1" node <<'NODE'
           const { chromium } = require('playwright')
-
           ;(async () => {
-            const browser = await chromium.launch({ headless: true })
+            const expected = Number(process.env.EXPECTED)
+            const browser = await chromium.launch({ channel: 'chrome', headless: true })
             const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
-            const errors = []
-
-            page.on('pageerror', (error) => {
-              errors.push(`PAGEERROR: ${error.stack || error.message}`)
-              console.error('PAGEERROR:', error.stack || error.message)
-            })
-            page.on('console', (message) => {
-              const text = message.text()
-              if (message.type() === 'error' || message.type() === 'warning') {
-                console.error(`CONSOLE ${message.type().toUpperCase()}:`, text)
-              }
-              if (message.type() === 'error') errors.push(`CONSOLE ERROR: ${text}`)
-            })
-
-            const response = await page.goto('http://127.0.0.1:4321/components', { waitUntil: 'networkidle' })
-            console.log('HTTP', response && response.status())
-            await page.waitForTimeout(2500)
-
+            const pageErrors = []
+            page.on('pageerror', error => pageErrors.push(error.stack || error.message))
+            await page.goto('http://127.0.0.1:4321/components/', { waitUntil: 'domcontentloaded' })
+            await page.waitForTimeout(1000)
             const state = await page.evaluate(() => ({
-              title: document.title,
-              textLength: document.body.innerText.length,
-              componentCards: document.querySelectorAll('[data-component]').length,
-              documentRoot: Boolean(document.querySelector('.component-document')),
-              bodyHTMLLength: document.body.innerHTML.length,
+              root: Boolean(document.querySelector('.component-document')),
+              cards: document.querySelectorAll('[data-component]').length,
+              text: document.body.innerText.length,
             }))
-            console.log('PAGE STATE', JSON.stringify(state))
-
             await browser.close()
-
-            if (!state.documentRoot || state.componentCards < 50 || state.textLength < 1000 || errors.length) {
-              console.error('Hydration diagnostic failed')
+            if (!state.root || state.cards !== expected || state.text < 100 || pageErrors.length) {
+              console.error('STATE', JSON.stringify(state))
+              for (const error of pageErrors) console.error('PAGEERROR', error)
               process.exit(1)
             }
-          })().catch((error) => {
+          })().catch(error => {
             console.error(error)
             process.exit(1)
           })
           NODE
+          }
+
+          build_slice() {
+            local start="$1"
+            local end="$2"
+            set_slice "$start" "$end"
+            rm -rf apps/web/dist
+            pnpm --filter @pzhown/web build >/tmp/build.log 2>&1 || {
+              cat /tmp/build.log
+              return 1
+            }
+          }
+
+          test_slice() {
+            local start="$1"
+            local end="$2"
+            local expected=$((end-start))
+            echo "=== TEST SLICE ${start}:${end} ==="
+            build_slice "$start" "$end" || return 1
+            browser_test "$expected"
+          }
+
+          # First build before starting the static server.
+          build_slice 0 10
+          python3 -m http.server 4321 --directory apps/web/dist >/tmp/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 1
+
+          failed_ranges=""
+          for pair in '0 10' '10 20' '20 30' '30 40' '40 50' '50 58'; do
+            set -- $pair
+            if test_slice "$1" "$2"; then
+              echo "SLICE $1:$2 OK"
+            else
+              echo "SLICE $1:$2 FAIL"
+              failed_ranges="$failed_ranges $1:$2"
+            fi
+          done
+
+          echo "FAILED RANGES:$failed_ranges"
+
+          if [ -n "$failed_ranges" ]; then
+            for range in $failed_ranges; do
+              start=${range%:*}
+              end=${range#*:}
+              i=$start
+              while [ "$i" -lt "$end" ]; do
+                j=$((i+1))
+                if test_slice "$i" "$j"; then
+                  echo "COMPONENT INDEX $i OK"
+                else
+                  echo "COMPONENT INDEX $i FAIL"
+                fi
+                i=$j
+              done
+            done
+            exit 1
+          fi
+
+          cp /tmp/ComponentsDocument.original.tsx apps/web/src/components/component-document/ComponentsDocument.tsx
