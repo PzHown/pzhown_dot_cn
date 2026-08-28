@@ -1,0 +1,56 @@
+name: Install all shadcn React Aria components
+
+on:
+  push:
+    branches:
+      - chore/install-all-aria-components
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Add every available aria-nova component
+        run: pnpm dlx shadcn@latest add --all --yes --cwd packages/ui
+
+      - name: Rebuild component barrel
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = require('path')
+          const dir = path.join(process.cwd(), 'packages/ui/src/components')
+          const files = fs.readdirSync(dir)
+            .filter((name) => name.endsWith('.tsx'))
+            .map((name) => name.slice(0, -4))
+            .sort((a, b) => a.localeCompare(b))
+          fs.writeFileSync(
+            path.join(dir, 'index.ts'),
+            files.map((name) => `export * from './${name}'\n`).join(''),
+          )
+          NODE
+
+      - name: Remove one-off workflow
+        run: rm -f .github/workflows/install-all-aria-components.yml
+
+      - name: Commit generated components
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(ui): install all shadcn React Aria components'
+          git push origin HEAD:chore/install-all-aria-components
