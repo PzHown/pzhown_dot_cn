@@ -1,4 +1,6 @@
 ---
+import ProgressiveBlur from '@pzhown/ui/astro'
+import ComponentShowcase from '../components/ComponentShowcase'
 import '../styles/global.css'
 ---
 
@@ -7,7 +9,747 @@ import '../styles/global.css'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>PzHown</title>
+    <meta name="description" content="PzHown shared UI and visual effects showcase" />
+    <title>PzHown UI Lab</title>
   </head>
-  <body></body>
+  <body>
+    <main class="page-shell">
+      <section class="hero section-shell">
+        <div class="hero-glow hero-glow-a"></div>
+        <div class="hero-glow hero-glow-b"></div>
+        <div class="eyebrow">PZHOWN / UI LAB</div>
+        <h1>Shared visual system,<br />rendered in Astro.</h1>
+        <p class="hero-copy">
+          Squircle corners, perceptual gradients, progressive blur, Motion, and Base UI components — all in one preview surface.
+        </p>
+        <div class="hero-pills" aria-label="Technology stack">
+          <span>Astro 7</span>
+          <span>Tailwind CSS 4</span>
+          <span>Motion 13</span>
+          <span>Base UI</span>
+          <span>React 18 / 19</span>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <header class="section-heading">
+          <div>
+            <p class="section-kicker">01 / CORNERS</p>
+            <h2>Squircle</h2>
+          </div>
+          <p>`corner-shape: squircle` globally upgrades every existing border radius where the browser supports it.</p>
+        </header>
+
+        <div class="squircle-grid">
+          <article class="squircle-demo radius-12">
+            <span>12</span>
+            <small>Compact</small>
+          </article>
+          <article class="squircle-demo radius-20">
+            <span>20</span>
+            <small>Control</small>
+          </article>
+          <article class="squircle-demo radius-32">
+            <span>32</span>
+            <small>Card</small>
+          </article>
+          <article class="squircle-demo radius-48">
+            <span>48</span>
+            <small>Hero</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <header class="section-heading">
+          <div>
+            <p class="section-kicker">02 / COLOR</p>
+            <h2>Smooth gradients</h2>
+          </div>
+          <p>Oklab interpolation keeps the color path perceptually clean; smootherstep eases the color progression at both ends.</p>
+        </header>
+
+        <div class="gradient-grid">
+          <article
+            class="gradient-card gradient-oklab"
+            style="--gradient-angle: 135deg; --gradient-from: oklch(0.75 0.2 255); --gradient-to: oklch(0.78 0.18 335);"
+          >
+            <div class="gradient-label">
+              <strong>Oklab</strong>
+              <span>Perceptual interpolation</span>
+            </div>
+          </article>
+          <article
+            class="gradient-card gradient-smooth"
+            style="--gradient-angle: 135deg; --gradient-from: oklch(0.7 0.19 252); --gradient-to: oklch(0.82 0.15 345);"
+          >
+            <div class="gradient-label">
+              <strong>Smootherstep</strong>
+              <span>6t⁵ − 15t⁴ + 10t³</span>
+            </div>
+          </article>
+          <article
+            class="gradient-card gradient-smooth-radial"
+            style="--gradient-position: 30% 25%; --gradient-from: oklch(0.9 0.14 90); --gradient-to: oklch(0.68 0.2 310);"
+          >
+            <div class="gradient-label">
+              <strong>Radial</strong>
+              <span>Smootherstep falloff</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <header class="section-heading">
+          <div>
+            <p class="section-kicker">03 / DEPTH</p>
+            <h2>Progressive blur</h2>
+          </div>
+          <p>Framework-neutral CSS masks and layered backdrop filters, rendered here through the zero-JS Astro adapter.</p>
+        </header>
+
+        <div class="blur-grid">
+          <article class="blur-stage">
+            <div class="blur-content">
+              <span class="blur-orb orb-one"></span>
+              <span class="blur-orb orb-two"></span>
+              <div class="blur-type">
+                <small>LINEAR / BOTTOM</small>
+                <strong>64px</strong>
+              </div>
+              <div class="blur-lines" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <ProgressiveBlur mode="linear" side="bottom" strength={64} steps={8} falloff={82} tint="transparent" />
+          </article>
+
+          <article class="blur-stage">
+            <div class="blur-content radial-content">
+              <span class="blur-orb orb-three"></span>
+              <span class="blur-orb orb-four"></span>
+              <div class="blur-type">
+                <small>RADIAL / CENTER</small>
+                <strong>48px</strong>
+              </div>
+              <div class="blur-grid-lines" aria-hidden="true"></div>
+            </div>
+            <ProgressiveBlur mode="radial" strength={48} steps={8} falloff={78} tint="transparent" />
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <header class="section-heading">
+          <div>
+            <p class="section-kicker">04 / MOTION</p>
+            <h2>Motion / Astro</h2>
+          </div>
+          <p>The framework-agnostic Motion API runs directly inside Astro without turning the section into a React island.</p>
+        </header>
+
+        <div class="motion-card">
+          <div class="motion-meta">
+            <div>
+              <span class="motion-status"><i></i> Native Astro script</span>
+              <h3>Keyframe travel</h3>
+            </div>
+            <button id="replay-motion" type="button">Replay</button>
+          </div>
+          <div class="motion-track">
+            <div id="motion-demo" class="motion-object">M</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-shell components-section">
+        <header class="section-heading">
+          <div>
+            <p class="section-kicker">05 / COMPONENTS</p>
+            <h2>Base UI + shadcn-style API</h2>
+          </div>
+          <p>Interactive primitives run as one React island while preserving the same shared tokens, squircle corners and Motion language.</p>
+        </header>
+        <ComponentShowcase client:load />
+      </section>
+
+      <footer class="footer section-shell">
+        <span>PzHown UI Lab</span>
+        <span>Astro · Next / Payload · shared @pzhown/ui</span>
+      </footer>
+    </main>
+
+    <script>
+      import { animate, inView } from 'motion'
+
+      const target = document.querySelector<HTMLElement>('#motion-demo')
+      const replay = document.querySelector<HTMLButtonElement>('#replay-motion')
+
+      const play = () => {
+        if (!target) return
+        target.style.transform = 'translateX(0px) rotate(0deg) scale(1)'
+        animate(
+          target,
+          {
+            x: [0, 110, 235, 360, 0],
+            rotate: [0, 8, -6, 12, 0],
+            scale: [1, 1.12, 0.94, 1.08, 1],
+          },
+          {
+            duration: 2.4,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        )
+      }
+
+      if (target) {
+        inView(target, () => {
+          play()
+        }, { amount: 0.6 })
+      }
+
+      replay?.addEventListener('click', play)
+    </script>
+  </body>
 </html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    background: #f5f5f3;
+    color: #121316;
+    font-family:
+      Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-width: 320px;
+    background:
+      radial-gradient(circle at 10% 5%, oklch(0.94 0.035 250 / 0.8), transparent 32rem),
+      radial-gradient(circle at 90% 20%, oklch(0.95 0.04 330 / 0.72), transparent 30rem),
+      #f5f5f3;
+  }
+
+  :global(button),
+  :global(input) {
+    font: inherit;
+  }
+
+  .page-shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 24px 0 72px;
+  }
+
+  .section-shell {
+    position: relative;
+    margin-top: 22px;
+    padding: clamp(24px, 4vw, 44px);
+    overflow: hidden;
+    border: 1px solid rgb(17 24 39 / 0.08);
+    border-radius: 36px;
+    background: rgb(255 255 255 / 0.68);
+    box-shadow: 0 30px 100px rgb(17 24 39 / 0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .hero {
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: clamp(120px, 18vw, 220px);
+    isolation: isolate;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      linear-gradient(135deg in oklab, oklch(0.99 0 0), oklch(0.96 0.025 260) 52%, oklch(0.96 0.035 330));
+  }
+
+  .hero-glow {
+    position: absolute;
+    z-index: -1;
+    filter: blur(10px);
+    opacity: 0.9;
+  }
+
+  .hero-glow-a {
+    width: 350px;
+    height: 350px;
+    top: -120px;
+    right: -60px;
+    border-radius: 46%;
+    background: radial-gradient(circle, oklch(0.77 0.17 257 / 0.7), transparent 68%);
+  }
+
+  .hero-glow-b {
+    width: 310px;
+    height: 310px;
+    top: 50px;
+    left: 20%;
+    border-radius: 42%;
+    background: radial-gradient(circle, oklch(0.82 0.14 335 / 0.56), transparent 70%);
+  }
+
+  .eyebrow,
+  .section-kicker {
+    margin: 0;
+    color: rgb(18 19 22 / 0.45);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  h1 {
+    max-width: 900px;
+    margin: 18px 0 18px;
+    font-size: clamp(48px, 8vw, 100px);
+    line-height: 0.93;
+    letter-spacing: -0.065em;
+    font-weight: 650;
+  }
+
+  .hero-copy {
+    max-width: 660px;
+    margin-bottom: 28px;
+    color: rgb(18 19 22 / 0.55);
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hero-pills span {
+    padding: 8px 12px;
+    border: 1px solid rgb(18 19 22 / 0.08);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.48);
+    color: rgb(18 19 22 / 0.62);
+    font-size: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(12px);
+  }
+
+  .section-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 440px);
+    gap: 28px;
+    align-items: end;
+    margin-bottom: 28px;
+  }
+
+  .section-heading h2 {
+    margin: 6px 0 0;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    font-weight: 620;
+  }
+
+  .section-heading > p {
+    margin: 0;
+    color: rgb(18 19 22 / 0.5);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .squircle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .squircle-demo {
+    min-height: 190px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 18px;
+    border: 1px solid rgb(18 19 22 / 0.08);
+    background:
+      radial-gradient(circle at 85% 5%, oklch(0.82 0.12 256 / 0.45), transparent 45%),
+      linear-gradient(145deg, white, oklch(0.965 0.012 260));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), 0 18px 45px rgb(17 24 39 / 0.06);
+  }
+
+  .squircle-demo span {
+    font-size: 34px;
+    font-weight: 620;
+    letter-spacing: -0.04em;
+  }
+
+  .squircle-demo small {
+    margin-top: 3px;
+    color: rgb(18 19 22 / 0.45);
+    font-size: 12px;
+  }
+
+  .radius-12 { border-radius: 12px; }
+  .radius-20 { border-radius: 20px; }
+  .radius-32 { border-radius: 32px; }
+  .radius-48 { border-radius: 48px; }
+
+  .gradient-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .gradient-card {
+    position: relative;
+    min-height: 280px;
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 18px 55px rgb(17 24 39 / 0.08);
+  }
+
+  .gradient-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.36), transparent 55%);
+  }
+
+  .gradient-label {
+    position: absolute;
+    z-index: 1;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+  }
+
+  .gradient-label strong {
+    font-size: 20px;
+    letter-spacing: -0.025em;
+  }
+
+  .gradient-label span {
+    margin-top: 3px;
+    color: rgb(255 255 255 / 0.72);
+    font-size: 12px;
+  }
+
+  .blur-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .blur-stage {
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+    border: 1px solid rgb(18 19 22 / 0.08);
+    border-radius: 30px;
+    background: #e9e9ed;
+  }
+
+  .blur-content {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg in oklab, oklch(0.94 0.02 250), oklch(0.9 0.05 315)),
+      #eee;
+  }
+
+  .blur-orb {
+    position: absolute;
+    display: block;
+    border-radius: 45%;
+  }
+
+  .orb-one {
+    width: 210px;
+    height: 210px;
+    top: 34px;
+    right: 24px;
+    background: oklch(0.72 0.2 257);
+    transform: rotate(18deg);
+  }
+
+  .orb-two {
+    width: 150px;
+    height: 150px;
+    bottom: 20px;
+    left: 36px;
+    background: oklch(0.78 0.18 345);
+    transform: rotate(-14deg);
+  }
+
+  .orb-three {
+    width: 220px;
+    height: 220px;
+    top: 70px;
+    left: 50%;
+    background: oklch(0.8 0.18 95);
+    transform: translateX(-50%) rotate(22deg);
+  }
+
+  .orb-four {
+    width: 140px;
+    height: 140px;
+    top: 18px;
+    right: 22px;
+    background: oklch(0.68 0.19 300);
+  }
+
+  .blur-type {
+    position: absolute;
+    z-index: 2;
+    top: 22px;
+    left: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blur-type small {
+    color: rgb(18 19 22 / 0.46);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .blur-type strong {
+    margin-top: 4px;
+    font-size: 30px;
+    letter-spacing: -0.04em;
+  }
+
+  .blur-lines {
+    position: absolute;
+    inset: 110px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .blur-lines span {
+    height: 16px;
+    border-radius: 999px;
+    background: rgb(18 19 22 / 0.78);
+  }
+
+  .blur-lines span:nth-child(2) { width: 78%; }
+  .blur-lines span:nth-child(3) { width: 88%; }
+  .blur-lines span:nth-child(4) { width: 58%; }
+
+  .blur-grid-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.28;
+    background-image:
+      linear-gradient(rgb(18 19 22 / 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(18 19 22 / 0.18) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .motion-card {
+    padding: 20px;
+    border: 1px solid rgb(18 19 22 / 0.08);
+    border-radius: 30px;
+    background: linear-gradient(145deg, rgb(255 255 255 / 0.8), rgb(246 247 250 / 0.72));
+  }
+
+  .motion-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+
+  .motion-meta h3 {
+    margin: 7px 0 0;
+    font-size: 20px;
+    letter-spacing: -0.025em;
+  }
+
+  .motion-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: rgb(18 19 22 / 0.48);
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  .motion-status i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: oklch(0.7 0.18 150);
+    box-shadow: 0 0 0 4px oklch(0.7 0.18 150 / 0.13);
+  }
+
+  #replay-motion {
+    padding: 9px 14px;
+    border: 1px solid rgb(18 19 22 / 0.1);
+    border-radius: 12px;
+    background: white;
+    color: #121316;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: transform 160ms ease, background-color 160ms ease;
+  }
+
+  #replay-motion:hover {
+    background: #f4f4f3;
+  }
+
+  #replay-motion:active {
+    transform: translateY(1px);
+  }
+
+  .motion-track {
+    position: relative;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    overflow: hidden;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 72% 25%, oklch(0.84 0.12 260 / 0.6), transparent 30%),
+      linear-gradient(135deg, oklch(0.98 0.005 250), oklch(0.94 0.025 300));
+  }
+
+  .motion-track::after {
+    content: "";
+    position: absolute;
+    left: 32px;
+    right: 32px;
+    top: 50%;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, rgb(18 19 22 / 0.16) 0 8px, transparent 8px 16px);
+  }
+
+  .motion-object {
+    position: relative;
+    z-index: 1;
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    border-radius: 23px;
+    background: rgb(255 255 255 / 0.58);
+    box-shadow: 0 20px 45px rgb(68 79 140 / 0.18);
+    font-size: 20px;
+    font-weight: 700;
+    backdrop-filter: blur(16px);
+  }
+
+  .components-section {
+    overflow: visible;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: rgb(18 19 22 / 0.46);
+    font-size: 12px;
+  }
+
+  @media (max-width: 860px) {
+    .section-heading {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .squircle-grid,
+    .gradient-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gradient-card:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .blur-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .page-shell {
+      width: min(100% - 18px, 1180px);
+      padding-top: 9px;
+    }
+
+    .section-shell {
+      margin-top: 10px;
+      padding: 22px;
+      border-radius: 28px;
+    }
+
+    .hero {
+      min-height: 520px;
+      padding-top: 160px;
+    }
+
+    h1 {
+      font-size: clamp(45px, 15vw, 70px);
+    }
+
+    .squircle-grid,
+    .gradient-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gradient-card:last-child {
+      grid-column: auto;
+    }
+
+    .squircle-demo {
+      min-height: 150px;
+    }
+
+    .motion-track {
+      padding: 0 18px;
+    }
+
+    .footer {
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      scroll-behavior: auto !important;
+    }
+
+    #motion-demo {
+      transform: none !important;
+    }
+  }
+</style>
