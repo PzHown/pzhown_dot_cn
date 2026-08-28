@@ -39,25 +39,53 @@ The Payload backend uses Tailwind CSS 4 through PostCSS. Tailwind Preflight is i
 
 Progressive Blur is implemented locally in `@pzhown/ui`. The visual core is CSS plus framework-neutral layer calculations, so there is no dependency on the former `progressive-blur` npm package.
 
-Astro can render it with zero client JavaScript:
+Astro and React / Next use the same component name and the same core props. Only the adapter import path differs.
+
+Astro:
 
 ```astro
 ---
 import ProgressiveBlur from '@pzhown/ui/astro'
 ---
 
-<ProgressiveBlur side="bottom" strength={64} steps={8} />
+<ProgressiveBlur
+  mode="linear"
+  side="bottom"
+  strength={64}
+  steps={8}
+  falloff={100}
+  tint="transparent"
+  className="my-blur"
+/>
 ```
 
-Next.js / React can use the same implementation as a Server Component because it has no hooks or browser APIs:
+Next.js / React:
 
 ```tsx
-import { LinearBlur, RadialBlur } from '@pzhown/ui/react'
+import ProgressiveBlur from '@pzhown/ui/react'
 
-<LinearBlur side="bottom" strength={64} steps={8} />
+<ProgressiveBlur
+  mode="linear"
+  side="bottom"
+  strength={64}
+  steps={8}
+  falloff={100}
+  tint="transparent"
+  className="my-blur"
+/>
 ```
 
-Both adapters support `strength`, `steps`, `falloff`, and `tint`. Linear blur also supports `top`, `right`, `bottom`, and `left`; radial blur fades outward from the center.
+Shared API:
+
+- `mode`: `linear | radial`
+- `side`: `top | right | bottom | left` for linear mode
+- `strength`: maximum blur strength
+- `steps`: number of blur layers
+- `falloff`: percentage of the area used for progressive falloff
+- `tint`: optional tint color
+- `className`: additional class name
+
+The Astro adapter renders with zero client JavaScript. The React adapter has no hooks or browser APIs, so it can remain a React Server Component in Next.js / Payload.
 
 ## Database selection
 
