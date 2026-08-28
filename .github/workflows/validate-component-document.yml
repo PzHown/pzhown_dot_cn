@@ -6,10 +6,11 @@ on:
       - feat/astro-full-component-lab
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +26,26 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Give React Aria table stable collection keys
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
+          let source = fs.readFileSync(path, 'utf8')
+          const from = `    <Piece name="Table">\n      <Piece name="TableHeader"><Piece name="TableRow"><Piece name="TableHead">组件</Piece><Piece name="TableHead">状态</Piece><Piece name="TableHead">备注</Piece></Piece></Piece>\n      <Piece name="TableBody">\n        <Piece name="TableRow"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>\n        <Piece name="TableRow" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>\n        <Piece name="TableRow"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>\n      </Piece>\n      <Piece name="TableCaption">组件状态表</Piece>\n    </Piece>`
+          const to = `    <Piece name="Table" aria-label="组件状态表">\n      <Piece name="TableHeader">\n        <Piece name="TableHead" id="component">组件</Piece>\n        <Piece name="TableHead" id="state">状态</Piece>\n        <Piece name="TableHead" id="note">备注</Piece>\n      </Piece>\n      <Piece name="TableBody">\n        <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>\n        <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>\n        <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>\n      </Piece>\n      <Piece name="TableCaption">组件状态表</Piece>\n    </Piece>`
+          if (!source.includes(from)) throw new Error('Table demo patch target not found')
+          fs.writeFileSync(path, source.replace(from, to))
+          NODE
+
+      - name: Commit table demo fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/web/src/components/component-document/ComponentDemos.tsx
+          git commit -m 'fix(web): give component table stable collection keys'
+          git push origin HEAD:feat/astro-full-component-lab
+
       - name: Check shared UI
         run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
 
@@ -39,8 +60,7 @@ jobs:
           let source = fs.readFileSync(path, 'utf8')
           const target = `  const Demo = componentDemos[id]\n\n  return (`
           if (!source.includes(target)) throw new Error('SSR trace insertion target not found')
-          source = source.replace(target, `  const Demo = componentDemos[id]\n  console.log('[component-document:ssr]', id)\n\n  return (`)
-          fs.writeFileSync(path, source)
+          fs.writeFileSync(path, source.replace(target, `  const Demo = componentDemos[id]\n  console.log('[component-document:ssr]', id)\n\n  return (`))
           NODE
 
       - name: Build Astro with trace
