@@ -1,6 +1,6 @@
 ---
 name: apple-design
-description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、材质、层级、留白、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读与布局已确定后统一 @pzhown/ui 的视觉表达。此 Skill 不负责决定正文行长、跨设备结构或动效逻辑；相关任务应优先使用 perceptual-reading、content-presentation、adaptive-layout 和 interaction-motion。
+description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、灰度与 Neutral、材质、层级、留白、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读与布局已确定后统一 @pzhown/ui 的视觉表达。此 Skill 不负责决定正文行长、跨设备结构或动效逻辑；相关任务应优先使用 perceptual-reading、content-presentation、adaptive-layout 和 interaction-motion。
 ---
 
 # Apple-inspired 视觉语言
@@ -24,13 +24,15 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 2. 页面/视觉重构读取 `references/visual-language.md`。
 3. 组件外观读取 `references/components.md`。
 4. Web/CSS 实现读取 `references/web-implementation.md`。
-5. 先用排版、空间和对比建立层级，再决定是否需要边框、阴影、Glass 或 Blur。
-6. 完成后做视觉审查，避免页面退回默认 shadcn/组件库样式。
+5. 先用排版、空间、灰度和明度层级建立结构，再决定是否需要色相、边框、阴影、Glass 或 Blur。
+6. 完成后做视觉审查，包含 Grayscale Test，避免页面依赖彩色才能成立，也避免退回默认 shadcn/组件库样式。
 
 ## 视觉不变量
 
 - 使用 Apple-inspired，而不是 Apple clone；保留项目自己的品牌表达。
 - 让排版、留白、颜色层级和空间关系先成立，避免“每个区块一圈灰边框”。
+- 先用 Neutral / 灰度与明度建立信息层级，再让色相承担品牌、状态和重点语义；不能靠彩色本身弥补层级不足。
+- 业务组件使用语义 token，不直接把 `gray-500`、`zinc-700` 等物理色阶当作组件语义。
 - 已设置 `border-radius` 的界面优先通过全局 `corner-shape: squircle` 获得连续圆角；不要另造 SVG 圆角方案，除非明确需要严格曲率。
 - 颜色使用语义 token；自定义色优先 OKLCH/Oklab，并同时验证浅色、深色和高对比环境。
 - 渐变优先使用 Oklab/Oklch 插值；需要柔和过渡时优先项目 smootherstep 工具。
@@ -50,6 +52,9 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 
 - 页面第一眼是否先看到内容，而不是 Glass/Gradient/Shadow？
 - 去掉边框后层级是否仍清楚？
+- **Grayscale Test**：页面临时转为灰度后，标题、正文、导航、主要操作、状态和层级是否仍然清楚？如果不清楚，说明设计过度依赖色相。
+- Neutral 层级是否足够但不过度？是否存在大量肉眼难以区分的近似灰色？
+- 辅助文字是否因为“做灰”而低于可读对比度？
 - Squircle、radius、spacing、surface 和颜色是否来自统一体系？
 - Blur/Glass 是否真的解释前后关系？
 - 深色模式是否重新校准亮度和对比，而不是简单反色？
@@ -62,5 +67,5 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 
 1. 当前视觉层级问题。
 2. 需要保留和删除的装饰。
-3. Token / surface / typography / material 的具体变化。
+3. Neutral / Token / surface / typography / material 的具体变化。
 4. 与阅读、布局和动效 Skill 的边界。
