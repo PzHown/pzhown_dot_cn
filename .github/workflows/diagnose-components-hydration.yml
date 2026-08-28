@@ -1,0 +1,93 @@
+name: Diagnose components hydration
+
+on:
+  push:
+    branches:
+      - fix/components-hydration-blank
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
+
+      - name: Install Chromium
+        run: npx -y playwright@latest install --with-deps chromium
+
+      - name: Start preview
+        run: |
+          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
+          echo $! > /tmp/astro-preview.pid
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4321/components >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/astro-preview.log
+          exit 1
+
+      - name: Open components page in Chromium
+        run: |
+          npx -y -p playwright@latest node <<'NODE'
+          const { chromium } = require('playwright')
+
+          ;(async () => {
+            const browser = await chromium.launch({ headless: true })
+            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+            const errors = []
+
+            page.on('pageerror', (error) => {
+              errors.push(`PAGEERROR: ${error.stack || error.message}`)
+              console.error('PAGEERROR:', error.stack || error.message)
+            })
+            page.on('console', (message) => {
+              if (message.type() === 'error') {
+                const text = message.text()
+                errors.push(`CONSOLE ERROR: ${text}`)
+                console.error('CONSOLE ERROR:', text)
+              }
+            })
+
+            const response = await page.goto('http://127.0.0.1:4321/components', { waitUntil: 'networkidle' })
+            console.log('HTTP', response && response.status())
+            await page.waitForTimeout(2500)
+
+            const state = await page.evaluate(() => ({
+              title: document.title,
+              textLength: document.body.innerText.length,
+              componentCards: document.querySelectorAll('[data-component]').length,
+              documentRoot: Boolean(document.querySelector('.component-document')),
+              bodyHTMLLength: document.body.innerHTML.length,
+            }))
+            console.log('PAGE STATE', JSON.stringify(state))
+
+            await page.screenshot({ path: '/tmp/components-page.png', fullPage: false })
+            await browser.close()
+
+            if (!state.documentRoot || state.componentCards < 50 || state.textLength < 1000 || errors.length) {
+              console.error('Hydration diagnostic failed')
+              process.exit(1)
+            }
+          })().catch((error) => {
+            console.error(error)
+            process.exit(1)
+          })
+          NODE
