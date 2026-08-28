@@ -1,0 +1,4 @@
+interface:
+  display_name: "感知阅读"
+  short_description: "以人眼舒适和内容理解为核心设计博客阅读体验"
+  brand_color: "#5B6CFF"

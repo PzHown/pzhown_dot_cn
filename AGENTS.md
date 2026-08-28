@@ -1,22 +1,70 @@
 # 项目协作约定
 
-## 设计系统
+## 项目设计目标
 
-所有面向用户的 UI、UX、页面、组件、布局、动画和视觉审查任务，都必须遵循项目级 `apple-design` Skill：
+本项目是现代跨设备个人博客。所有用户界面优先实现：
 
-`.agents/skills/apple-design/SKILL.md`
+1. 内容最先被理解。
+2. 人眼自然舒适、适合长时间阅读。
+3. 手机、平板、桌面和可变窗口保持连续体验。
+4. 高级视觉和交互服务于内容与状态，不为炫技增加负荷。
+5. 核心内容采用渐进增强，无高级 CSS/JS 时仍可访问。
 
-执行 UI 任务时：
+执行任何重要 UI/UX 任务前先读取根目录 `DESIGN.md`。
 
-- 先检查并优先复用 `@pzhown/ui`，不要为单页重复造基础组件。
-- 采用 Apple-inspired Web Design System，而不是机械复刻 iOS/macOS。
-- 使用排版、留白、材质和层级建立结构，避免默认 shadcn 式“每块一圈灰边框”。
-- 圆角优先使用项目全局 `corner-shape: squircle` 体系。
-- 色彩与渐变优先使用语义 token、OKLCH/Oklab 和现有 Smooth Gradient 工具。
-- 景深与透明材质优先使用现有 Progressive Blur，并控制使用范围和 GPU 成本。
-- React 交互底层优先使用 React Aria Components；Motion 用于 spring、presence、layout、gesture。
-- Astro 前台保持 Astro-first，仅在真正需要交互状态时使用 React Island。
-- Payload 原生 Admin 不做全局重皮，自定义业务 Dashboard 才使用共享设计系统。
-- 所有交互必须考虑 hover、pressed、focus-visible、selected、disabled、键盘、触控、暗色模式和 reduced motion。
+## 项目级 Design Skills
 
-如任务涉及具体视觉、组件、动效、可访问性或 Web 实现细则，按 `apple-design` Skill 的指引读取对应 `references/` 文件。
+根据任务按需加载以下 Skill，不要让一个 Skill 代替全部设计判断：
+
+- `.agents/skills/perceptual-reading/SKILL.md`
+  - 文章、正文、字体、字号、行高、行长、段落、深色阅读、长文、视觉舒适。
+- `.agents/skills/content-presentation/SKILL.md`
+  - Markdown/CMS 内容、引用、代码、图片、表格、脚注、目录、元数据、文章结构。
+- `.agents/skills/adaptive-layout/SKILL.md`
+  - 响应式、Container Queries、Grid/Subgrid、手机/平板/桌面、输入能力、侧栏/目录重排。
+- `.agents/skills/apple-design/SKILL.md`
+  - Apple-inspired 视觉语言、Squircle、色彩、材质、留白、阴影、透明与 Blur。
+- `.agents/skills/interaction-motion/SKILL.md`
+  - Motion、View Transitions、Presence、共享元素、手势、滚动联动和高级微交互。
+
+## 设计判断顺序
+
+涉及多个 Skill 时，按以下优先级解决冲突：
+
+```text
+内容语义
+→ perceptual-reading
+→ content-presentation
+→ adaptive-layout
+→ apple-design
+→ interaction-motion
+```
+
+可访问性、性能和渐进增强是所有层的共同底线。
+
+## 前端实现约束
+
+- 优先复用 `@pzhown/ui`，不要为单页重复造基础组件。
+- React 交互底层优先使用 React Aria Components。
+- Motion 用于 spring、presence、layout、gesture；简单 hover/focus/color/opacity 优先 CSS。
+- Astro 前台保持 Astro-first，仅在真正需要状态或 React Aria 时使用 React Island。
+- 使用 Container Queries、Grid/Subgrid、`clamp()`、`minmax()` 和逻辑属性实现现代布局。
+- Breakpoint 由内容崩坏点产生，不机械按设备型号划分。
+- 圆角优先使用全局 `corner-shape: squircle`。
+- 色彩与渐变优先使用语义 token、OKLCH/Oklab 和现有 Smooth Gradient。
+- Progressive Blur 只用于建立上下文/层级，不把长文正文放在持续高强度 Blur 上。
+- Payload 原生 Admin 不做全局重皮；自定义 Dashboard/业务 UI 才使用共享设计系统。
+- Hover 不得承载唯一功能；所有交互考虑 pressed、focus-visible、selected、disabled、keyboard、touch 和 reduced motion。
+- 不默认给所有 Card 加 hover scale，不默认给所有 Section 加 scroll reveal。
+
+## 完成标准
+
+UI 任务完成前至少检查：
+
+- 内容是否比 UI 装饰更突出？
+- 连续阅读是否舒适？
+- 去掉 Card/边框后层级是否仍然成立？
+- 窄屏、平板、宽屏和可变窗口是否自然？
+- 键盘、触控、缩放、深色模式和 reduced motion 是否成立？
+- 动效是否解释变化，而不是增加视觉忙碌？
+- 是否优先复用项目设计系统，而不是制造一次性样式？

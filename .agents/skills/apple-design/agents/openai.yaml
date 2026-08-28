@@ -1,3 +1,4 @@
 interface:
-  display_name: "Apple Web 设计规范"
-  short_description: "为 pzhown_dot_cn 提供 Apple-inspired UI/UX 设计、实现与审查规范"
+  display_name: "Apple 视觉语言"
+  short_description: "以清晰、层级、材质和克制感统一项目视觉表达"
+  brand_color: "#111111"

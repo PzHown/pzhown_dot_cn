@@ -1,0 +1,4 @@
+interface:
+  display_name: "交互与动效"
+  short_description: "用空间连续性和状态反馈打造高级但克制的交互"
+  brand_color: "#8C5BE8"

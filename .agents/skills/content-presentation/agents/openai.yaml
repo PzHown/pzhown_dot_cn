@@ -1,0 +1,4 @@
+interface:
+  display_name: "内容呈现"
+  short_description: "让内容类型决定版式，构建真正内容优先的博客"
+  brand_color: "#B06B3C"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "跨设备布局"
+  short_description: "以内容崩坏点和输入能力驱动现代自适应布局"
+  brand_color: "#2F8F83"
