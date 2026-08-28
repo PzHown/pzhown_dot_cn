@@ -58,7 +58,7 @@ jobs:
           patch(
             dialog,
             `}: React.ComponentProps<typeof Button> & { render?: React.ReactElement }) {`,
-            `}: Omit<React.ComponentProps<typeof Button>, 'children'> & { render?: React.ReactElement; children?: React.ReactNode }) {`
+            `}: Omit<React.ComponentProps<typeof Button>, 'children' | 'render'> & { render?: React.ReactElement; children?: React.ReactNode }) {`
           )
 
           const dropdown = 'packages/ui/src/components/dropdown-menu.tsx'
