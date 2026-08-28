@@ -30,17 +30,20 @@ export function ProgressiveBlur({
       aria-hidden="true"
       className={['pzhown-progressive-blur', className].filter(Boolean).join(' ')}
       data-progressive-blur={mode}
+      data-progressive-blur-side={side}
       style={rootStyle}
     >
-      <div className="pzhown-progressive-blur__tint" />
-      {model.layers.map((layer, index) => {
-        const layerStyle: CustomProperties = {
-          '--pzhown-pb-blur': `${layer.blur.toFixed(3)}px`,
-          '--pzhown-pb-mask': layer.mask,
-        }
+      <div className="pzhown-progressive-blur__surface">
+        {model.layers.map((layer, index) => {
+          const layerStyle: CustomProperties = {
+            '--pzhown-pb-layer': `${index + 1}`,
+            '--pzhown-pb-blur': `${layer.blur.toFixed(3)}px`,
+            '--pzhown-pb-mask': layer.mask,
+          }
 
-        return <div className="pzhown-progressive-blur__layer" key={index} style={layerStyle} />
-      })}
+          return <div className="pzhown-progressive-blur__layer" key={index} style={layerStyle} />
+        })}
+      </div>
     </div>
   )
 }
