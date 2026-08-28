@@ -84,7 +84,11 @@ class DemoErrorBoundary extends React.Component<DemoErrorBoundaryProps, DemoErro
   render() {
     if (this.state.error) {
       return (
-        <div role="alert" className="tw:rounded-xl tw:border tw:border-destructive/30 tw:bg-destructive/8 tw:p-4">
+        <div
+          role="alert"
+          data-demo-error={this.props.componentId}
+          className="tw:rounded-xl tw:border tw:border-destructive/30 tw:bg-destructive/8 tw:p-4"
+        >
           <strong className="tw:block tw:text-sm tw:text-destructive">该组件 Demo 运行失败</strong>
           <p className="tw:mt-1 tw:mb-0 tw:text-xs tw:leading-5 tw:text-muted-foreground">
             已隔离错误，不会影响其他组件。请查看控制台中的 component-document 日志。
