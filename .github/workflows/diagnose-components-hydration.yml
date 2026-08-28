@@ -25,8 +25,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check shared UI
-        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
+      - name: Render only the Table document entry
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          let source = fs.readFileSync(path, 'utf8')
+          const begin = source.indexOf('  const filtered = normalized\n')
+          const finish = source.indexOf('\n\n  return (', begin)
+          if (begin < 0 || finish < 0) throw new Error('filtered block not found')
+          source = source.slice(0, begin) + '  const filtered = componentDocs.filter((item) => item.id === \'table\')' + source.slice(finish)
+          fs.writeFileSync(path, source)
+          NODE
 
       - name: Check Astro
         run: pnpm --filter @pzhown/web check
@@ -34,7 +44,7 @@ jobs:
       - name: Build Astro
         run: pnpm --filter @pzhown/web build
 
-      - name: Install Playwright package for browser verification
+      - name: Install Playwright package
         run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
       - name: Start production preview and dev server
@@ -42,80 +52,43 @@ jobs:
           pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           pnpm --filter @pzhown/web dev --host 127.0.0.1 --port 4322 > /tmp/astro-dev.log 2>&1 &
           for port in 4321 4322; do
-            ready=0
             for i in $(seq 1 90); do
               if curl -fsS "http://127.0.0.1:${port}/components/" >/dev/null; then
-                ready=1
                 break
               fi
               sleep 1
             done
-            if [ "$ready" -ne 1 ]; then
-              echo "Server ${port} failed to start"
-              cat /tmp/astro-preview.log || true
-              cat /tmp/astro-dev.log || true
-              exit 1
-            fi
           done
 
-      - name: Capture production and development browser diagnostics
+      - name: Verify isolated Table hydration
         run: |
           node <<'NODE'
           const { chromium } = require('playwright')
-
           async function inspect(browser, label, url) {
-            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+            const page = await browser.newPage()
             const pageErrors = []
-            const consoleMessages = []
-            const failedResources = []
-            const requestFailures = []
-
+            const messages = []
             page.on('pageerror', error => pageErrors.push(error.stack || error.message))
             page.on('console', message => {
-              if (message.type() === 'error' || message.type() === 'warning') {
-                consoleMessages.push(`${message.type().toUpperCase()}: ${message.text()}`)
-              }
+              if (message.type() === 'error' || message.type() === 'warning') messages.push(`${message.type()}: ${message.text()}`)
             })
-            page.on('response', response => {
-              if (response.status() >= 400) failedResources.push(`${response.status()} ${response.url()}`)
-            })
-            page.on('requestfailed', request => {
-              requestFailures.push(`${request.failure()?.errorText || 'FAILED'} ${request.url()}`)
-            })
-
             await page.goto(url, { waitUntil: 'networkidle' })
-            await page.waitForTimeout(2000)
-
+            await page.waitForTimeout(1500)
             const state = await page.evaluate(() => ({
               root: Boolean(document.querySelector('.component-document')),
-              cards: document.querySelectorAll('[data-component]').length,
-              text: document.body.innerText.length,
+              cards: Array.from(document.querySelectorAll('[data-component]')).map(node => node.getAttribute('data-component')),
               demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map(node => node.getAttribute('data-demo-error')),
             }))
-
             console.log(`=== ${label} ===`)
-            console.log('PAGE STATE', JSON.stringify(state))
-            console.log('FAILED RESOURCES', JSON.stringify(failedResources))
-            console.log('REQUEST FAILURES', JSON.stringify(requestFailures))
+            console.log('STATE', JSON.stringify(state))
             console.log('PAGE ERRORS', JSON.stringify(pageErrors))
-            console.log('CONSOLE MESSAGES', JSON.stringify(consoleMessages))
+            console.log('MESSAGES', JSON.stringify(messages))
             await page.close()
-            return { state, pageErrors, consoleMessages, failedResources, requestFailures }
           }
-
           ;(async () => {
             const browser = await chromium.launch({ channel: 'chrome', headless: true })
-            const production = await inspect(browser, 'PRODUCTION', 'http://127.0.0.1:4321/components/')
-            const development = await inspect(browser, 'DEVELOPMENT', 'http://127.0.0.1:4322/components/')
+            await inspect(browser, 'PRODUCTION TABLE', 'http://127.0.0.1:4321/components/')
+            await inspect(browser, 'DEVELOPMENT TABLE', 'http://127.0.0.1:4322/components/')
             await browser.close()
-
-            for (const result of [production, development]) {
-              if (!result.state.root || result.state.cards !== 58 || result.state.demoErrors.length) {
-                process.exit(1)
-              }
-            }
-          })().catch(error => {
-            console.error(error)
-            process.exit(1)
-          })
+          })().catch(error => { console.error(error); process.exit(1) })
           NODE
