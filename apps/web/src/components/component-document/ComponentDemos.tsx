@@ -31,6 +31,27 @@ function DemoStack({ children, className = '' }: { children: React.ReactNode; cl
   return <div className={`tw:grid tw:gap-3 ${className}`}>{children}</div>
 }
 
+function ClientMounted({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div
+        data-client-mount-placeholder
+        className="tw:grid tw:min-h-24 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/30 tw:text-xs tw:text-muted-foreground"
+      >
+        客户端组件加载中…
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
+
 function StateLabel({ children }: { children: React.ReactNode }) {
   return (
     <span className="tw:mb-1 tw:block tw:text-[10px] tw:font-semibold tw:uppercase tw:tracking-[0.14em] tw:text-muted-foreground">
@@ -813,17 +834,23 @@ function QuestionnaireDemo() {
             <Piece name="QuestionnaireChoices" type="radio">
               <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>
               <Piece name="QuestionnaireChoice" value="b">移动端</Piece>
-              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>
+              <Piece name="QuestionnaireChoice" value="c" disabled>禁用选项</Piece>
             </Piece>
-            <div className="tw:grid tw:gap-2 tw:pt-2">
-              <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />
-              <Piece name="QuestionnaireError">示例错误信息</Piece>
-            </div>
           </Piece>
           <Piece name="QuestionnaireActions">
             <Piece name="QuestionnairePrevious" />
             <Piece name="QuestionnaireSkip" />
             <Piece name="QuestionnaireNext" />
+          </Piece>
+        </Piece>
+      </div>
+      <div className="tw:rounded-xl tw:border tw:border-border tw:p-4">
+        <Piece name="Questionnaire">
+          <Piece name="QuestionnaireItem" id="text">
+            <Piece name="QuestionnaireTitle">自由输入</Piece>
+            <Piece name="QuestionnaireDescription">单独展示文本输入与错误状态，避免把不同题型混进同一 Item。</Piece>
+            <Piece name="QuestionnaireInput" aria-label="问卷文本输入" placeholder="文本输入状态" aria-invalid="true" />
+            <Piece name="QuestionnaireError">示例错误信息</Piece>
           </Piece>
         </Piece>
       </div>
@@ -983,22 +1010,27 @@ function SwitchDemo() {
 }
 
 function TableDemo() {
+  // React Aria Table collection currently triggers a recoverable React 19 SSR
+  // hydration error in Astro. Keep the workaround scoped to this demo so the
+  // other 57 components retain normal SSR + hydration.
   return (
-    <DemoStack>
-      <Piece name="Table" aria-label="组件状态表">
-        <Piece name="TableHeader">
-          <Piece name="TableHead" id="component">组件</Piece>
-          <Piece name="TableHead" id="state">状态</Piece>
-          <Piece name="TableHead" id="note">备注</Piece>
+    <ClientMounted>
+      <DemoStack>
+        <Piece name="Table" aria-label="组件状态表">
+          <Piece name="TableHeader">
+            <Piece name="TableHead" id="component" isRowHeader>组件</Piece>
+            <Piece name="TableHead" id="state">状态</Piece>
+            <Piece name="TableHead" id="note">备注</Piece>
+          </Piece>
+          <Piece name="TableBody">
+            <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
+            <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
+            <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
+          </Piece>
         </Piece>
-        <Piece name="TableBody">
-          <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
-          <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
-          <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
-        </Piece>
-      </Piece>
-      <Piece name="TableCaption">组件状态表</Piece>
-    </DemoStack>
+        <Piece name="TableCaption">组件状态表</Piece>
+      </DemoStack>
+    </ClientMounted>
   )
 }
 
