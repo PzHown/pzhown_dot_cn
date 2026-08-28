@@ -4,22 +4,16 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const buttonVariants = cva(
-  'pzhown-ui tw:inline-flex tw:shrink-0 tw:items-center tw:justify-center tw:gap-1.5 tw:whitespace-nowrap tw:rounded-xl tw:border tw:border-transparent tw:text-sm tw:font-medium tw:outline-none tw:transition-[color,background-color,border-color,box-shadow,transform] tw:duration-150 tw:select-none tw:disabled:pointer-events-none tw:disabled:opacity-50 tw:focus-visible:ring-3 tw:focus-visible:ring-[var(--pzhown-ui-ring)] tw:active:translate-y-px tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4',
+  'pzhown-ui pzhown-button tw:inline-flex tw:shrink-0 tw:items-center tw:justify-center tw:gap-1.5 tw:whitespace-nowrap tw:rounded-xl tw:border tw:border-transparent tw:text-sm tw:font-medium tw:outline-none tw:transition-[color,background-color,border-color,box-shadow,transform] tw:duration-150 tw:select-none tw:disabled:pointer-events-none tw:disabled:opacity-50 tw:focus-visible:ring-3 tw:focus-visible:ring-[var(--pzhown-ui-ring)] tw:active:translate-y-px tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4',
   {
     variants: {
       variant: {
-        default:
-          'tw:bg-[var(--pzhown-ui-primary)] tw:text-[var(--pzhown-ui-primary-foreground)] tw:hover:bg-[var(--pzhown-ui-primary-hover)]',
-        outline:
-          'tw:border-[var(--pzhown-ui-border)] tw:bg-[var(--pzhown-ui-surface)] tw:text-[var(--pzhown-ui-foreground)] tw:hover:bg-[var(--pzhown-ui-accent)]',
-        secondary:
-          'tw:bg-[var(--pzhown-ui-muted)] tw:text-[var(--pzhown-ui-foreground)] tw:hover:bg-[var(--pzhown-ui-accent)]',
-        ghost:
-          'tw:bg-transparent tw:text-[var(--pzhown-ui-foreground)] tw:hover:bg-[var(--pzhown-ui-accent)]',
-        destructive:
-          'tw:bg-[var(--pzhown-ui-destructive-soft)] tw:text-[var(--pzhown-ui-destructive)] tw:hover:brightness-95',
-        link:
-          'tw:bg-transparent tw:text-[var(--pzhown-ui-foreground)] tw:underline-offset-4 tw:hover:underline',
+        default: '',
+        outline: '',
+        secondary: '',
+        ghost: '',
+        destructive: '',
+        link: 'tw:underline-offset-4',
       },
       size: {
         default: 'tw:h-9 tw:px-3.5',
@@ -48,6 +42,8 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      data-variant={variant}
+      data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
