@@ -45,10 +45,4 @@ export function ProgressiveBlur({
   )
 }
 
-export function LinearBlur(props: Omit<ProgressiveBlurProps, 'mode'>) {
-  return <ProgressiveBlur {...props} mode="linear" />
-}
-
-export function RadialBlur(props: Omit<ProgressiveBlurProps, 'mode' | 'side'>) {
-  return <ProgressiveBlur {...props} mode="radial" />
-}
+export default ProgressiveBlur
