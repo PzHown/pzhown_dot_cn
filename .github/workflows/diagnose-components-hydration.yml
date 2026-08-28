@@ -6,11 +6,10 @@ on:
       - fix/components-hydration-blank
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  browser:
-    if: github.actor != 'github-actions[bot]'
+  warning-scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,116 +25,101 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Fix controlled InputOTP demo
+      - name: Prepare client-only single-component diagnostic mode
         run: |
           node <<'NODE'
           const fs = require('fs')
-          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
-          let source = fs.readFileSync(path, 'utf8')
 
-          const from = `function InputOTPDemo() {\n  return (\n    <DemoStack>\n      <Piece name="InputOTP" maxLength={6} defaultValue="1263">`
-          const to = `function InputOTPDemo() {\n  const [value, setValue] = React.useState('1263')\n\n  return (\n    <DemoStack>\n      <Piece name="InputOTP" maxLength={6} value={value} onChange={setValue}>`
+          const componentPath = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          let componentSource = fs.readFileSync(componentPath, 'utf8')
+          const marker = "  const normalized = query.trim().toLowerCase()\n\n  const filtered = normalized\n"
+          if (!componentSource.includes(marker)) throw new Error('ComponentsDocument filter marker not found')
+          componentSource = componentSource.replace(
+            marker,
+            "  const normalized = query.trim().toLowerCase()\n  const diagnosticTarget = typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('component') ?? ''\n\n  const filtered = diagnosticTarget\n    ? componentDocs.filter((item) => item.id === diagnosticTarget)\n    : normalized\n"
+          )
+          fs.writeFileSync(componentPath, componentSource)
 
-          if (!source.includes(from)) throw new Error('InputOTPDemo patch target not found')
-          source = source.replace(from, to)
-          fs.writeFileSync(path, source)
+          const pagePath = 'apps/web/src/pages/components.astro'
+          let pageSource = fs.readFileSync(pagePath, 'utf8')
+          if (!pageSource.includes('<ComponentsDocument client:load />')) throw new Error('components.astro client directive not found')
+          pageSource = pageSource.replace('<ComponentsDocument client:load />', '<ComponentsDocument client:only="react" />')
+          fs.writeFileSync(pagePath, pageSource)
           NODE
-
-      - name: Commit InputOTP fix
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/web/src/components/component-document/ComponentDemos.tsx
-          git commit -m 'fix(web): use controlled state in InputOTP demo'
-          git push origin HEAD:fix/components-hydration-blank
-
-      - name: Check shared UI
-        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
-
-      - name: Check Astro
-        run: pnpm --filter @pzhown/web check
-
-      - name: Build Astro
-        run: pnpm --filter @pzhown/web build
 
       - name: Install Playwright package
         run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
-      - name: Start production preview and dev server
+      - name: Start Astro dev server
         run: |
-          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           pnpm --filter @pzhown/web dev --host 127.0.0.1 --port 4322 > /tmp/astro-dev.log 2>&1 &
-          for port in 4321 4322; do
-            ready=0
-            for i in $(seq 1 90); do
-              if curl -fsS "http://127.0.0.1:${port}/components/" >/dev/null; then
-                ready=1
-                break
-              fi
-              sleep 1
-            done
-            if [ "$ready" -ne 1 ]; then
-              cat /tmp/astro-preview.log || true
-              cat /tmp/astro-dev.log || true
-              exit 1
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:4322/components/ >/dev/null; then
+              exit 0
             fi
+            sleep 1
           done
+          cat /tmp/astro-dev.log
+          exit 1
 
-      - name: Verify full component document hydration
+      - name: Scan all component demos for remaining warnings
         run: |
           node <<'NODE'
+          const fs = require('fs')
           const { chromium } = require('playwright')
 
-          async function inspect(browser, label, url) {
-            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
-            const pageErrors = []
-            const messages = []
-            const responses = []
-            page.on('pageerror', error => pageErrors.push(error.stack || error.message))
-            page.on('console', message => {
-              if (message.type() === 'error' || message.type() === 'warning') messages.push(`${message.type()}: ${message.text()}`)
-            })
-            page.on('response', response => {
-              if (response.status() >= 400) responses.push(`${response.status()} ${response.url()}`)
-            })
-            await page.goto(url, { waitUntil: 'networkidle' })
-            await page.waitForTimeout(2000)
-            const state = await page.evaluate(() => ({
-              root: Boolean(document.querySelector('.component-document')),
-              cards: document.querySelectorAll('[data-component]').length,
-              demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map(node => node.getAttribute('data-demo-error')),
-              tableRendered: Boolean(document.querySelector('[data-component="table"] [data-slot="table"]')),
-              text: document.body.innerText.length,
-            }))
-            console.log(`=== ${label} ===`)
-            console.log('STATE', JSON.stringify(state))
-            console.log('PAGE ERRORS', JSON.stringify(pageErrors))
-            console.log('MESSAGES', JSON.stringify(messages))
-            console.log('FAILED RESPONSES', JSON.stringify(responses))
-            await page.close()
-            return { state, pageErrors, messages, responses }
-          }
+          const catalog = fs.readFileSync('apps/web/src/components/component-document/catalog.ts', 'utf8')
+          const ids = [...catalog.matchAll(/\bid:\s*'([^']+)'/g)].map((match) => match[1])
+          if (ids.length !== 58) throw new Error(`Expected 58 component ids, found ${ids.length}`)
 
           ;(async () => {
             const browser = await chromium.launch({ channel: 'chrome', headless: true })
-            const production = await inspect(browser, 'PRODUCTION', 'http://127.0.0.1:4321/components/')
-            const development = await inspect(browser, 'DEVELOPMENT', 'http://127.0.0.1:4322/components/')
-            await browser.close()
+            const offenders = []
 
-            for (const result of [production, development]) {
-              if (!result.state.root || result.state.cards !== 58 || result.state.demoErrors.length || !result.state.tableRendered || result.pageErrors.length || result.responses.length) {
-                process.exit(1)
+            for (const id of ids) {
+              const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+              const messages = []
+              const pageErrors = []
+
+              page.on('pageerror', error => pageErrors.push(error.stack || error.message))
+              page.on('console', message => {
+                if (message.type() === 'error' || message.type() === 'warning') {
+                  messages.push(`${message.type()}: ${message.text()}`)
+                }
+              })
+
+              await page.goto(`http://127.0.0.1:4322/components/?component=${encodeURIComponent(id)}`, { waitUntil: 'networkidle' })
+              await page.waitForTimeout(350)
+
+              const state = await page.evaluate(() => ({
+                cards: Array.from(document.querySelectorAll('[data-component]')).map((node) => node.getAttribute('data-component')),
+                demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map((node) => node.getAttribute('data-demo-error')),
+              }))
+
+              if (state.cards.length !== 1 || state.cards[0] !== id || state.demoErrors.length || pageErrors.length) {
+                console.log('DIAGNOSTIC FAILURE', id, JSON.stringify({ state, pageErrors, messages }))
+                await browser.close()
+                process.exit(2)
               }
+
+              const relevant = messages.filter((message) =>
+                message.includes('If you do not provide a visible label') ||
+                message.includes('PressResponder was rendered without a pressable child')
+              )
+
+              if (relevant.length) {
+                offenders.push({ id, messages: relevant })
+                console.log('OFFENDER', id, JSON.stringify(relevant))
+              }
+
+              await page.close()
             }
 
-            const importantWarnings = development.messages.filter(message =>
-              message.includes('both value and defaultValue') ||
-              message.includes('isDisabled') ||
-              message.includes('Failed to load resource')
-            )
-            if (importantWarnings.length) process.exit(1)
-          })().catch(error => {
+            await browser.close()
+            console.log('OFFENDERS', JSON.stringify(offenders))
+            console.log('SCANNED', ids.length)
+          })().catch((error) => {
             console.error(error)
-            process.exit(1)
+            process.exit(2)
           })
           NODE
