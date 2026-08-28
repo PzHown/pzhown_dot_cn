@@ -1,6 +1,6 @@
 ---
 name: apple-design
-description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、灰度与 Neutral、材质、层级、留白、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读与布局已确定后统一 @pzhown/ui 的视觉表达。此 Skill 不负责决定正文行长、跨设备结构或动效逻辑；相关任务应优先使用 perceptual-reading、content-presentation、adaptive-layout 和 interaction-motion。
+description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、灰度与 Neutral、材质、层级、留白、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读、布局与交互可供性已确定后统一 @pzhown/ui 的视觉表达。此 Skill 不负责决定正文行长、跨设备结构、Link/Button/可点击 Surface 的交互语义或复杂动效逻辑；相关任务应优先使用 perceptual-reading、content-presentation、adaptive-layout、interaction-affordance 和 interaction-motion。
 ---
 
 # Apple-inspired 视觉语言
@@ -14,6 +14,7 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 - 阅读舒适与正文排版：使用 `perceptual-reading`。
 - 内容语义与文章结构：使用 `content-presentation`。
 - 跨设备空间结构：使用 `adaptive-layout`。
+- Link、Button、Icon Button、可点击 Surface 与交互状态表达：使用 `interaction-affordance`。
 - 动画与空间连续性：使用 `interaction-motion`。
 
 视觉语言不得反向破坏这些决定。
@@ -44,7 +45,7 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 ## 组件视觉
 
 - Button、Input、Tabs、Switch、Dialog、Popover、Tooltip、Menu 等优先扩展 `@pzhown/ui`。
-- React Aria 决定交互语义和状态；此 Skill 只统一视觉表达，不覆盖其可访问性行为。
+- React Aria 决定交互语义和状态；`interaction-affordance` 决定不同可交互元素应如何被识别；此 Skill 只统一最终视觉表达。
 - 使用状态差异而不是粗暴边框表达 hovered、pressed、selected 和 focus-visible。
 - Focus 必须可见，但可以与视觉语言协调，不要为了“干净”隐藏 focus ring。
 
@@ -68,4 +69,4 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 1. 当前视觉层级问题。
 2. 需要保留和删除的装饰。
 3. Neutral / Token / surface / typography / material 的具体变化。
-4. 与阅读、布局和动效 Skill 的边界。
+4. 与阅读、布局、交互可供性和动效 Skill 的边界。

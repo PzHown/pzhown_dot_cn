@@ -25,6 +25,8 @@
     ↓
 跨设备布局
     ↓
+交互可供性
+    ↓
 视觉语言
     ↓
 交互与动效
@@ -48,9 +50,13 @@
 
 负责跨设备与可变窗口布局，遵循“适配而不是缩小”，使用内容崩坏点、Container Queries 和输入能力驱动布局变化。
 
+### `interaction-affordance`
+
+负责统一可交互元素的可发现性、语义与状态表达：Inline Link、Navigation Link、Text Action、Button、Icon Button、Clickable Surface，以及 Rest / Hover / Focus / Pressed / Selected / Disabled / Pending。
+
 ### `apple-design`
 
-负责视觉语言：层级、材质、色彩、灰度与 Neutral、Squircle、留白、阴影、透明度和 Apple-inspired 的克制感。它不是阅读、布局和动效的最高级规范。
+负责视觉语言：层级、材质、色彩、灰度与 Neutral、Squircle、留白、阴影、透明度和 Apple-inspired 的克制感。它不决定一个元素应该是 Link、Button 还是可点击 Surface。
 
 ### `interaction-motion`
 
@@ -59,6 +65,7 @@
 ## 技术设计约束
 
 - 公共前台保持 Astro-first；静态内容不要因为动效或样式无意义 React 化。
+- 导航使用 `<a>` / Link；动作使用 `<button>` / React Aria 对应控件；禁止用 `div onClick` 代替真实交互语义。
 - 需要复杂交互状态时使用 React Aria Components。
 - Motion 用于 spring、presence、layout、gesture；简单状态优先 CSS。
 - `@pzhown/ui` 是共享组件和视觉 token 的唯一优先入口；不要在页面里重复造基础控件。
@@ -83,6 +90,22 @@
 - 手机、平板、桌面保持相同信息优先级，但可以使用不同的导航、目录、侧栏和信息密度。
 - Touch、hover、fine pointer、coarse pointer 分别判断，不把屏幕宽度等同于输入能力。
 - 浏览器任意宽度、200% 文本缩放和系统字体变化下仍应保持可用。
+
+## 交互可供性
+
+统一的是“交互语法”，不是所有可点击元素的外观。
+
+- **导航与动作分离**：进入页面/位置使用 Link；改变当前状态、提交、打开控件使用 Button 或对应组件。
+- **Rest 状态先成立**：重要可交互项在静止状态下已有足够线索；Hover 只增强确认，不负责第一次告诉用户“这里能点”。
+- **正文链接保留链接心智模型**：不能只靠颜色表达，优先使用细 underline 或其他稳定的非颜色线索。
+- **Navigation Link 与 Inline Link 可以不同**：导航可依赖固定位置、结构和当前项 indicator，不要求全部下划线。
+- **Text Action 是 Button 的视觉变体**：例如复制、展开、重试，语义仍是 Button。
+- **Pressed 提供即时反馈**：使用短促的明度、surface、位移或小幅 scale；不让用户等待动画。
+- **Focus-visible 独立且清楚**：不能因追求简洁而隐藏，且不被容器裁切。
+- **Selected 是持续状态**：使用位置、indicator、surface、形状或字重等多线索，不只变色。
+- **Disabled 不保留正常操作暗示**：不显示正常 hover/pressed，也不能让状态只能靠低 opacity 猜测。
+- **Clickable Surface 避免嵌套冲突**：Card 内若有 Menu、Bookmark 等次级操作，不把整个交互结构塞进一个 `<a>`。
+- **触控与视觉尺寸分离**：独立控件保持舒适 hit area，正文 inline link 保持自然文本流。
 
 ## 动效规则
 
@@ -172,12 +195,13 @@ Destructive
 2. 阅读是否舒适，视觉负荷是否合理？
 3. 信息层级是否脱离 Card/边框也成立？
 4. 窄屏、平板、宽屏和可变窗口是否自然？
-5. React Aria 的键盘、触控、focus、selected、disabled 是否完整？
-6. 视觉语言是否统一且克制？
-7. **转为灰度后，标题、正文、导航、主要操作和状态层级是否仍然清楚？**
-8. 动效是否解释变化且支持 reduced motion？
-9. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
-10. 是否优先复用了 `@pzhown/ui` 和现有 token？
+5. 可交互项在 Rest 状态是否已有合理 signifier，且导航与动作语义是否正确？
+6. React Aria 的键盘、触控、focus、selected、disabled 是否完整？
+7. 视觉语言是否统一且克制？
+8. **转为灰度后，标题、正文、导航、主要操作和状态层级是否仍然清楚？**
+9. 动效是否解释变化且支持 reduced motion？
+10. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
+11. 是否优先复用了 `@pzhown/ui` 和现有 token？
 
 ## 参考理念来源
 
@@ -185,6 +209,7 @@ Destructive
 
 - Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
 - W3C WCAG 2.2: https://www.w3.org/TR/WCAG22/
+- React Aria Components: https://react-aria.adobe.com/
 - Vercel Web Interface Guidelines: https://github.com/vercel-labs/web-interface-guidelines
 - Vercel Agent Skills: https://github.com/vercel-labs/agent-skills
 - Anthropic frontend-design Skill: https://github.com/anthropics/skills/tree/main/skills/frontend-design

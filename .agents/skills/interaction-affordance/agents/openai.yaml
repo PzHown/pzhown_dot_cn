@@ -1,0 +1,3 @@
+interface:
+  display_name: "交互可供性规范"
+  short_description: "统一 Link、Button、可点击 Surface 与交互状态的可发现性和反馈语言"

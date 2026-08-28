@@ -22,6 +22,8 @@
   - Markdown/CMS 内容、引用、代码、图片、表格、脚注、目录、元数据、文章结构。
 - `.agents/skills/adaptive-layout/SKILL.md`
   - 响应式、Container Queries、Grid/Subgrid、手机/平板/桌面、输入能力、侧栏/目录重排。
+- `.agents/skills/interaction-affordance/SKILL.md`
+  - 文字链接、导航、Text Action、Button、Icon Button、可点击 Surface，以及 hover/pressed/focus/selected/disabled 等状态表达。
 - `.agents/skills/apple-design/SKILL.md`
   - Apple-inspired 视觉语言、Squircle、色彩、材质、留白、阴影、透明与 Blur。
 - `.agents/skills/interaction-motion/SKILL.md`
@@ -36,6 +38,7 @@
 → perceptual-reading
 → content-presentation
 → adaptive-layout
+→ interaction-affordance
 → apple-design
 → interaction-motion
 ```
@@ -45,7 +48,9 @@
 ## 前端实现约束
 
 - 优先复用 `@pzhown/ui`，不要为单页重复造基础组件。
+- 导航使用真实 Link；执行动作使用 Button/对应控件，不用 `div onClick` 伪装交互语义。
 - React 交互底层优先使用 React Aria Components。
+- 可点击性在 Rest 状态先成立；Hover 只能增强，不能成为唯一发现机制。
 - Motion 用于 spring、presence、layout、gesture；简单 hover/focus/color/opacity 优先 CSS。
 - Astro 前台保持 Astro-first，仅在真正需要状态或 React Aria 时使用 React Island。
 - 使用 Container Queries、Grid/Subgrid、`clamp()`、`minmax()` 和逻辑属性实现现代布局。
@@ -65,6 +70,7 @@ UI 任务完成前至少检查：
 - 连续阅读是否舒适？
 - 去掉 Card/边框后层级是否仍然成立？
 - 窄屏、平板、宽屏和可变窗口是否自然？
+- 静止状态下，主要可交互项是否已有合理 signifier，且导航与动作不会混淆？
 - 键盘、触控、缩放、深色模式和 reduced motion 是否成立？
 - 动效是否解释变化，而不是增加视觉忙碌？
 - 是否优先复用项目设计系统，而不是制造一次性样式？
