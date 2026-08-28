@@ -1,0 +1,3 @@
+interface:
+  display_name: "导航与定向"
+  short_description: "统一信息架构、导航路径与当前位置表达"

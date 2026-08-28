@@ -1,69 +1,109 @@
 ---
 name: interaction-affordance
-description: 为 pzhown_dot_cn 统一可交互元素的“可点击性、可操作性与状态表达”。用于文字链接、导航链接、文字动作、Button、Icon Button、可点击 Card/Surface、Tabs、Toggle、Menu Item，以及 hover、pressed、focus-visible、selected、disabled、pending 等交互状态设计与实现。要求先区分导航与动作，再通过语义、形状、明度、装饰、位置和状态反馈建立清晰但克制的交互可供性；不能依赖 hover 或颜色作为唯一可点击线索。
+description: 为 pzhown_dot_cn 统一所有可交互元素的“可点击感”和状态表达。用于正文链接、导航链接、Text Action、Button、Icon Button、Clickable Surface/Card、Tabs、Toggle、Menu Item，以及 hover、pressed、focus-visible、selected、disabled、pending 等交互状态。目标是在不把所有元素都做成同一种按钮的前提下，让用户无需试点就能判断哪里可操作，并区分导航、动作与状态变化；同时兼顾 Mouse、Touch、Keyboard 和 React Aria 语义。
 ---
 
 # 交互可供性规范
 
-把“用户无需试点就能大致判断哪里可操作、操作后会发生什么”设为交互表达目标。统一的是交互语法，不是把所有可点击元素做成同一种按钮。
+统一的是交互语法，不是所有可点击元素的外观。
+
+## 核心原则
+
+- 先决定语义，再决定视觉 signifier。
+- 重要交互在 Rest 状态就要有足够线索；Hover 只增强确认。
+- 导航与动作保持不同心智模型：去往位置使用 Link，改变当前状态使用 Button/对应控件。
+- 不依赖颜色、Hover 或动画单独表达“这里能点”。
+- 同一种语义在 Mouse、Touch、Keyboard 下保持一致；输入方式只改变反馈方式，不改变含义。
+- 优先使用原生语义与 React Aria，不使用 `div onClick` 模拟控件。
 
 ## 工作流程
 
-1. 先判断语义：这是**导航**、**动作**、**状态切换**、**选择**还是**进入一个对象**。
-2. 根据语义选择元素：
-   - 导航：`<a>` / Link。
-   - 动作：`<button>` / React Aria Button。
-   - 状态与选择：使用对应 React Aria primitive，不用 `div onClick` 伪装控件。
-3. 根据上下文选择 signifier：Inline Link、Navigation Link、Text Action、Button、Icon Button、Clickable Surface 或 Selection Control。
-4. 设计 Rest 状态先成立，再补 hover、focus-visible、pressed、selected、disabled、pending。不要让 hover 成为“终于看得出能点”的唯一时刻。
-5. 在触控、键盘、鼠标三种输入下保持同一语义和可发现性。
-6. 视觉细节交给 `apple-design`；复杂过渡与空间动画交给 `interaction-motion`。
+1. 判断交互意图：导航、动作、状态切换、选择、菜单命令，还是进入一个对象。
+2. 选择正确语义元素：`<a>` / Link、`<button>` / React Aria Button、Switch、Tab、MenuItem 等。
+3. 为 Rest 状态选择最小充分 signifier：文字装饰、shape、surface、icon、位置、indicator 或组合。
+4. 定义 Hover / Focus-visible / Pressed / Selected / Disabled / Pending；不要只做 Hover。
+5. 检查无 Hover 环境是否仍可发现；检查键盘 Focus 是否清楚且不被裁切。
+6. 检查命中区与误触风险；视觉尺寸与 hit area 可以分离。
+7. 与 `system-feedback` 协作操作级 Loading/Success/Error/Retry，与 `interaction-motion` 协作复杂动画；本 Skill 只定义“应该如何被识别”和控件级状态反馈。
 
-## 交互不变量
+## 交互角色
 
-- **导航与动作分离**：跳转到其他页面/位置用 Link；改变当前状态、提交、打开控件用 Button/对应控件。
-- **Rest 状态有线索**：重要可交互项在静止状态下就应具备足够 signifier，不依赖 hover 才显现。
-- **不只靠颜色**：正文链接、选择、错误、成功等不能只靠色相区分；同时使用下划线、形状、位置、图标、字重或 surface 差异。
-- **Hover 是增强，不是发现机制**：手机没有 hover；关键功能不能只在 hover 时出现或变得可识别。
-- **Focus 必须可见**：键盘焦点是独立状态，不等同于 hover。不要为了“干净”隐藏 focus-visible。
-- **Pressed 必须有即时反馈**：动作控件在按下时产生短促的材质、明度或轻微位移/缩放反馈；反馈不能拖慢操作。
-- **Selected 是持续状态**：用位置、surface、indicator、形状或文字权重表达，不只改变颜色。
-- **Disabled 不伪装可用**：同时降低可操作暗示与反馈；不接受点击，不显示正常 hover/pressed。
-- **命中区与视觉尺寸分离**：视觉可紧凑，触控 hit area 仍要足够；正文 inline link 属于自然例外。
-- **整块可点击要有边界**：Card/Surface 若整体可进入，应让对象标题、构图或 hover/focus surface 明确表达；避免嵌套多个冲突点击目标。
+### Inline Link
 
-## 表达优先级
+用于正文中的页面/资源跳转。
 
-优先使用多个低噪声信号共同表达，而不是一个过强信号：
+- 默认保留稳定非颜色线索，优先细 underline / text decoration。
+- Hover 可增强 underline、foreground 或 decoration thickness。
+- Visited 可轻微区分历史，但不能降到难读。
+- 不把正文 Link 做成 Button，除非语义本身就是动作。
 
-```text
-语义与位置
-+ 文字/图标含义
-+ 形状或装饰
-+ 明度/Surface
-+ 状态反馈
-```
+### Navigation Link
 
-不要默认把“可点击”等同于“高饱和品牌色”。在内容型博客中，彩色应该比结构信号更稀缺。
+用于主导航、侧栏导航、面包屑、目录等结构化导航。
 
-## 状态语言
+- 可以依赖固定位置、重复结构、selected/current indicator 提供导航语法，不要求每项下划线。
+- 当前项必须持续可识别；避免只在 Hover 才出现当前/可点击线索。
+- 导航项仍使用 Link 语义，不因为视觉像 Tab 就换成 Button。
 
-默认方向：
+### Text Action
 
-```text
-Rest
-→ Hover：可交互性更明确、对比适度增强
-→ Focus-visible：定位能力明显增强
-→ Pressed：产生即时按压反馈
-→ Selected：形成可持续识别的状态
-```
+用于复制、展开、重试、清除、编辑等动作型文字入口。
 
-不要使用“交互越深，元素越淡到看不见”的状态体系。具体状态实现读取 `references/states-feedback.md`。
+- 语义使用 Button/对应控件，不使用 Link 假装动作。
+- 可以视觉上近似文字链接，但通过动词、位置、icon 或状态反馈保留动作语义。
+
+### Button
+
+用于提交、确认、创建、切换当前状态或调用操作。
+
+- Shape + surface/foreground + label 共同形成 Rest signifier。
+- 同一任务区只保留一个最强主操作。
+- Pressed 必须即时可感知。
+- Icon + label 的具体 gap/padding 使用 `spatial-composition`，不要在本 Skill 独立造 spacing scale。
+
+### Icon Button
+
+用于空间紧凑且 icon 心智模型稳定的动作。
+
+- 必须有可访问名称。
+- Rest 状态要能判断属于交互控件；如果裸 icon 无法成立，提供轻 surface 或固定工具栏上下文。
+- 桌面端可用 Tooltip 补充解释，但 Tooltip 不承担完成任务必需的信息。
+
+### Clickable Surface
+
+用于“进入这个对象”而不是“执行这个对象上的所有动作”。
+
+- 使用对象标题、缩略图、箭头/Link signal、布局和 hover surface 建立整体可进入感。
+- Card 内存在 Menu、Bookmark、Checkbox 等次级操作时，不把整张 Card 包进一个 `<a>` 导致嵌套交互冲突。
+- 主要入口可通过 stretched link/overlay 技术实现，但必须保护内部次级操作和焦点顺序。
+
+## 状态方向
+
+- **Rest**：静止时先成立。
+- **Hovered**：提高确认度，不引入首次可发现功能。
+- **Focus-visible**：比 Rest 更明显，且在复杂背景上保持可见。
+- **Pressed**：短促的明度/surface/小位移/小 scale，立即响应。
+- **Selected**：持续状态，优先组合位置/indicator/surface/字重/形状，不只变色。
+- **Disabled**：降低操作暗示，不响应正常 Hover/Pressed；原因不能只藏 Tooltip。
+- **Pending**：用户已触发且操作未完成；保持控件宽度/布局，避免 Label → Spinner 引发明显跳动。
+
+详细状态规则读取 `references/states-feedback.md`。
+
+## 输入能力
+
+- 不把 `@media (max-width)` 等同于 Touch。
+- `hover:hover` / `pointer:fine` 只用于增强鼠标体验。
+- Touch 没有 Hover，因此关键可发现性必须在 Rest 成立。
+- Keyboard 使用 Focus-visible 表达定位，不要求 Focus 和 Hover 完全一样。
+- 命中区优先满足舒适触控；视觉外观可以更紧凑。
+
+详细命中区规则读取 `references/hit-targets.md`。
 
 ## 与其他 Skill 的边界
 
-- 阅读正文与链接密度：优先 `perceptual-reading`。
-- 文章卡片、目录、脚注等内容角色：优先 `content-presentation`。
+- 正文 Link 的密度、行长和阅读影响：优先 `perceptual-reading`。
+- Card/内容块应不应该存在：优先 `content-presentation`。
+- 控件内部 inset、icon-label gap、相邻目标之间的视觉间距和静态重心：使用 `spatial-composition`。
 - 不同设备的重排与输入能力：优先 `adaptive-layout`。
 - 颜色、Squircle、Surface、材质：使用 `apple-design`。
 - Presence、共享元素、页面过渡和复杂 gesture：使用 `interaction-motion`。

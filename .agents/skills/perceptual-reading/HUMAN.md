@@ -1,6 +1,6 @@
 # 感知阅读 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -30,8 +30,9 @@
 ## 它不负责
 
 - 文章中的图片、表格、引用应该属于哪种版式：看[内容呈现](../content-presentation/HUMAN.md)。
-- 手机、平板、桌面的空间结构怎么重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
-- 页面/组件的 gap、padding、视觉重心和 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
+- 手机、平板、桌面的结构怎么重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 页面级 gap、section rhythm、negative space 与视觉重心：看[空间构图](../spatial-composition/HUMAN.md)。
+- 选择、记忆与流程的认知负担：看[认知工效](../cognitive-ergonomics/HUMAN.md)。
 - Link/Button 怎么看起来可操作：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - 最终颜色、材质、Squircle：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 页面切换和复杂动画：看[交互动效](../interaction-motion/HUMAN.md)。

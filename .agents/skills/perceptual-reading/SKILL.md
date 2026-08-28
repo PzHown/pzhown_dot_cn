@@ -54,3 +54,7 @@ description: 为 pzhown_dot_cn 提供以人眼自然舒适、长时间阅读与�
 
 - 需要理解视觉负荷与阅读研究依据时，读取 `references/reading-science.md`。
 - 需要写 CSS、文章布局和实际实现时，读取 `references/implementation.md`。
+
+## 与认知工效的边界
+
+本 Skill 主要降低视觉阅读负担；如果问题是选择太多、需要记忆、模式切换或流程难理解，使用 `cognitive-ergonomics`。

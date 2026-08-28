@@ -1,51 +1,51 @@
 # 空间构图 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
 
 ## 它解决什么问题
 
-这个 Skill 负责页面、组件与控件之间“离多远、谁更重、整体怎么平衡、视线怎么走”。
+这个 Skill 负责回答两类互相影响的问题：
 
-它把 gap、padding、gutter、留白、视觉重心和 attention flow 放在同一套空间构图体系里，而不是把它们当成互不相关的微调。
+1. **元素之间应该离多远？**
+2. **整个页面的视觉重量、重心和视线顺序是否自然？**
+
+它不是“8px spacing 表”，而是一套空间关系与视觉构图语法。
 
 ## 核心理念
 
-> 距离表达关系，视觉重量表达重要性，重心组织整体稳定，视线顺序决定用户如何读懂页面。
+> 距离表达关系，视觉重量表达重要性，重心组织整体稳定，视线顺序组织理解。
 
-同时遵循：**几何一致性是起点，光学一致性才是终点。**
+同时记住：**空白也是构图元素，几何一致性只是起点。**
+
+## 什么时候看它
+
+当任务涉及 page gap、section gap、组件间 gap、Card padding、Button/Input 内边距、icon-label gap、grid gutter、页面边距、negative space、视觉重心、非对称构图、图片/标题谁更抢眼、optical center 或跨设备密度时，看这里。
 
 ## 它主要负责
 
-- 页面 gutter、section gap、组件 gap、控件 padding、icon-label gap 等空间节奏。
-- 通过 proximity / negative space 表达分组与层级。
-- 判断标题、图片、CTA、颜色块、动效等视觉重量是否与内容优先级一致。
-- 组织 symmetric / asymmetric / editorial 等构图平衡。
-- 控制一个页面或 section 的主要注意力锚点和阅读顺序。
-- 在手机、平板、桌面之间重新映射空间密度与视觉重心。
-- 对图标、文字、圆形/不对称几何进行有限的 optical adjustment。
+- Primitive spacing ramp 和语义 spacing。
+- Inline / Inset / Stack / Group / Section / Gutter / Page Edge。
+- 组件内部 padding 与父布局 gap 的职责边界。
+- Visual Weight、Visual Balance 和 Negative Space。
+- Attention Flow：第一眼、第二眼、下一步视线应该去哪。
+- Optical Adjustment：数学对齐后必要的有限视觉修正。
+- 不同设备下重新映射空间密度和视觉重心。
 
 ## 它不负责
 
-- 内容本身的语义与版式角色：看[内容呈现](../content-presentation/HUMAN.md)。
-- 正文行长、字号、行高与阅读舒适：看[感知阅读](../perceptual-reading/HUMAN.md)。
-- 列、pane、导航和目录何时重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
-- 可点击元素的语义和状态：看[交互可供性](../interaction-affordance/HUMAN.md)。
-- 颜色、材质、Squircle、Glass、Blur：看[Apple 视觉](../apple-design/HUMAN.md)。
-- 动画如何解释状态变化：看[交互动效](../interaction-motion/HUMAN.md)。
+- 内容是什么、该用什么内容版式：看[内容呈现](../content-presentation/HUMAN.md)。
+- 正文具体字号、行高、行长：看[感知阅读](../perceptual-reading/HUMAN.md)。
+- 元素在不同容器里放在哪里、什么时候重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 一个对象应该是 Link 还是 Button：看[交互可供性](../interaction-affordance/HUMAN.md)。
+- Neutral、材质、Squircle、Blur 和 Shadow：看[Apple 视觉](../apple-design/HUMAN.md)。
+- 页面状态变化以后怎么动：看[交互动效](../interaction-motion/HUMAN.md)。
 
-## 怎么理解它和跨设备布局的区别
+## 一句话区分
 
 ```text
-adaptive-layout
-= WHERE
-东西放在哪里、什么时候重排
-
-spatial-composition
-= RELATION + WEIGHT
-东西离多远、谁更重、整体是否平衡、视线怎么流动
+adaptive-layout = WHERE
+spatial-composition = RELATION + WEIGHT
 ```
-
-两者必须一起使用，但不互相替代。
 
 ## 详细规则
 

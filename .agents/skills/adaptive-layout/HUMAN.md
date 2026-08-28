@@ -1,6 +1,6 @@
 # 跨设备自适应布局 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -31,6 +31,7 @@ Breakpoint 应由内容真正开始失效的地方产生，而不是机械套用
 - 正文阅读参数：看[感知阅读](../perceptual-reading/HUMAN.md)。
 - 内容本身属于 reading 还是 wide/stage：看[内容呈现](../content-presentation/HUMAN.md)。
 - 具体 gap、padding、gutter、negative space、视觉重心与 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
+- 导航的信息架构与当前位置：看[导航与定向](../navigation-wayfinding/HUMAN.md)。
 - 控件可点击性与状态表达：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - 最终视觉材质：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 布局变化的动画方式：看[交互动效](../interaction-motion/HUMAN.md)。

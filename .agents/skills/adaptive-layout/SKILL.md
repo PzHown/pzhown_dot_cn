@@ -1,6 +1,6 @@
 ---
 name: adaptive-layout
-description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方式的自适应结构。用于响应式页面、手机/平板/桌面布局、Container Queries、Grid/Subgrid、导航重排、侧栏/目录、媒体布局、横竖屏、触控与鼠标差异、安全区域或任何需要在不同尺寸和交互能力下保持内容优先级的任务。遵循“适配而不是缩小”：允许列、pane、导航方式和信息密度随容器与输入能力改变；具体 gap、padding、视觉重量和重心由 spatial-composition 负责。
+description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方式的自适应结构。用于响应式页面、手机/平板/桌面布局、Container Queries、Grid/Subgrid、导航呈现重排、侧栏/目录、媒体布局、横竖屏、触控与鼠标差异、安全区域或任何需要在不同尺寸和交互能力下保持内容优先级的任务。遵循“适配而不是缩小”：允许列、pane、导航方式和信息密度随容器与输入能力改变；具体 gap、padding、视觉重量和重心由 spatial-composition 负责。
 ---
 
 # 跨设备自适应布局
@@ -10,11 +10,11 @@ description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方�
 ## 工作流程
 
 1. 先列出内容优先级和核心任务，不先选 breakpoint。
-2. 从最窄可用容器开始建立内容流，再逐步增加辅助列、宽媒体和导航层。
+2. 从最窄可用容器开始建立内容流，再逐步增加辅助列、宽媒体和导航呈现；导航的信息架构先由 `navigation-wayfinding` 确定。
 3. 当内容真正“失效”时创建容器断点：文字过短、控件拥挤、导航冲突或辅助列无法成立。
 4. 优先 Container Queries；只有页面级环境变化才使用 viewport media query。
 5. 检查输入能力：`hover`、`pointer`、键盘、触控、可变窗口和安全区域。
-6. 保持阅读层级一致，允许不同设备使用不同空间结构。
+6. 保持阅读层级和导航信息架构一致，允许不同设备使用不同空间结构与导航呈现。
 7. 结构确定后联合 `spatial-composition` 重新映射 gap、gutter、negative space、视觉重量与 attention flow。
 8. 联合 `perceptual-reading` 检查阅读舒适度，联合 `apple-design` 检查最终视觉语言。
 

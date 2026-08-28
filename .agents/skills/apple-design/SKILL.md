@@ -1,6 +1,6 @@
 ---
 name: apple-design
-description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、灰度与 Neutral、材质、层级、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读、布局、空间构图与交互可供性已确定后统一 @pzhown/ui 的最终视觉表达。此 Skill 不负责具体 gap/padding、视觉重心、正文行长、跨设备结构、Link/Button/可点击 Surface 的交互语义或复杂动效逻辑。
+description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。用于色彩、灰度与 Neutral、材质、层级、Squircle、阴影、透明度、Glass、Progressive Blur、视觉组件外观、品牌气质和视觉审查；也用于在信息架构、阅读、布局、空间构图与交互可供性已确定后统一 @pzhown/ui 的最终视觉表达。此 Skill 不负责具体 gap/padding、视觉重心、正文行长、跨设备结构、Link/Button/可点击 Surface 的交互语义或复杂动效逻辑；相关任务应优先使用 perceptual-reading、content-presentation、adaptive-layout、spatial-composition、navigation-wayfinding、cognitive-ergonomics、interaction-affordance、system-feedback 和 interaction-motion；inclusive-accessibility 横向约束全部视觉输出。
 ---
 
 # Apple-inspired 视觉语言
@@ -15,7 +15,10 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 - 内容语义与文章结构：使用 `content-presentation`。
 - 跨设备空间结构：使用 `adaptive-layout`。
 - gap、padding、gutter、negative space、视觉重量、重心和 attention flow：使用 `spatial-composition`。
-- Link、Button、Icon Button、可点击 Surface 与交互状态表达：使用 `interaction-affordance`。
+- Link、Button、Icon Button、可点击 Surface 与局部交互状态表达：使用 `interaction-affordance`。
+- 全局导航与当前位置：使用 `navigation-wayfinding`。
+- 系统加载、成功、失败与恢复：使用 `system-feedback`。
+- 可访问性：使用 `inclusive-accessibility` 作为横向基线。
 - 动画与空间连续性：使用 `interaction-motion`。
 
 视觉语言不得反向破坏这些决定。
@@ -32,7 +35,7 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 ## 视觉不变量
 
 - 使用 Apple-inspired，而不是 Apple clone；保留项目自己的品牌表达。
-- 尊重既有空间构图与内容优先级，避免通过 Glass、Shadow、Color 重新制造错误的视觉重心。
+- 让排版、留白、颜色层级和空间关系先成立，避免“每个区块一圈灰边框”。
 - 先用 Neutral / 灰度与明度建立信息层级，再让色相承担品牌、状态和重点语义；不能靠彩色本身弥补层级不足。
 - 业务组件使用语义 token，不直接把 `gray-500`、`zinc-700` 等物理色阶当作组件语义。
 - 已设置 `border-radius` 的界面优先通过全局 `corner-shape: squircle` 获得连续圆角；不要另造 SVG 圆角方案，除非明确需要严格曲率。
@@ -46,7 +49,7 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 ## 组件视觉
 
 - Button、Input、Tabs、Switch、Dialog、Popover、Tooltip、Menu 等优先扩展 `@pzhown/ui`。
-- React Aria 决定交互语义和状态；`interaction-affordance` 决定不同可交互元素应如何被识别；`spatial-composition` 决定控件内部/外部空间和视觉重量；此 Skill 只统一最终视觉表达。
+- React Aria 决定交互语义和状态；`interaction-affordance` 决定不同可交互元素应如何被识别；此 Skill 只统一最终视觉表达。
 - 使用状态差异而不是粗暴边框表达 hovered、pressed、selected 和 focus-visible。
 - Focus 必须可见，但可以与视觉语言协调，不要为了“干净”隐藏 focus ring。
 
@@ -57,7 +60,7 @@ description: 为 pzhown_dot_cn 提供 Apple-inspired Web 视觉语言规范。�
 - **Grayscale Test**：页面临时转为灰度后，标题、正文、导航、主要操作、状态和层级是否仍然清楚？如果不清楚，说明设计过度依赖色相。
 - Neutral 层级是否足够但不过度？是否存在大量肉眼难以区分的近似灰色？
 - 辅助文字是否因为“做灰”而低于可读对比度？
-- Squircle、radius、surface 和颜色是否来自统一体系？spacing 是否来自 `spatial-composition` 而不是此处另造？
+- Squircle、radius、spacing、surface 和颜色是否来自统一体系？
 - Blur/Glass 是否真的解释前后关系？
 - 深色模式是否重新校准亮度和对比，而不是简单反色？
 - 页面是否仍明显像默认 shadcn demo？如果是，继续调整。

@@ -167,3 +167,8 @@ primary anchor
 ## 研究依据
 
 需要理解原则来源、避免把经验误写成科学定律时读取 `references/research-basis.md`。
+
+## 与导航和认知的边界
+
+- `navigation-wayfinding` 决定信息空间和路径，本 Skill 决定这些导航对象在构图中的空间关系与视觉重量。
+- `cognitive-ergonomics` 决定用户需要承担多少记忆与决策，本 Skill 不用“更多留白”掩盖认知结构问题。

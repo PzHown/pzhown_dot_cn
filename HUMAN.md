@@ -39,14 +39,20 @@ SQLite（本地）/ PostgreSQL（生产）
   ↓
 空间关系、视觉重心和视线怎么组织
   ↓
+我在哪里、怎么去、怎么回来
+  ↓
+用户需要想多少、记多少、判断多少
+  ↓
 怎么看出能操作
+  ↓
+系统操作后如何回应
   ↓
 最终长什么样
   ↓
 操作以后怎么动
 ```
 
-对应的项目 Skills 如下。
+`inclusive-accessibility` 横向贯穿全部步骤，不是最后才补的检查项。
 
 ## Skill 人类目录
 
@@ -56,15 +62,21 @@ SQLite（本地）/ PostgreSQL（生产）
 | 内容呈现 | [`content-presentation/HUMAN.md`](./.agents/skills/content-presentation/HUMAN.md) | [`SKILL.md`](./.agents/skills/content-presentation/SKILL.md) |
 | 跨设备布局 | [`adaptive-layout/HUMAN.md`](./.agents/skills/adaptive-layout/HUMAN.md) | [`SKILL.md`](./.agents/skills/adaptive-layout/SKILL.md) |
 | 空间构图 | [`spatial-composition/HUMAN.md`](./.agents/skills/spatial-composition/HUMAN.md) | [`SKILL.md`](./.agents/skills/spatial-composition/SKILL.md) |
+| 导航与定向 | [`navigation-wayfinding/HUMAN.md`](./.agents/skills/navigation-wayfinding/HUMAN.md) | [`SKILL.md`](./.agents/skills/navigation-wayfinding/SKILL.md) |
+| 认知工效 | [`cognitive-ergonomics/HUMAN.md`](./.agents/skills/cognitive-ergonomics/HUMAN.md) | [`SKILL.md`](./.agents/skills/cognitive-ergonomics/SKILL.md) |
 | 交互可供性 | [`interaction-affordance/HUMAN.md`](./.agents/skills/interaction-affordance/HUMAN.md) | [`SKILL.md`](./.agents/skills/interaction-affordance/SKILL.md) |
+| 系统反馈 | [`system-feedback/HUMAN.md`](./.agents/skills/system-feedback/HUMAN.md) | [`SKILL.md`](./.agents/skills/system-feedback/SKILL.md) |
 | Apple-inspired 视觉语言 | [`apple-design/HUMAN.md`](./.agents/skills/apple-design/HUMAN.md) | [`SKILL.md`](./.agents/skills/apple-design/SKILL.md) |
 | 交互与动效 | [`interaction-motion/HUMAN.md`](./.agents/skills/interaction-motion/HUMAN.md) | [`SKILL.md`](./.agents/skills/interaction-motion/SKILL.md) |
+| 包容性与可访问性 | [`inclusive-accessibility/HUMAN.md`](./.agents/skills/inclusive-accessibility/HUMAN.md) | [`SKILL.md`](./.agents/skills/inclusive-accessibility/SKILL.md) |
 
 ## 怎么读这些文档
 
 第一次了解项目：先看本页，再看 `README.md`。
 
-准备做 UI：先看 `DESIGN.md`，然后进入与你任务最相关的 Skill `HUMAN.md`；需要精确执行规则时再看对应 `SKILL.md` 和 `references/`。
+准备做 UI：先看 `DESIGN.md`，进入最相关的 Skill `HUMAN.md`；需要精确执行规则时再看对应 `SKILL.md` 和 `references/`。
+
+每个 Skill 的 `HUMAN.md` 顶部都可以横跳到其他 Human Guide。
 
 准备改架构：先看 `README.md` 与实际 `apps/*`、`packages/*` 代码，不要把设计 Skill 当架构文档。
 

@@ -1,6 +1,6 @@
 # Apple-inspired 视觉语言 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -34,7 +34,10 @@
 - 内容应该用什么版式：看[内容呈现](../content-presentation/HUMAN.md)。
 - 页面在不同设备怎么重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
 - gap、padding、gutter、negative space、视觉重量和重心：看[空间构图](../spatial-composition/HUMAN.md)。
+- 导航结构：看[导航与定向](../navigation-wayfinding/HUMAN.md)。
 - Link/Button/Clickable Surface 应该如何被识别：看[交互可供性](../interaction-affordance/HUMAN.md)。
+- Loading / Error / Success 等系统反馈：看[系统反馈](../system-feedback/HUMAN.md)。
+- 可访问性由[包容性与可访问性](../inclusive-accessibility/HUMAN.md)横向约束。
 - 高级动画怎么组织：看[交互动效](../interaction-motion/HUMAN.md)。
 
 ## 详细规则

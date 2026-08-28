@@ -67,3 +67,7 @@ Spring 优先通过“响应速度 + 阻尼感”判断，不追求弹跳本身�
 
 - 需要建立项目 motion language 时读取 `references/motion-language.md`。
 - 需要 Motion / CSS / View Transition 实现选择时读取 `references/implementation.md`。
+
+## 与系统反馈的边界
+
+先由 `system-feedback` 决定 Loading / Success / Error / Progress / Undo 的语义与持续方式；本 Skill 只决定必要的动态呈现，不用动画替代状态说明。
