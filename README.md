@@ -7,7 +7,7 @@ Monorepo for the public Astro site and the Payload CMS / admin backend.
 - `apps/web`: Astro 7 + Tailwind CSS 4 + Motion public site
 - `apps/web`: React Islands are available for interactive components
 - `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4 + Motion
-- `packages/ui`: shared framework-light UI primitives
+- `packages/ui`: shared UI system built with Base UI + shadcn-style source components
 - Database: SQLite for local development by default, PostgreSQL for production
 - Package manager: pnpm workspaces
 
@@ -31,9 +31,7 @@ The first visit to Payload Admin will guide you through creating the initial use
 
 ## Styling
 
-The Astro frontend uses Tailwind CSS 4 through the official Vite plugin.
-
-The Payload backend uses Tailwind CSS 4 through PostCSS. Tailwind Preflight is intentionally disabled there and utilities use the `tw:` prefix, for example `tw:flex`, so Payload's built-in Admin styles are not reset or shadowed.
+Both apps use Tailwind CSS 4 with the `tw:` prefix. Payload does not enable Tailwind Preflight, so its built-in Admin styles remain isolated from the custom UI system.
 
 ### Squircle corners
 
@@ -106,17 +104,40 @@ import ProgressiveBlur from '@pzhown/ui/react'
 />
 ```
 
-Shared API:
+## UI components
 
-- `mode`: `linear | radial`
-- `side`: `top | right | bottom | left` for linear mode
-- `strength`: maximum blur strength
-- `steps`: number of blur layers
-- `falloff`: percentage of the area used for progressive falloff
-- `tint`: optional tint color
-- `className`: additional class name
+`@pzhown/ui` uses Base UI primitives with shadcn-style source components. The initial component set is:
 
-The Astro adapter renders with zero client JavaScript. The React adapter has no hooks or browser APIs, so it can remain a React Server Component in Next.js / Payload.
+- Button
+- Input
+- Dialog
+- Popover
+- Tooltip
+- Dropdown Menu
+- Tabs
+- Switch
+
+Next.js / Payload custom UI can import components directly:
+
+```tsx
+import { Button, Dialog, DialogContent, DialogTrigger } from '@pzhown/ui/react'
+```
+
+Astro uses the same React components inside React Islands when interaction is required:
+
+```astro
+---
+import { Button } from '@pzhown/ui/react'
+---
+
+<Button client:idle>Open</Button>
+```
+
+Presentation-only Astro components should remain native Astro where possible. Base UI React components are intended for stateful controls such as dialogs, menus, popovers, tabs, switches, and tooltips.
+
+The shared component theme is intentionally scoped to the `.pzhown-ui` class so it does not overwrite Payload's built-in Admin theme. Squircle corners, translucent surfaces, and the shared design tokens are applied by the component layer.
+
+A `packages/ui/components.json` file is included for future shadcn CLI additions. The package uses the Base UI / Nova base, neutral tokens, Lucide icons, Tailwind CSS variables, and the workspace UI aliases.
 
 ## Animation
 

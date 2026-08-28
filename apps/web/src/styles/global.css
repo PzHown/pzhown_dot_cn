@@ -1,3 +1,6 @@
-@import "tailwindcss";
+@import "tailwindcss" prefix(tw);
+@source "../../../../packages/ui/src";
+
 @import "@pzhown/ui/effects.css";
 @import "@pzhown/ui/progressive-blur.css";
+@import "@pzhown/ui/components.css";

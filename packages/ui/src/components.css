@@ -1,0 +1,133 @@
+.pzhown-ui {
+  --pzhown-ui-background: oklch(0.985 0.002 264);
+  --pzhown-ui-foreground: oklch(0.205 0.01 264);
+  --pzhown-ui-surface: oklch(1 0 0 / 0.82);
+  --pzhown-ui-surface-solid: oklch(1 0 0);
+  --pzhown-ui-muted: oklch(0.955 0.004 264);
+  --pzhown-ui-muted-foreground: oklch(0.51 0.012 264);
+  --pzhown-ui-border: oklch(0.205 0.01 264 / 0.12);
+  --pzhown-ui-primary: oklch(0.22 0.015 264);
+  --pzhown-ui-primary-hover: oklch(0.29 0.018 264);
+  --pzhown-ui-primary-foreground: oklch(0.985 0.002 264);
+  --pzhown-ui-accent: oklch(0.94 0.008 264);
+  --pzhown-ui-accent-foreground: oklch(0.22 0.015 264);
+  --pzhown-ui-destructive: oklch(0.58 0.22 25);
+  --pzhown-ui-destructive-soft: oklch(0.96 0.028 25);
+  --pzhown-ui-ring: oklch(0.63 0.14 250 / 0.32);
+  --pzhown-ui-shadow: 0 18px 55px rgb(0 0 0 / 0.14), 0 2px 8px rgb(0 0 0 / 0.06);
+  color: var(--pzhown-ui-foreground);
+}
+
+:where(.dark, [data-theme='dark']) .pzhown-ui,
+.pzhown-ui.dark,
+.pzhown-ui[data-theme='dark'] {
+  --pzhown-ui-background: oklch(0.16 0.008 264);
+  --pzhown-ui-foreground: oklch(0.96 0.004 264);
+  --pzhown-ui-surface: oklch(0.22 0.008 264 / 0.86);
+  --pzhown-ui-surface-solid: oklch(0.22 0.008 264);
+  --pzhown-ui-muted: oklch(0.27 0.009 264);
+  --pzhown-ui-muted-foreground: oklch(0.7 0.012 264);
+  --pzhown-ui-border: oklch(0.96 0.004 264 / 0.12);
+  --pzhown-ui-primary: oklch(0.96 0.004 264);
+  --pzhown-ui-primary-hover: oklch(0.88 0.006 264);
+  --pzhown-ui-primary-foreground: oklch(0.18 0.008 264);
+  --pzhown-ui-accent: oklch(0.3 0.01 264);
+  --pzhown-ui-accent-foreground: oklch(0.96 0.004 264);
+  --pzhown-ui-destructive: oklch(0.7 0.19 25);
+  --pzhown-ui-destructive-soft: oklch(0.32 0.08 25);
+  --pzhown-ui-ring: oklch(0.72 0.13 250 / 0.38);
+  --pzhown-ui-shadow: 0 22px 65px rgb(0 0 0 / 0.42), 0 2px 10px rgb(0 0 0 / 0.22);
+}
+
+.pzhown-dialog-overlay {
+  opacity: 0;
+  background: rgb(0 0 0 / 0.16);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  transition: opacity 180ms ease, backdrop-filter 220ms ease;
+}
+
+.pzhown-dialog-overlay[data-open] {
+  opacity: 1;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.pzhown-dialog-content {
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.98);
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pzhown-dialog-content[data-open] {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pzhown-popover-content,
+.pzhown-tooltip-content,
+.pzhown-dropdown-content {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 140ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pzhown-popover-content[data-open],
+.pzhown-tooltip-content[data-open],
+.pzhown-dropdown-content[data-open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pzhown-dropdown-item[data-highlighted],
+.pzhown-dropdown-sub-trigger[data-highlighted],
+.pzhown-dropdown-sub-trigger[data-popup-open] {
+  background: var(--pzhown-ui-accent);
+  color: var(--pzhown-ui-accent-foreground);
+}
+
+.pzhown-tabs-trigger[data-active] {
+  background: var(--pzhown-ui-surface-solid);
+  color: var(--pzhown-ui-foreground);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px var(--pzhown-ui-border);
+}
+
+.pzhown-switch {
+  background: var(--pzhown-ui-muted);
+}
+
+.pzhown-switch[data-checked] {
+  background: var(--pzhown-ui-primary);
+}
+
+.pzhown-switch-thumb {
+  margin-left: 2px;
+  transform: translateX(0);
+  background: var(--pzhown-ui-surface-solid);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.18);
+}
+
+.pzhown-switch[data-size='sm'] .pzhown-switch-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.pzhown-switch[data-checked] .pzhown-switch-thumb {
+  transform: translateX(1rem);
+}
+
+.pzhown-switch[data-size='sm'][data-checked] .pzhown-switch-thumb {
+  transform: translateX(0.75rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pzhown-dialog-overlay,
+  .pzhown-dialog-content,
+  .pzhown-popover-content,
+  .pzhown-tooltip-content,
+  .pzhown-dropdown-content,
+  .pzhown-switch,
+  .pzhown-switch-thumb {
+    transition: none !important;
+  }
+}

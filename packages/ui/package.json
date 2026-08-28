@@ -3,19 +3,37 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "sideEffects": [
+    "./src/*.css"
+  ],
   "exports": {
     ".": "./src/core.ts",
     "./astro": "./src/ProgressiveBlur.astro",
-    "./react": "./src/ProgressiveBlur.tsx",
+    "./react": "./src/react.ts",
     "./core": "./src/core.ts",
+    "./components": "./src/components/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./lib/*": "./src/lib/*.ts",
+    "./components.css": "./src/components.css",
     "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
+  "dependencies": {
+    "@base-ui/react": "1.7.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.34.0",
+    "tailwind-merge": "3.6.0"
+  },
   "peerDependencies": {
-    "react": ">=18 <20"
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   }
