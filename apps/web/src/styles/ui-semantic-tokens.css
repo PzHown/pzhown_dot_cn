@@ -1,0 +1,48 @@
+.pzhown-ui {
+  --background: var(--pzhown-ui-background);
+  --foreground: var(--pzhown-ui-foreground);
+  --card: var(--pzhown-ui-surface-strong);
+  --card-foreground: var(--pzhown-ui-foreground);
+  --popover: var(--pzhown-ui-surface-strong);
+  --popover-foreground: var(--pzhown-ui-foreground);
+  --primary: var(--pzhown-ui-primary);
+  --primary-foreground: var(--pzhown-ui-primary-foreground);
+  --secondary: var(--pzhown-ui-muted);
+  --secondary-foreground: var(--pzhown-ui-foreground);
+  --muted: var(--pzhown-ui-muted);
+  --muted-foreground: var(--pzhown-ui-muted-foreground);
+  --accent: var(--pzhown-ui-accent);
+  --accent-foreground: var(--pzhown-ui-accent-foreground);
+  --destructive: var(--pzhown-ui-destructive);
+  --border: var(--pzhown-ui-border);
+  --input: var(--pzhown-ui-border-strong);
+  --ring: var(--pzhown-ui-ring);
+
+  /* Low-chroma, perceptually spaced chart accents for the component lab. */
+  --chart-1: oklch(0.62 0.16 252);
+  --chart-2: oklch(0.68 0.13 174);
+  --chart-3: oklch(0.69 0.14 70);
+  --chart-4: oklch(0.66 0.15 315);
+  --chart-5: oklch(0.64 0.15 25);
+
+  --sidebar: var(--pzhown-ui-surface-strong);
+  --sidebar-foreground: var(--pzhown-ui-foreground);
+  --sidebar-primary: var(--pzhown-ui-primary);
+  --sidebar-primary-foreground: var(--pzhown-ui-primary-foreground);
+  --sidebar-accent: var(--pzhown-ui-accent);
+  --sidebar-accent-foreground: var(--pzhown-ui-accent-foreground);
+  --sidebar-border: var(--pzhown-ui-border);
+  --sidebar-ring: var(--pzhown-ui-ring);
+
+  --radius: 0.875rem;
+}
+
+:where(.dark, [data-theme='dark']) .pzhown-ui,
+.pzhown-ui.dark,
+.pzhown-ui[data-theme='dark'] {
+  --chart-1: oklch(0.72 0.13 252);
+  --chart-2: oklch(0.74 0.11 174);
+  --chart-3: oklch(0.76 0.12 70);
+  --chart-4: oklch(0.73 0.13 315);
+  --chart-5: oklch(0.72 0.13 25);
+}
