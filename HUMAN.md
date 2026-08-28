@@ -52,7 +52,7 @@ SQLite（本地）/ PostgreSQL（生产）
 操作以后怎么动
 ```
 
-`inclusive-accessibility` 横向贯穿全部步骤，不是最后才补的检查项。
+`inclusive-accessibility` 与 `perceptual-naturalness` 都横向贯穿全部步骤：前者保证人人可用，后者保证变化符合人的感知与因果预期。
 
 ## Skill 人类目录
 
@@ -68,6 +68,7 @@ SQLite（本地）/ PostgreSQL（生产）
 | 系统反馈 | [`system-feedback/HUMAN.md`](./.agents/skills/system-feedback/HUMAN.md) | [`SKILL.md`](./.agents/skills/system-feedback/SKILL.md) |
 | Apple-inspired 视觉语言 | [`apple-design/HUMAN.md`](./.agents/skills/apple-design/HUMAN.md) | [`SKILL.md`](./.agents/skills/apple-design/SKILL.md) |
 | 交互与动效 | [`interaction-motion/HUMAN.md`](./.agents/skills/interaction-motion/HUMAN.md) | [`SKILL.md`](./.agents/skills/interaction-motion/SKILL.md) |
+| 感知自然性 | [`perceptual-naturalness/HUMAN.md`](./.agents/skills/perceptual-naturalness/HUMAN.md) | [`SKILL.md`](./.agents/skills/perceptual-naturalness/SKILL.md) |
 | 包容性与可访问性 | [`inclusive-accessibility/HUMAN.md`](./.agents/skills/inclusive-accessibility/HUMAN.md) | [`SKILL.md`](./.agents/skills/inclusive-accessibility/SKILL.md) |
 
 ## 怎么读这些文档

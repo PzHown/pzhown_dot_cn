@@ -10,8 +10,9 @@
 2. **视觉与认知都舒适**：降低视觉搜索、记忆、判断、模式切换和精确操作负担。
 3. **跨设备连续**：手机、平板、桌面和可变窗口保持同一信息优先级，但允许结构和交互自适应。
 4. **先进但克制**：现代 CSS、React Aria、Motion、View Transitions、Progressive Blur 必须服务于内容、状态与空间关系。
-5. **状态可理解、错误可恢复**：用户始终知道系统正在做什么，失败后能继续。
-6. **渐进增强与包容性**：没有高级 CSS、动画或 JS 时核心内容和导航仍成立；可访问性从设计开始。
+5. **变化自然可预测**：动画、颜色、材质和布局变化保留对象身份、空间关系与操作因果。
+6. **状态可理解、错误可恢复**：用户始终知道系统正在做什么，失败后能继续。
+7. **渐进增强与包容性**：没有高级 CSS、动画或 JS 时核心内容和导航仍成立；可访问性从设计开始。
 
 ## 设计决策链
 
@@ -41,7 +42,7 @@
 
 低层级目标不得破坏高层级目标。
 
-`inclusive-accessibility` 是横向基线，贯穿全部步骤；性能与渐进增强同样横向生效。
+`inclusive-accessibility` 与 `perceptual-naturalness` 是两条横向基线，贯穿全部步骤：前者保证不同能力用户都能完成任务，后者保证感知、空间、时间、因果与材质连续性。性能与渐进增强同样横向生效。
 
 ## Skill 分工
 
@@ -89,6 +90,10 @@
 
 负责高级动态表达：空间连续性、Presence、共享元素、手势和 View Transitions。先由其他 Skill 决定状态和因果，再决定是否需要动画。
 
+### `perceptual-naturalness`
+
+作为横向质量层，负责**变化是否自然、连续、可预测**：Perceptual / Spatial / Temporal / Causal / Material Continuity，自然 Motion、自然 Color、直接操控、材质/光照/深度一致性。它不决定具体 Motion 参数或视觉风格。
+
 ### `inclusive-accessibility`
 
 作为横向约束，负责 Semantic HTML、Keyboard、Focus、Screen Reader、Contrast、非颜色线索、Zoom/Reflow、Touch Target、替代输入、Reduced Motion 和动态状态公告。
@@ -99,6 +104,7 @@
 - 导航使用 `<a>` / Link；动作使用 `<button>` / React Aria 对应控件；禁止 `div onClick` 代替语义控件。
 - 需要复杂交互状态时优先 React Aria Components。
 - Motion 用于 spring、presence、layout、gesture；简单状态优先 CSS。
+- 自然性不等于“慢 + Spring + 低饱和 + 大圆角”；直接操控优先即时、增量、可逆和可中断，颜色/渐变需要感知连续时优先 Oklab/OKLCH。
 - `@pzhown/ui` 是共享组件、Token 与基础视觉规则的优先入口。
 - 圆角优先使用现有 `corner-shape: squircle` 体系。
 - 自定义色彩优先使用 OKLCH/Oklab 和语义 token。
@@ -323,6 +329,27 @@ Destructive
 - Motion 是高注意力重量信号；静态构图已有多个强焦点时不再增加运动竞争。
 - `system-feedback` 先决定 Loading/Success/Error/Progress 的语义，本 Skill 只决定动态表达。
 
+## 感知自然性
+
+自然不是一种视觉风格，而是变化符合人的感知与因果预期。
+
+```text
+Perceptual Continuity  → 同一对象仍被看作同一对象
+Spatial Continuity     → 看得出从哪里来、到哪里去
+Temporal Continuity    → 速度与阶段没有无原因断裂
+Causal Continuity      → 用户动作与系统结果像同一事件链
+Material Continuity    → 光、深度、透明和表面属于同一视觉世界
+```
+
+- 不模拟自然的外观，维护自然的连续性。
+- 自然 Motion 先建立来源、去向和因果，再选择 easing / spring；Linear 在恒定速率场景可以正确。
+- 直接操控优先跟手、快速、增量、可逆、可中断；自动吸附或预测不得突然夺走控制。
+- 需要感知均匀的 Color / Gradient 变化优先 Oklab / OKLCH，先检查 Lightness 路径，再检查 Hue / Chroma。
+- 深色模式重新建立亮度和色度关系，不做机械反色。
+- Shadow、Highlight、Blur、Translucency 和 Surface 应共同说明同一深度/光照逻辑。
+- Shared element 只有语义上确实是同一对象延续时使用；不要为了过渡漂亮制造虚假的对象身份。
+- `perceptual-naturalness` 判断“变化是否自然”，`interaction-motion` 决定具体动画技术，`apple-design` 决定最终颜色/材质，`spatial-composition` 决定静态关系与重心。
+
 ## 包容性与可访问性基线
 
 可访问性不是最后的独立步骤。
@@ -350,12 +377,13 @@ Destructive
 6. 是否存在不必要的记忆、决策、隐藏规则或模式切换？
 7. 可交互项在 Rest 状态是否有合理 signifier？
 8. 用户操作后是否理解 Loading / Success / Error / Recovery？
-9. Semantic HTML、Keyboard、Focus、Touch、Zoom/Reflow 与 Reduced Motion 是否成立？
-10. 视觉语言是否统一且克制？
-11. 灰度下主要层级是否仍清楚？
-12. 动效是否解释变化？
-13. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
-14. 是否优先复用了 `@pzhown/ui` 和现有 token？
+9. 动画、颜色、材质和布局变化是否保持对象身份、空间、时间、因果与材质连续性？
+10. Semantic HTML、Keyboard、Focus、Touch、Zoom/Reflow 与 Reduced Motion 是否成立？
+11. 视觉语言是否统一且克制？
+12. 灰度下主要层级是否仍清楚？
+13. 动效是否解释变化？
+14. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
+15. 是否优先复用了 `@pzhown/ui` 和现有 token？
 
 ## 参考理念来源
 
@@ -363,6 +391,15 @@ Destructive
 
 - Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
 - Microsoft Fluent 2: https://fluent2.microsoft.design/
+- Apple Motion: https://developer.apple.com/design/human-interface-guidelines/motion
+- Apple Color: https://developer.apple.com/design/human-interface-guidelines/color
+- Apple Materials: https://developer.apple.com/design/human-interface-guidelines/materials
+- Fluent 2 Motion: https://fluent2.microsoft.design/motion
+- W3C CSS Color 4: https://www.w3.org/TR/css-color-4/
+- Gestalt perceptual grouping review: https://pmc.ncbi.nlm.nih.gov/articles/PMC3482144/
+- Direct Manipulation (Shneiderman): https://doi.org/10.1109/MC.1983.1654471
+- Causal perception: https://pmc.ncbi.nlm.nih.gov/articles/PMC7484022/
+- Material Perception review: https://pubmed.ncbi.nlm.nih.gov/28697677/
 - Atlassian Design System: https://atlassian.design/
 - Carbon Design System: https://carbondesignsystem.com/
 - Adobe Spectrum: https://spectrum.adobe.com/

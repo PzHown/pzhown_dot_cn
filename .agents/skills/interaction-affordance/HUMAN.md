@@ -1,6 +1,6 @@
 # 交互可供性 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [导航与定向](../navigation-wayfinding/HUMAN.md) · [认知工效](../cognitive-ergonomics/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [系统反馈](../system-feedback/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md) · [感知自然性](../perceptual-naturalness/HUMAN.md) · [包容性与可访问性](../inclusive-accessibility/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -36,6 +36,8 @@
 - 颜色、Squircle 和 Surface 最终长相：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 操作级 Loading / Success / Error / Retry：看[系统反馈](../system-feedback/HUMAN.md)。
 - 复杂动画和空间连续性：看[交互动效](../interaction-motion/HUMAN.md)。
+
+- 直接操控、手势与结果之间的因果连续性：看[感知自然性](../perceptual-naturalness/HUMAN.md)。
 
 ## 详细规则
 

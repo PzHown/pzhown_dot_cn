@@ -37,6 +37,8 @@
   - Apple-inspired 视觉语言、Squircle、色彩、Neutral、材质、阴影、透明与 Blur。
 - `.agents/skills/interaction-motion/SKILL.md`
   - Motion、View Transitions、Presence、共享元素、手势与高级微交互。
+- `.agents/skills/perceptual-naturalness/SKILL.md`
+  - 横向质量层：自然 Motion、自然 Color、对象/空间/时间/因果/材质连续性、直接操控和光照/深度一致性。
 - `.agents/skills/inclusive-accessibility/SKILL.md`
   - 横向基线：Semantic HTML、Keyboard、Focus、Screen Reader、Contrast、Zoom/Reflow、Touch、Reduced Motion。
 
@@ -58,7 +60,7 @@
 → interaction-motion
 ```
 
-`inclusive-accessibility` 不位于链尾，而是横向约束全部步骤。性能与渐进增强同样是共同底线。
+`inclusive-accessibility` 与 `perceptual-naturalness` 都不位于链尾，而是横向约束全部步骤：前者负责可访问性，后者负责感知/空间/时间/因果/材质连续性。性能与渐进增强同样是共同底线。
 
 ## 前端实现约束
 
@@ -69,6 +71,7 @@
 - 可点击性在 Rest 状态先成立；Hover 只能增强，不能成为唯一发现机制。
 - 操作级 Loading/Success/Error/Retry 使用 `system-feedback`；不要把所有状态都塞进 Button 的视觉状态。
 - Motion 用于 spring、presence、layout、gesture；简单 hover/focus/color/opacity 优先 CSS。
+- 任何动画、颜色、材质、光影或跨布局变化若“技术上平滑但看起来生硬”，使用 `perceptual-naturalness` 检查五种连续性，不用统一 Spring、慢动画或低饱和假装自然。
 - Astro 前台保持 Astro-first，仅在真正需要状态或 React Aria 时使用 React Island。
 - 使用 Container Queries、Grid/Subgrid、`clamp()`、`minmax()` 和逻辑属性实现现代布局。
 - Breakpoint 由内容崩坏点产生，不机械按设备型号划分。
@@ -98,5 +101,6 @@ UI 任务完成前至少检查：
 - 主要可交互项在静止状态是否已有合理 signifier？
 - 用户操作后是否能理解系统正在做什么、结果是什么、失败后怎么办？
 - 语义、键盘、Focus、缩放、触控、深色模式和 Reduced Motion 是否成立？
+- 动画、颜色、材质和跨状态变化是否符合人的感知与因果预期，而不是仅仅数值连续？
 - 动效是否解释变化，而不是增加视觉忙碌？
 - 是否优先复用了项目设计系统，而不是制造一次性样式？

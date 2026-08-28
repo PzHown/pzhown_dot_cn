@@ -1,0 +1,3 @@
+interface:
+  display_name: "感知自然性"
+  short_description: "让动画、颜色、材质与交互变化保持自然连续和因果一致"
