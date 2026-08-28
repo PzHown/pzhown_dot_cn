@@ -412,11 +412,11 @@ function CollapsibleDemo() {
   return (
     <DemoRow className="tw:items-start">
       <Piece name="Collapsible" defaultExpanded>
-        <Piece name="CollapsibleTrigger" render={<Piece name="Button" variant="outline" />}>展开状态</Piece>
+        <Piece name="CollapsibleTrigger" className="tw:inline-flex tw:h-9 tw:items-center tw:rounded-xl tw:border tw:border-input tw:bg-background tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:hover:bg-muted tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50">展开状态</Piece>
         <Piece name="CollapsibleContent"><div className="tw:mt-2 tw:rounded-lg tw:bg-muted tw:p-3 tw:text-sm">已展开内容</div></Piece>
       </Piece>
       <Piece name="Collapsible">
-        <Piece name="CollapsibleTrigger" render={<Piece name="Button" variant="outline" />}>收起状态</Piece>
+        <Piece name="CollapsibleTrigger" className="tw:inline-flex tw:h-9 tw:items-center tw:rounded-xl tw:border tw:border-input tw:bg-background tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:hover:bg-muted tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50">收起状态</Piece>
         <Piece name="CollapsibleContent">收起内容</Piece>
       </Piece>
     </DemoRow>
@@ -901,8 +901,8 @@ function SheetDemo() {
   return (
     <DemoRow>
       {['left', 'right', 'top', 'bottom'].map((side) => (
-        <Piece key={side} name="Sheet">
-          <Piece name="SheetTrigger" render={<Piece name="Button" variant="outline" />}>{side}</Piece>
+        <Piece key={side} name="SheetTrigger">
+          <Piece name="Button" variant="outline">{side}</Piece>
           <Piece name="SheetContent" side={side}>
             <Piece name="SheetHeader">
               <Piece name="SheetTitle">Sheet · {side}</Piece>

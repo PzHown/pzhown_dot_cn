@@ -50,7 +50,7 @@ export const componentDocs: ComponentDoc[] = [
     title: '确认对话框',
     category: '覆盖层与菜单',
     description: '在高风险或不可逆操作前要求用户明确确认，强调后果与恢复路径。',
-    composition: ['AlertDialog', '├─ AlertDialogTrigger', '└─ AlertDialogContent', '   ├─ AlertDialogHeader', '   ├─ AlertDialogFooter', '   ├─ AlertDialogCancel', '   └─ AlertDialogAction'],
+    composition: ['AlertDialogTrigger', '├─ trigger', '└─ AlertDialogContent', '   ├─ AlertDialogHeader', '   ├─ AlertDialogFooter', '   ├─ AlertDialogCancel', '   └─ AlertDialogAction'],
     states: ['关闭', '打开', '取消', '确认'],
   },
   {
@@ -446,7 +446,7 @@ export const componentDocs: ComponentDoc[] = [
     title: '侧边面板',
     category: '覆盖层与菜单',
     description: '从边缘覆盖进入的任务面板，常用于辅助编辑、筛选或导航。',
-    composition: ['Sheet', '├─ SheetTrigger', '└─ SheetContent', '   ├─ SheetHeader', '   ├─ SheetTitle / SheetDescription', '   └─ SheetFooter'],
+    composition: ['SheetTrigger', '├─ trigger', '└─ SheetContent', '   ├─ SheetHeader', '   ├─ SheetTitle / SheetDescription', '   └─ SheetFooter'],
     states: ['关闭', '打开', '左侧', '右侧', '顶部', '底部'],
   },
   {
