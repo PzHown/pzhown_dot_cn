@@ -37,29 +37,38 @@ jobs:
       - name: Install Playwright package for browser verification
         run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
-      - name: Start production preview
+      - name: Start production preview and dev server
         run: |
           pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:4321/components/ >/dev/null; then
-              exit 0
+          pnpm --filter @pzhown/web dev --host 127.0.0.1 --port 4322 > /tmp/astro-dev.log 2>&1 &
+          for port in 4321 4322; do
+            ready=0
+            for i in $(seq 1 90); do
+              if curl -fsS "http://127.0.0.1:${port}/components/" >/dev/null; then
+                ready=1
+                break
+              fi
+              sleep 1
+            done
+            if [ "$ready" -ne 1 ]; then
+              echo "Server ${port} failed to start"
+              cat /tmp/astro-preview.log || true
+              cat /tmp/astro-dev.log || true
+              exit 1
             fi
-            sleep 1
           done
-          cat /tmp/astro-preview.log
-          exit 1
 
-      - name: Identify remaining browser failures
+      - name: Capture production and development browser diagnostics
         run: |
           node <<'NODE'
           const { chromium } = require('playwright')
 
-          ;(async () => {
-            const browser = await chromium.launch({ channel: 'chrome', headless: true })
+          async function inspect(browser, label, url) {
             const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
             const pageErrors = []
             const consoleMessages = []
             const failedResources = []
+            const requestFailures = []
 
             page.on('pageerror', error => pageErrors.push(error.stack || error.message))
             page.on('console', message => {
@@ -70,26 +79,41 @@ jobs:
             page.on('response', response => {
               if (response.status() >= 400) failedResources.push(`${response.status()} ${response.url()}`)
             })
+            page.on('requestfailed', request => {
+              requestFailures.push(`${request.failure()?.errorText || 'FAILED'} ${request.url()}`)
+            })
 
-            await page.goto('http://127.0.0.1:4321/components/', { waitUntil: 'networkidle' })
+            await page.goto(url, { waitUntil: 'networkidle' })
             await page.waitForTimeout(2000)
 
             const state = await page.evaluate(() => ({
               root: Boolean(document.querySelector('.component-document')),
               cards: document.querySelectorAll('[data-component]').length,
               text: document.body.innerText.length,
-              failureIds: Array.from(document.querySelectorAll('[role="alert"]'))
-                .map(node => node.closest('[data-component]')?.getAttribute('data-component'))
-                .filter(Boolean),
+              demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map(node => node.getAttribute('data-demo-error')),
             }))
 
+            console.log(`=== ${label} ===`)
             console.log('PAGE STATE', JSON.stringify(state))
             console.log('FAILED RESOURCES', JSON.stringify(failedResources))
+            console.log('REQUEST FAILURES', JSON.stringify(requestFailures))
             console.log('PAGE ERRORS', JSON.stringify(pageErrors))
             console.log('CONSOLE MESSAGES', JSON.stringify(consoleMessages))
+            await page.close()
+            return { state, pageErrors, consoleMessages, failedResources, requestFailures }
+          }
+
+          ;(async () => {
+            const browser = await chromium.launch({ channel: 'chrome', headless: true })
+            const production = await inspect(browser, 'PRODUCTION', 'http://127.0.0.1:4321/components/')
+            const development = await inspect(browser, 'DEVELOPMENT', 'http://127.0.0.1:4322/components/')
             await browser.close()
 
-            if (!state.root || state.cards !== 58) process.exit(1)
+            for (const result of [production, development]) {
+              if (!result.state.root || result.state.cards !== 58 || result.state.demoErrors.length) {
+                process.exit(1)
+              }
+            }
           })().catch(error => {
             console.error(error)
             process.exit(1)
