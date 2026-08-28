@@ -5,8 +5,25 @@
   pointer-events: none;
 }
 
+.pzhown-progressive-blur[data-progressive-blur-side='top'] {
+  transform-origin: top;
+}
+
+.pzhown-progressive-blur[data-progressive-blur-side='right'] {
+  transform-origin: right;
+}
+
+.pzhown-progressive-blur[data-progressive-blur-side='bottom'] {
+  transform-origin: bottom;
+}
+
+.pzhown-progressive-blur[data-progressive-blur-side='left'] {
+  transform-origin: left;
+}
+
 .pzhown-progressive-blur__surface {
   position: relative;
+  z-index: 0;
   width: 100%;
   height: 100%;
   background: var(--pzhown-pb-tint, transparent);
