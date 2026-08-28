@@ -485,7 +485,7 @@ function ContextMenuDemo() {
   return (
     <DemoStack>
       <Piece name="ContextMenuTrigger">
-        <button type="button" className="tw:grid tw:h-28 tw:w-full tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</button>
+        <Piece name="Button" variant="outline" className="tw:grid tw:h-28 tw:w-full tw:place-items-center tw:rounded-xl tw:border-dashed tw:bg-muted/50 tw:text-sm tw:font-normal tw:text-muted-foreground">在这里右键</Piece>
         <Piece name="ContextMenu">
           <Piece name="ContextMenuItem">复制</Piece>
           <Piece name="ContextMenuItem" isDisabled>禁用项</Piece>
