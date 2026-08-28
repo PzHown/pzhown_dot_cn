@@ -1,12 +1,12 @@
 # 跨设备自适应布局 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
 
 ## 它解决什么问题
 
 这个 Skill 负责让同一套内容在手机、平板、桌面、窄窗口和不同输入设备下都自然成立。
 
-它不是传统的“桌面版缩小成手机版”，而是重新安排空间关系，同时保持信息优先级不变。
+它不是传统的“桌面版缩小成手机版”，而是重新安排结构，同时保持信息优先级不变。
 
 ## 核心理念
 
@@ -23,16 +23,24 @@ Breakpoint 应由内容真正开始失效的地方产生，而不是机械套用
 - 从最窄可用内容流开始，再逐步增加辅助空间。
 - 优先使用 Container Queries 让组件对自己的容器负责。
 - 区分屏幕尺寸和输入能力，不把“窄屏”等同于“触控”。
-- 宽屏增加留白、目录、注释和媒体，而不是无限拉宽正文。
+- 决定列、pane、目录、导航和媒体何时改变结构。
 - 处理 sticky/fixed、虚拟键盘、安全区域和任意窗口宽度。
 
 ## 它不负责
 
 - 正文阅读参数：看[感知阅读](../perceptual-reading/HUMAN.md)。
 - 内容本身属于 reading 还是 wide/stage：看[内容呈现](../content-presentation/HUMAN.md)。
+- 具体 gap、padding、gutter、negative space、视觉重心与 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
 - 控件可点击性与状态表达：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - 最终视觉材质：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 布局变化的动画方式：看[交互动效](../interaction-motion/HUMAN.md)。
+
+## 一句话区分
+
+```text
+adaptive-layout = WHERE
+spatial-composition = RELATION + WEIGHT
+```
 
 ## 详细规则
 

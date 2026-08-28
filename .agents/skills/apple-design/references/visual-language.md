@@ -2,7 +2,7 @@
 
 ## 目录
 - 核心原则
-- 层级与留白
+- 层级与空间边界
 - 圆角与形状
 - 色彩与渐变
 - 灰度与 Neutral
@@ -21,11 +21,13 @@
 - **适应不同输入和尺寸**：同时考虑鼠标、触控、键盘，以及窗口大小变化。
 - **可访问性从设计开始**：不要在最后补救对比度、焦点和 reduced motion。
 
-## 层级与留白
+## 层级与空间边界
 
-优先用以下顺序建立层级：
+视觉层优先尊重已经由 `spatial-composition` 建立的距离关系、negative space、视觉重量、重心和 attention flow。
 
-1. 空间与对齐。
+建立最终视觉层级时优先：
+
+1. 已确定的空间与对齐关系。
 2. 字号、字重、前景色层级。
 3. surface/material 差异。
 4. 阴影或分隔线。
@@ -36,8 +38,9 @@
 - 每张 Card 都是 `1px #ddd border + white background`。
 - 在同一屏使用过多不同 radius、阴影和渐变。
 - 把次要信息做得和主任务同等抢眼。
+- 在本 Skill 重新定义另一套 spacing scale。
 
-项目 spacing 优先从 `4 / 8 / 12 / 16 / 24 / 32 / 48 / 64` 中选择。局部可微调，但不要形成大量孤立数值。
+具体 page gap、section gap、组件 gap、控件 padding、gutter 与 optical adjustment 统一使用 `spatial-composition`。本 Skill 只确保颜色、材质与形状不会破坏既有空间构图。
 
 ## 圆角与形状
 
@@ -54,6 +57,7 @@
 - 自定义色优先使用 OKLCH；渐变优先 `in oklab` 或项目 smootherstep 工具。
 - 渐变用于空间、氛围或聚焦，不用于弥补层级不足。
 - 浅色、深色和高对比模式都必须验证；不要硬编码只在一种背景下成立的颜色。
+- 高饱和色和大面积深色 surface 都会增加视觉重量；若与 `spatial-composition` 的主次冲突，优先降低错误视觉重量。
 
 ## 灰度与 Neutral
 
@@ -166,6 +170,7 @@ Apple HIG 将 material 用于建立前景/背景的深度与层级。本项目�
 - 长列表和持续滚动区域减少 backdrop-filter，避免 GPU 成本。
 - 文本对比不足时先提高 surface 的不透明度，而不是继续加 shadow。
 - Liquid Glass 是 Apple 平台的系统材质；Web 端只借鉴层级与反馈原则，不模拟其全部物理效果。
+- 强 elevation、shadow、glass contrast 会提升视觉重量，不能无视 `spatial-composition` 的主次设计。
 
 ## 排版
 
@@ -174,11 +179,12 @@ Apple HIG 将 material 用于建立前景/背景的深度与层级。本项目�
 - 标题通过字号、字重和紧凑 tracking 建立层级，不靠全大写或高饱和颜色。
 - 长正文保持舒适行高和可读宽度；控制单行过长。
 - B 端密集界面可使用 14–16px 正文；C 端阅读内容通常优先 16–18px。具体以可读性为准。
+- 排版本身会改变视觉重量；字号/字重的最终选择不能破坏既定 attention flow。
 
 ## 响应式
 
 - 设计成“同一信息架构的不同排布”，不要把移动端当作简单缩小版。
-- 宽屏增加留白和并列关系，不要无节制拉长文本。
+- 结构重排由 `adaptive-layout` 负责；重排后的 spacing、negative space 和视觉重心由 `spatial-composition` 负责。
 - 窄屏保持主要操作可达，并避免关键按钮被折叠到不可发现位置。
 - 尺寸变化时保持控件与内容关系稳定，用自然布局变化维持上下文。
 

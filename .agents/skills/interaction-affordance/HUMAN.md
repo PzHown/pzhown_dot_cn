@@ -1,6 +1,6 @@
 # 交互可供性 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -31,7 +31,8 @@
 
 - 文字链接密度与正文阅读舒适度：看[感知阅读](../perceptual-reading/HUMAN.md)。
 - Card/目录/脚注在内容里的角色：看[内容呈现](../content-presentation/HUMAN.md)。
-- 不同设备上的空间重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 不同设备上的结构重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 控件 padding、icon-label gap、相邻目标的空间节奏和静态视觉重心：看[空间构图](../spatial-composition/HUMAN.md)。
 - 颜色、Squircle 和 Surface 最终长相：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 复杂动画和空间连续性：看[交互动效](../interaction-motion/HUMAN.md)。
 

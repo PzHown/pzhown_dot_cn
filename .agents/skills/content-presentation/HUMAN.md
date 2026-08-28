@@ -1,6 +1,6 @@
 # 内容呈现 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -29,6 +29,7 @@
 
 - 正文具体多宽、字号与行高：看[感知阅读](../perceptual-reading/HUMAN.md)。
 - 不同容器下如何重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 这些内容之间具体离多远、谁更重、空白怎么分配：看[空间构图](../spatial-composition/HUMAN.md)。
 - 内容里的 Link、Button 怎么表达可点击：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - Surface 最终颜色与材质：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 内容切换以后怎么动：看[交互动效](../interaction-motion/HUMAN.md)。

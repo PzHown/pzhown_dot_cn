@@ -1,11 +1,11 @@
 ---
 name: adaptive-layout
-description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方式的自适应布局。用于响应式页面、手机/平板/桌面布局、Container Queries、Grid/Subgrid、导航重排、侧栏/目录、媒体布局、横竖屏、触控与鼠标差异、安全区域或任何需要在不同尺寸和交互能力下保持内容优先级的任务。遵循“适配而不是缩小”：保持同一信息层级，但允许空间结构、导航方式和信息密度随容器与输入能力改变。
+description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方式的自适应结构。用于响应式页面、手机/平板/桌面布局、Container Queries、Grid/Subgrid、导航重排、侧栏/目录、媒体布局、横竖屏、触控与鼠标差异、安全区域或任何需要在不同尺寸和交互能力下保持内容优先级的任务。遵循“适配而不是缩小”：允许列、pane、导航方式和信息密度随容器与输入能力改变；具体 gap、padding、视觉重量和重心由 spatial-composition 负责。
 ---
 
 # 跨设备自适应布局
 
-设计同一内容逻辑在不同空间中的最佳构图，不把桌面页面按比例缩成手机页面。
+设计同一内容逻辑在不同空间中的最佳**结构**，不把桌面页面按比例缩成手机页面。
 
 ## 工作流程
 
@@ -15,7 +15,8 @@ description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方�
 4. 优先 Container Queries；只有页面级环境变化才使用 viewport media query。
 5. 检查输入能力：`hover`、`pointer`、键盘、触控、可变窗口和安全区域。
 6. 保持阅读层级一致，允许不同设备使用不同空间结构。
-7. 完成后联合 `perceptual-reading` 检查阅读舒适度，联合 `apple-design` 检查视觉语言。
+7. 结构确定后联合 `spatial-composition` 重新映射 gap、gutter、negative space、视觉重量与 attention flow。
+8. 联合 `perceptual-reading` 检查阅读舒适度，联合 `apple-design` 检查最终视觉语言。
 
 ## 布局不变量
 
@@ -29,6 +30,7 @@ description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方�
 - Sticky、fixed、浮动控件必须考虑虚拟键盘、安全区域、浏览器工具栏和可缩放文字。
 - 极宽屏把多余空间用于留白、辅助信息和媒体，不无限拉宽阅读正文。
 - 允许浏览器窗口被任意缩放；桌面窄窗口不能退化成错误布局。
+- 本 Skill 决定 **WHERE**；不要在这里把具体 spacing ramp、视觉重心或 optical adjustment 写死，这些属于 `spatial-composition`。
 
 ## 文章页参考构图
 
@@ -39,7 +41,7 @@ description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方�
                      目录变成轻量入口
 ```
 
-这是信息关系示例，不是固定三档 breakpoint。
+这是信息关系示例，不是固定三档 breakpoint。每一种结构内部实际的 gutter、section rhythm 和视觉平衡由 `spatial-composition` 决定。
 
 ## 设计审查
 
@@ -50,6 +52,7 @@ description: 为 pzhown_dot_cn 设计真正跨设备、跨窗口和跨输入方�
 - 宽屏是否避免超长正文行？
 - 触控命中区、hover、键盘导航是否分别成立？
 - 内容变化、长标题和国际化是否会把布局顶坏？
+- 重排后是否交给 `spatial-composition` 重新检查关系距离、重心和注意力顺序，而不是沿用桌面 spacing？
 
 ## 参考资料
 

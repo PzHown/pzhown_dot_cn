@@ -1,6 +1,6 @@
 # 感知阅读 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md) · [交互动效](../interaction-motion/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -31,6 +31,7 @@
 
 - 文章中的图片、表格、引用应该属于哪种版式：看[内容呈现](../content-presentation/HUMAN.md)。
 - 手机、平板、桌面的空间结构怎么重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 页面/组件的 gap、padding、视觉重心和 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
 - Link/Button 怎么看起来可操作：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - 最终颜色、材质、Squircle：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 页面切换和复杂动画：看[交互动效](../interaction-motion/HUMAN.md)。

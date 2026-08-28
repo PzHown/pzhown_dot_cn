@@ -1,6 +1,6 @@
 # 交互与动效 · Human Guide
 
-[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md)
+[项目总览](../../../HUMAN.md) · [感知阅读](../perceptual-reading/HUMAN.md) · [内容呈现](../content-presentation/HUMAN.md) · [跨设备布局](../adaptive-layout/HUMAN.md) · [空间构图](../spatial-composition/HUMAN.md) · [交互可供性](../interaction-affordance/HUMAN.md) · [Apple 视觉](../apple-design/HUMAN.md)
 
 ## 它解决什么问题
 
@@ -30,6 +30,7 @@
 - 动画前后内容本身怎么排：看[内容呈现](../content-presentation/HUMAN.md)。
 - 阅读区域能承受多少视觉运动：先看[感知阅读](../perceptual-reading/HUMAN.md)。
 - 布局在不同设备如何变化：看[跨设备布局](../adaptive-layout/HUMAN.md)。
+- 静态页面的 gap、视觉重量、重心和 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
 - 控件应该怎样表现“可点击”：看[交互可供性](../interaction-affordance/HUMAN.md)。
 - 最终材质与颜色：看[Apple 视觉](../apple-design/HUMAN.md)。
 

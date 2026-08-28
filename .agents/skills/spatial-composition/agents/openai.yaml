@@ -1,0 +1,3 @@
+interface:
+  display_name: "空间构图规范"
+  short_description: "统一 gap、padding、留白、视觉重量、重心与注意力顺序"
