@@ -2,6 +2,8 @@
 import { createProgressiveBlurModel, type ProgressiveBlurOptions } from './core'
 
 type Props = ProgressiveBlurOptions & {
+  className?: string
+  /** @deprecated Use className for parity with React/Next. */
   class?: string
   style?: string
   id?: string
@@ -14,7 +16,8 @@ const {
   steps = 8,
   falloff = 100,
   tint = 'transparent',
-  class: className,
+  className,
+  class: legacyClassName,
   style = '',
   ...attrs
 } = Astro.props
@@ -26,7 +29,7 @@ const rootStyle = `--pzhown-pb-tint:${model.tintBackground};${style}`
 <div
   {...attrs}
   aria-hidden="true"
-  class:list={['pzhown-progressive-blur', className]}
+  class:list={['pzhown-progressive-blur', className, legacyClassName]}
   data-progressive-blur={mode}
   style={rootStyle}
 >
