@@ -31,15 +31,17 @@ const rootStyle = `--pzhown-pb-tint:${model.tintBackground};${style}`
   aria-hidden="true"
   class:list={['pzhown-progressive-blur', className, legacyClassName]}
   data-progressive-blur={mode}
+  data-progressive-blur-side={side}
   style={rootStyle}
 >
-  <div class="pzhown-progressive-blur__tint"></div>
-  {
-    model.layers.map((layer) => (
-      <div
-        class="pzhown-progressive-blur__layer"
-        style={`--pzhown-pb-blur:${layer.blur.toFixed(3)}px;--pzhown-pb-mask:${layer.mask};`}
-      />
-    ))
-  }
+  <div class="pzhown-progressive-blur__surface">
+    {
+      model.layers.map((layer, index) => (
+        <div
+          class="pzhown-progressive-blur__layer"
+          style={`--pzhown-pb-layer:${index + 1};--pzhown-pb-blur:${layer.blur.toFixed(3)}px;--pzhown-pb-mask:${layer.mask};`}
+        />
+      ))
+    }
+  </div>
 </div>
