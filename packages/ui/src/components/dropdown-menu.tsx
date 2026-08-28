@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import {
+  composeRenderProps,
   Header as HeaderPrimitive,
   Menu as MenuPrimitive,
   MenuItem as MenuItemPrimitive,
@@ -136,10 +137,13 @@ function DropdownMenuSubTrigger({
       textValue={typeof children === 'string' ? children : props.textValue}
       className={cn('pzhown-dropdown-item tw:flex tw:cursor-default tw:items-center tw:gap-2 tw:px-2 tw:py-1.5 tw:outline-none tw:select-none', className)}
       {...props}
-    >
-      {children}
-      <ChevronRightIcon className="tw:ml-auto" />
-    </MenuItemPrimitive>
+      children={composeRenderProps(children, (resolvedChildren) => (
+        <>
+          {resolvedChildren}
+          <ChevronRightIcon className="tw:ml-auto" />
+        </>
+      ))}
+    />
   )
 }
 
@@ -181,12 +185,15 @@ function DropdownMenuCheckboxItem({
         onCheckedChange?.(!checked)
       }}
       {...props}
-    >
-      <span className="tw:pointer-events-none tw:absolute tw:left-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
-        {checked ? <CheckIcon className="tw:size-4" /> : null}
-      </span>
-      {children}
-    </MenuItemPrimitive>
+      children={composeRenderProps(children, (resolvedChildren) => (
+        <>
+          <span className="tw:pointer-events-none tw:absolute tw:left-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
+            {checked ? <CheckIcon className="tw:size-4" /> : null}
+          </span>
+          {resolvedChildren}
+        </>
+      ))}
+    />
   )
 }
 
@@ -216,12 +223,15 @@ function DropdownMenuRadioItem({
         group.onValueChange?.(value)
       }}
       {...props}
-    >
-      <span className="tw:pointer-events-none tw:absolute tw:left-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
-        {selected ? <CheckIcon className="tw:size-4" /> : null}
-      </span>
-      {children}
-    </MenuItemPrimitive>
+      children={composeRenderProps(children, (resolvedChildren) => (
+        <>
+          <span className="tw:pointer-events-none tw:absolute tw:left-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
+            {selected ? <CheckIcon className="tw:size-4" /> : null}
+          </span>
+          {resolvedChildren}
+        </>
+      ))}
+    />
   )
 }
 

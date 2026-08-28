@@ -68,7 +68,7 @@ function DialogClose({
   variant = 'outline',
   size = 'default',
   ...props
-}: React.ComponentProps<typeof Button> & { render?: React.ReactElement }) {
+}: Omit<React.ComponentProps<typeof Button>, 'children' | 'render'> & { render?: React.ReactElement; children?: React.ReactNode }) {
   if (render) {
     return renderControl(render, children, { slot: 'close', 'data-slot': 'dialog-close', ...props })
   }

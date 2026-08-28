@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import {
+  composeRenderProps,
   OverlayArrow,
   Tooltip as TooltipPrimitive,
   TooltipTrigger as TooltipTriggerPrimitive,
@@ -65,14 +66,17 @@ function TooltipContent({
       crossOffset={alignOffset ?? crossOffset}
       className={cn('pzhown-ui pzhown-tooltip-content tw:z-50 tw:w-fit tw:max-w-xs tw:px-2.5 tw:py-1.5 tw:text-xs tw:font-medium', className)}
       {...props}
-    >
-      {children}
-      <OverlayArrow className="pzhown-tooltip-arrow">
-        <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true">
-          <path d="M0 0 4 5 8 0" />
-        </svg>
-      </OverlayArrow>
-    </TooltipPrimitive>
+      children={composeRenderProps(children, (resolvedChildren) => (
+        <>
+          {resolvedChildren}
+          <OverlayArrow className="pzhown-tooltip-arrow">
+            <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true">
+              <path d="M0 0 4 5 8 0" />
+            </svg>
+          </OverlayArrow>
+        </>
+      ))}
+    />
   )
 }
 

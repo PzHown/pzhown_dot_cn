@@ -24,6 +24,7 @@ import {
 import { cn } from "@pzhown/ui/lib/utils"
 import {
   Dialog,
+  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -73,7 +74,7 @@ function CommandDialog({
   ...props
 }: Omit<
   React.ComponentProps<typeof Dialog>,
-  "children" | "className" | "isOpen" | "onOpenChange"
+  "children" | "className" | "open" | "onOpenChange"
 > & {
   title?: string
   description?: string
@@ -84,22 +85,21 @@ function CommandDialog({
   children: React.ReactNode
 }) {
   return (
-    <Dialog
-      isOpen={open}
-      onOpenChange={onOpenChange}
-      className={cn(
-        "tw:top-1/3 tw:translate-y-0 tw:overflow-hidden tw:rounded-xl! tw:p-0",
-        className
-      )}
-      showCloseButton={showCloseButton}
-      isDismissable
-      {...props}
-    >
-      <DialogHeader className="tw:sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
-      {children}
+    <Dialog open={open} onOpenChange={onOpenChange} {...props}>
+      <DialogContent
+        className={cn(
+          "tw:top-1/3 tw:translate-y-0 tw:overflow-hidden tw:rounded-xl! tw:p-0",
+          className
+        )}
+        showCloseButton={showCloseButton}
+        isDismissable
+      >
+        <DialogHeader className="tw:sr-only">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {children}
+      </DialogContent>
     </Dialog>
   )
 }

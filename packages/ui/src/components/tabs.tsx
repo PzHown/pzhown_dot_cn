@@ -13,9 +13,9 @@ import { cn } from '../lib/utils'
 
 type TabsProps = Omit<React.ComponentProps<typeof TabsPrimitive>, 'className'> & {
   className?: string
-  defaultValue?: React.Key
-  value?: React.Key
-  onValueChange?: (value: React.Key) => void
+  defaultValue?: string | number
+  value?: string | number
+  onValueChange?: (value: string | number) => void
 }
 
 function Tabs({
@@ -75,7 +75,7 @@ function TabsTrigger({
   value,
   id,
   ...props
-}: React.ComponentProps<typeof TabPrimitive> & { value?: React.Key }) {
+}: React.ComponentProps<typeof TabPrimitive> & { value?: string | number }) {
   return (
     <TabPrimitive
       id={id ?? value}
@@ -94,7 +94,7 @@ function TabsContent({
   value,
   id,
   ...props
-}: React.ComponentProps<typeof TabPanelPrimitive> & { value?: React.Key }) {
+}: React.ComponentProps<typeof TabPanelPrimitive> & { value?: string | number }) {
   return (
     <TabPanelPrimitive
       id={id ?? value}

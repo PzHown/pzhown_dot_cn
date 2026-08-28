@@ -21,7 +21,7 @@ import {
   SheetTitle,
 } from "@pzhown/ui/components/sheet"
 import { Skeleton } from "@pzhown/ui/components/skeleton"
-import { Tooltip, TooltipTrigger } from "@pzhown/ui/components/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@pzhown/ui/components/tooltip"
 import { PanelLeftIcon } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
@@ -496,7 +496,7 @@ function SidebarMenuButton({
   ...props
 }: SidebarButtonProps & {
   isActive?: boolean
-  tooltip?: string | React.ComponentProps<typeof Tooltip>
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
   const comp =
@@ -531,10 +531,10 @@ function SidebarMenuButton({
   }
 
   return (
-    <TooltipTrigger isDisabled={state !== "collapsed" || isMobile}>
-      {comp}
-      <Tooltip placement="right" {...tooltip} />
-    </TooltipTrigger>
+    <Tooltip isDisabled={state !== "collapsed" || isMobile}>
+      <TooltipTrigger>{comp}</TooltipTrigger>
+      <TooltipContent placement="right" {...tooltip} />
+    </Tooltip>
   )
 }
 
