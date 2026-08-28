@@ -1,0 +1,35 @@
+name: Validate full Astro component document
+
+on:
+  push:
+    branches:
+      - feat/astro-full-component-lab
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check shared UI
+        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
+
+      - name: Check Astro
+        run: pnpm --filter @pzhown/web check
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
