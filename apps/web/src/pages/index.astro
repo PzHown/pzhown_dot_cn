@@ -20,14 +20,14 @@ import '../styles/global.css'
         <div class="eyebrow">PZHOWN / UI LAB</div>
         <h1>Shared visual system,<br />rendered in Astro.</h1>
         <p class="hero-copy">
-          Squircle corners, perceptual gradients, progressive blur, Motion, and Base UI components — all in one preview surface.
+          Squircle corners, perceptual gradients, progressive blur, Motion, and React Aria components — all in one preview surface.
         </p>
         <div class="hero-pills" aria-label="Technology stack">
           <span>Astro 7</span>
           <span>Tailwind CSS 4</span>
           <span>Motion 13</span>
-          <span>Base UI</span>
-          <span>React 18 / 19</span>
+          <span>React Aria</span>
+          <span>React 19</span>
         </div>
       </section>
 
@@ -100,7 +100,7 @@ import '../styles/global.css'
         </div>
       </section>
 
-      <section class="section-shell">
+      <section class="section-shell blur-section">
         <header class="section-heading">
           <div>
             <p class="section-kicker">03 / DEPTH</p>
@@ -122,7 +122,15 @@ import '../styles/global.css'
                 <span></span><span></span><span></span><span></span>
               </div>
             </div>
-            <ProgressiveBlur mode="linear" side="bottom" strength={64} steps={8} falloff={82} tint="transparent" />
+            <ProgressiveBlur
+              mode="linear"
+              side="bottom"
+              strength={64}
+              steps={8}
+              falloff={95}
+              tint="transparent"
+              style="top:auto;height:120px;z-index:1;"
+            />
           </article>
 
           <article class="blur-stage">
@@ -131,11 +139,20 @@ import '../styles/global.css'
               <span class="blur-orb orb-four"></span>
               <div class="blur-type">
                 <small>RADIAL / CENTER</small>
-                <strong>48px</strong>
+                <strong>32px</strong>
               </div>
               <div class="blur-grid-lines" aria-hidden="true"></div>
             </div>
-            <ProgressiveBlur mode="radial" strength={48} steps={8} falloff={78} tint="transparent" />
+            <div class="radial-blur-zone" aria-hidden="true">
+              <ProgressiveBlur
+                mode="radial"
+                strength={32}
+                steps={8}
+                falloff={85}
+                tint="transparent"
+                style="inset:-100px;z-index:1;"
+              />
+            </div>
           </article>
         </div>
       </section>
@@ -167,9 +184,9 @@ import '../styles/global.css'
         <header class="section-heading">
           <div>
             <p class="section-kicker">05 / COMPONENTS</p>
-            <h2>Base UI + shadcn-style API</h2>
+            <h2>React Aria + owned UI source</h2>
           </div>
-          <p>Interactive primitives run as one React island while preserving the same shared tokens, squircle corners and Motion language.</p>
+          <p>Adaptive interaction primitives run as one React island while PzHown UI owns the visual language, squircle surfaces and Motion integration.</p>
         </header>
         <ComponentShowcase client:load />
       </section>
@@ -258,6 +275,11 @@ import '../styles/global.css'
     box-shadow: 0 30px 100px rgb(17 24 39 / 0.06);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+  }
+
+  .blur-section,
+  .components-section {
+    overflow: visible;
   }
 
   .hero {
@@ -465,16 +487,14 @@ import '../styles/global.css'
   .blur-stage {
     position: relative;
     min-height: 360px;
-    overflow: hidden;
-    border: 1px solid rgb(18 19 22 / 0.08);
-    border-radius: 30px;
-    background: #e9e9ed;
   }
 
   .blur-content {
     position: absolute;
     inset: 0;
     overflow: hidden;
+    border: 1px solid rgb(18 19 22 / 0.08);
+    border-radius: 30px;
     background:
       linear-gradient(135deg in oklab, oklch(0.94 0.02 250), oklch(0.9 0.05 315)),
       #eee;
@@ -569,6 +589,16 @@ import '../styles/global.css'
       linear-gradient(rgb(18 19 22 / 0.18) 1px, transparent 1px),
       linear-gradient(90deg, rgb(18 19 22 / 0.18) 1px, transparent 1px);
     background-size: 28px 28px;
+  }
+
+  .radial-blur-zone {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    width: 150px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
 
   .motion-card {
@@ -666,10 +696,6 @@ import '../styles/global.css'
     font-size: 20px;
     font-weight: 700;
     backdrop-filter: blur(16px);
-  }
-
-  .components-section {
-    overflow: visible;
   }
 
   .footer {
