@@ -4,9 +4,9 @@ Monorepo for the public Astro site and the Payload CMS / admin backend.
 
 ## Stack
 
-- `apps/web`: Astro 7 + Tailwind CSS 4 public site
+- `apps/web`: Astro 7 + Tailwind CSS 4 + Motion public site
 - `apps/web`: React Islands are available for interactive components
-- `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4
+- `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4 + Motion
 - `packages/ui`: shared framework-light UI primitives
 - Database: SQLite for local development by default, PostgreSQL for production
 - Package manager: pnpm workspaces
@@ -117,6 +117,24 @@ Shared API:
 - `className`: additional class name
 
 The Astro adapter renders with zero client JavaScript. The React adapter has no hooks or browser APIs, so it can remain a React Server Component in Next.js / Payload.
+
+## Animation
+
+Motion is the standard animation engine for both apps.
+
+Astro uses Motion's framework-agnostic API:
+
+```ts
+import { animate, inView, scroll } from 'motion'
+```
+
+Next.js / Payload React components use the React API:
+
+```tsx
+import { motion, AnimatePresence } from 'motion/react'
+```
+
+Use CSS first for simple hover, focus, color, opacity, and transition effects. Use Motion for state-driven animation, springs, gestures, layout transitions, scroll-linked animation, and coordinated UI transitions.
 
 ## Database selection
 
