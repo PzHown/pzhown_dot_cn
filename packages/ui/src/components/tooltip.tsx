@@ -1,53 +1,78 @@
 'use client'
 
-import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
+import * as React from 'react'
+import {
+  OverlayArrow,
+  Tooltip as TooltipPrimitive,
+  TooltipTrigger as TooltipTriggerPrimitive,
+} from 'react-aria-components'
 
 import { cn } from '../lib/utils'
+import { Button } from './button'
 
-function TooltipProvider({ delay = 250, ...props }: TooltipPrimitive.Provider.Props) {
-  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />
+const TooltipDelayContext = React.createContext(250)
+
+function TooltipProvider({ delay = 250, children }: { delay?: number; children?: React.ReactNode }) {
+  return <TooltipDelayContext.Provider value={delay}>{children}</TooltipDelayContext.Provider>
 }
 
-function Tooltip(props: TooltipPrimitive.Root.Props) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+function Tooltip({ delay, ...props }: React.ComponentProps<typeof TooltipTriggerPrimitive>) {
+  const providerDelay = React.useContext(TooltipDelayContext)
+  return <TooltipTriggerPrimitive data-slot="tooltip-root" delay={delay ?? providerDelay} {...props} />
 }
 
-function TooltipTrigger(props: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+function TooltipTrigger({ render, children }: { render?: React.ReactElement; children?: React.ReactNode }) {
+  if (render) {
+    return React.cloneElement(render as React.ReactElement<any>, { 'data-slot': 'tooltip-trigger' }, children)
+  }
+  if (React.isValidElement(children)) return children
+  return <Button data-slot="tooltip-trigger">{children}</Button>
+}
+
+type TooltipContentProps = Omit<
+  React.ComponentProps<typeof TooltipPrimitive>,
+  'className' | 'placement' | 'offset' | 'crossOffset'
+> & {
+  className?: string
+  placement?: React.ComponentProps<typeof TooltipPrimitive>['placement']
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  align?: 'start' | 'center' | 'end'
+  sideOffset?: number
+  alignOffset?: number
+  offset?: number
+  crossOffset?: number
 }
 
 function TooltipContent({
   className,
+  placement,
   side = 'top',
-  sideOffset = 6,
   align = 'center',
-  alignOffset = 0,
+  sideOffset,
+  alignOffset,
+  offset = 7,
+  crossOffset = 0,
   children,
   ...props
-}: TooltipPrimitive.Popup.Props &
-  Pick<TooltipPrimitive.Positioner.Props, 'align' | 'alignOffset' | 'side' | 'sideOffset'>) {
+}: TooltipContentProps) {
+  const resolvedPlacement = placement ?? (`${side}${align === 'center' ? '' : ` ${align}`}` as TooltipContentProps['placement'])
+
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        className="tw:isolate tw:z-50"
-      >
-        <TooltipPrimitive.Popup
-          data-slot="tooltip-content"
-          className={cn(
-            'pzhown-ui pzhown-tooltip-content tw:z-50 tw:w-fit tw:max-w-xs tw:origin-[var(--transform-origin)] tw:rounded-lg tw:bg-[var(--pzhown-ui-primary)] tw:px-2.5 tw:py-1.5 tw:text-xs tw:font-medium tw:text-[var(--pzhown-ui-primary-foreground)] tw:shadow-lg',
-            className,
-          )}
-          {...props}
-        >
-          {children}
-          <TooltipPrimitive.Arrow className="tw:fill-[var(--pzhown-ui-primary)]" />
-        </TooltipPrimitive.Popup>
-      </TooltipPrimitive.Positioner>
-    </TooltipPrimitive.Portal>
+    <TooltipPrimitive
+      data-slot="tooltip-content"
+      placement={resolvedPlacement}
+      offset={sideOffset ?? offset}
+      crossOffset={alignOffset ?? crossOffset}
+      className={cn('pzhown-ui pzhown-tooltip-content tw:z-50 tw:w-fit tw:max-w-xs tw:px-2.5 tw:py-1.5 tw:text-xs tw:font-medium', className)}
+      {...props}
+    >
+      {children}
+      <OverlayArrow className="pzhown-tooltip-arrow">
+        <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true">
+          <path d="M0 0 4 5 8 0" />
+        </svg>
+      </OverlayArrow>
+    </TooltipPrimitive>
   )
 }
 

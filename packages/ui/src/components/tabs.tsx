@@ -1,43 +1,67 @@
 'use client'
 
-import { Tabs as TabsPrimitive } from '@base-ui/react/tabs'
+import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import {
+  TabList as TabListPrimitive,
+  TabPanel as TabPanelPrimitive,
+  Tab as TabPrimitive,
+  Tabs as TabsPrimitive,
+} from 'react-aria-components'
 
 import { cn } from '../lib/utils'
 
-function Tabs({ className, orientation = 'horizontal', ...props }: TabsPrimitive.Root.Props) {
+type TabsProps = Omit<React.ComponentProps<typeof TabsPrimitive>, 'className'> & {
+  className?: string
+  defaultValue?: React.Key
+  value?: React.Key
+  onValueChange?: (value: React.Key) => void
+}
+
+function Tabs({
+  className,
+  defaultValue,
+  value,
+  onValueChange,
+  defaultSelectedKey,
+  selectedKey,
+  onSelectionChange,
+  ...props
+}: TabsProps) {
   return (
-    <TabsPrimitive.Root
+    <TabsPrimitive
       data-slot="tabs"
-      data-orientation={orientation}
+      defaultSelectedKey={defaultSelectedKey ?? defaultValue}
+      selectedKey={selectedKey ?? value}
+      onSelectionChange={(key) => {
+        onSelectionChange?.(key)
+        onValueChange?.(key)
+      }}
       className={cn('pzhown-ui tw:flex tw:data-[orientation=horizontal]:flex-col', className)}
       {...props}
     />
   )
 }
 
-const tabsListVariants = cva(
-  'tw:inline-flex tw:w-fit tw:items-center tw:justify-center tw:gap-1 tw:rounded-xl tw:p-1 tw:text-[var(--pzhown-ui-muted-foreground)]',
-  {
-    variants: {
-      variant: {
-        default: 'tw:bg-[var(--pzhown-ui-muted)]',
-        line: 'tw:rounded-none tw:bg-transparent tw:p-0',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
+const tabsListVariants = cva('pzhown-tabs-list tw:inline-flex tw:w-fit tw:items-center tw:justify-center tw:gap-1', {
+  variants: {
+    variant: {
+      default: '',
+      line: 'pzhown-tabs-list-line',
     },
   },
-)
+  defaultVariants: {
+    variant: 'default',
+  },
+})
 
 function TabsList({
   className,
   variant = 'default',
   ...props
-}: TabsPrimitive.List.Props & VariantProps<typeof tabsListVariants>) {
+}: React.ComponentProps<typeof TabListPrimitive> & VariantProps<typeof tabsListVariants>) {
   return (
-    <TabsPrimitive.List
+    <TabListPrimitive
       data-slot="tabs-list"
       data-variant={variant}
       className={cn(tabsListVariants({ variant }), className)}
@@ -46,12 +70,18 @@ function TabsList({
   )
 }
 
-function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
+function TabsTrigger({
+  className,
+  value,
+  id,
+  ...props
+}: React.ComponentProps<typeof TabPrimitive> & { value?: React.Key }) {
   return (
-    <TabsPrimitive.Tab
+    <TabPrimitive
+      id={id ?? value}
       data-slot="tabs-trigger"
       className={cn(
-        'pzhown-tabs-trigger tw:relative tw:inline-flex tw:h-8 tw:flex-1 tw:items-center tw:justify-center tw:gap-1.5 tw:whitespace-nowrap tw:rounded-lg tw:px-3 tw:text-sm tw:font-medium tw:text-[var(--pzhown-ui-muted-foreground)] tw:outline-none tw:transition-[color,background-color,box-shadow] tw:hover:text-[var(--pzhown-ui-foreground)] tw:focus-visible:ring-3 tw:focus-visible:ring-[var(--pzhown-ui-ring)] tw:disabled:pointer-events-none tw:disabled:opacity-50 tw:[&_svg]:pointer-events-none tw:[&_svg]:size-4 tw:[&_svg]:shrink-0',
+        'pzhown-tabs-trigger tw:relative tw:inline-flex tw:h-8 tw:flex-1 tw:items-center tw:justify-center tw:gap-1.5 tw:whitespace-nowrap tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:[&_svg]:pointer-events-none tw:[&_svg]:size-4 tw:[&_svg]:shrink-0',
         className,
       )}
       {...props}
@@ -59,8 +89,20 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
   )
 }
 
-function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
-  return <TabsPrimitive.Panel data-slot="tabs-content" className={cn('tw:flex-1 tw:outline-none', className)} {...props} />
+function TabsContent({
+  className,
+  value,
+  id,
+  ...props
+}: React.ComponentProps<typeof TabPanelPrimitive> & { value?: React.Key }) {
+  return (
+    <TabPanelPrimitive
+      id={id ?? value}
+      data-slot="tabs-content"
+      className={cn('pzhown-tabs-content tw:flex-1 tw:outline-none', className)}
+      {...props}
+    />
+  )
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants }

@@ -37,16 +37,19 @@ import {
   TooltipTrigger,
 } from '@pzhown/ui/react'
 
+const cardClass =
+  'tw:rounded-[28px] tw:border tw:border-white/65 tw:bg-white/58 tw:p-5 tw:shadow-[0_18px_60px_rgb(17_24_39/0.065),inset_0_1px_0_rgb(255_255_255/0.82)] tw:backdrop-blur-2xl'
+
 export default function ComponentShowcase() {
   const [motionKey, setMotionKey] = useState(0)
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delay={180}>
       <div className="pzhown-ui tw:grid tw:gap-5 tw:lg:grid-cols-2">
-        <article className="tw:rounded-[28px] tw:border tw:border-black/8 tw:bg-white/72 tw:p-5 tw:shadow-[0_20px_70px_rgb(17_24_39/0.08)] tw:backdrop-blur-xl">
+        <article className={cardClass}>
           <div className="tw:mb-5">
             <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-[0.18em] tw:text-black/40">Buttons</p>
-            <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Variants & sizing</h3>
+            <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Adaptive press states</h3>
           </div>
           <div className="tw:flex tw:flex-wrap tw:gap-2.5">
             <Button>Default</Button>
@@ -64,24 +67,24 @@ export default function ComponentShowcase() {
           </div>
         </article>
 
-        <article className="tw:rounded-[28px] tw:border tw:border-black/8 tw:bg-white/72 tw:p-5 tw:shadow-[0_20px_70px_rgb(17_24_39/0.08)] tw:backdrop-blur-xl">
+        <article className={cardClass}>
           <div className="tw:mb-5">
             <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-[0.18em] tw:text-black/40">Form controls</p>
             <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Input & switch</h3>
           </div>
           <div className="tw:grid tw:gap-4">
             <Input placeholder="Search components…" />
-            <div className="tw:flex tw:items-center tw:justify-between tw:rounded-2xl tw:bg-black/[0.035] tw:px-4 tw:py-3">
+            <div className="tw:flex tw:items-center tw:justify-between tw:rounded-[18px] tw:bg-black/[0.025] tw:px-4 tw:py-3 tw:shadow-[inset_0_1px_2px_rgb(0_0_0/0.025)]">
               <div>
                 <p className="tw:text-sm tw:font-medium">Motion effects</p>
-                <p className="tw:mt-0.5 tw:text-xs tw:text-black/45">Spring, layout and gesture feedback</p>
+                <p className="tw:mt-0.5 tw:text-xs tw:text-black/45">Adaptive mouse, keyboard and touch feedback</p>
               </div>
               <Switch defaultChecked aria-label="Enable motion effects" />
             </div>
           </div>
         </article>
 
-        <article className="tw:rounded-[28px] tw:border tw:border-black/8 tw:bg-white/72 tw:p-5 tw:shadow-[0_20px_70px_rgb(17_24_39/0.08)] tw:backdrop-blur-xl">
+        <article className={cardClass}>
           <div className="tw:mb-5">
             <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-[0.18em] tw:text-black/40">Overlays</p>
             <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Dialog, popover, tooltip & menu</h3>
@@ -91,9 +94,9 @@ export default function ComponentShowcase() {
               <DialogTrigger render={<Button />}>Open dialog</DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Shared component layer</DialogTitle>
+                  <DialogTitle>React Aria component layer</DialogTitle>
                   <DialogDescription>
-                    Base UI handles behavior and accessibility while the PzHown layer owns squircle, blur and visual tokens.
+                    React Aria owns adaptive interaction and accessibility; PzHown UI owns squircle, blur, surfaces and motion language.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -107,15 +110,15 @@ export default function ComponentShowcase() {
               <PopoverTrigger render={<Button variant="outline" />}>Popover</PopoverTrigger>
               <PopoverContent>
                 <PopoverHeader>
-                  <PopoverTitle>Progressive surface</PopoverTitle>
-                  <PopoverDescription>Translucent surface, squircle corner and a native Base UI positioner.</PopoverDescription>
+                  <PopoverTitle>Adaptive surface</PopoverTitle>
+                  <PopoverDescription>React Aria positioning with a translucent squircle surface and soft entrance motion.</PopoverDescription>
                 </PopoverHeader>
               </PopoverContent>
             </Popover>
 
             <Tooltip>
               <TooltipTrigger render={<Button variant="secondary" />}>Hover me</TooltipTrigger>
-              <TooltipContent>Base UI tooltip</TooltipContent>
+              <TooltipContent>React Aria tooltip</TooltipContent>
             </Tooltip>
 
             <DropdownMenu>
@@ -134,7 +137,7 @@ export default function ComponentShowcase() {
           </div>
         </article>
 
-        <article className="tw:rounded-[28px] tw:border tw:border-black/8 tw:bg-white/72 tw:p-5 tw:shadow-[0_20px_70px_rgb(17_24_39/0.08)] tw:backdrop-blur-xl">
+        <article className={cardClass}>
           <div className="tw:mb-5">
             <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-[0.18em] tw:text-black/40">Tabs</p>
             <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Stateful navigation</h3>
@@ -149,24 +152,24 @@ export default function ComponentShowcase() {
               Squircle corners, Oklab color interpolation and progressive blur form the visual foundation.
             </TabsContent>
             <TabsContent value="motion" className="tw:pt-4 tw:text-sm tw:leading-6 tw:text-black/55">
-              Motion provides spring, gesture, layout and coordinated state transitions.
+              Motion handles larger spring, gesture and layout transitions while React Aria exposes interaction states.
             </TabsContent>
             <TabsContent value="system" className="tw:pt-4 tw:text-sm tw:leading-6 tw:text-black/55">
-              Base UI primitives keep keyboard navigation, focus management and ARIA behavior reliable.
+              React Aria keeps mouse, touch, keyboard, focus and screen-reader behavior adaptive and consistent.
             </TabsContent>
           </Tabs>
         </article>
 
-        <article className="tw:rounded-[28px] tw:border tw:border-black/8 tw:bg-white/72 tw:p-5 tw:shadow-[0_20px_70px_rgb(17_24_39/0.08)] tw:backdrop-blur-xl tw:lg:col-span-2">
+        <article className={`${cardClass} tw:lg:col-span-2`}>
           <div className="tw:flex tw:flex-col tw:gap-5 tw:md:flex-row tw:md:items-center tw:md:justify-between">
             <div>
               <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-[0.18em] tw:text-black/40">Motion / React</p>
               <h3 className="tw:mt-1 tw:text-lg tw:font-semibold tw:tracking-[-0.02em]">Spring interaction</h3>
               <p className="tw:mt-2 tw:max-w-xl tw:text-sm tw:leading-6 tw:text-black/50">
-                Hover the object for a spring-driven transform, or replay its entrance animation.
+                React Aria handles interaction semantics; Motion remains available for richer spatial transitions.
               </p>
             </div>
-            <Button variant="outline" onClick={() => setMotionKey((value) => value + 1)}>
+            <Button variant="outline" onPress={() => setMotionKey((value) => value + 1)}>
               Replay
             </Button>
           </div>
