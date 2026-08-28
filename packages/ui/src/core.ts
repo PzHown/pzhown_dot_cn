@@ -33,14 +33,18 @@ const clamp = (value: number, min: number, max: number) =>
 const formatPercent = (value: number) => `${clamp(value, 0, 100).toFixed(3)}%`
 
 const buildStops = (index: number, start: number, segment: number) => {
-  const fadeIn = start + Math.max(0, index - 1) * segment
-  const opaqueStart = start + index * segment
-  const opaqueEnd = start + (index + 1) * segment
-  const fadeOut = start + (index + 2) * segment
-
   if (index === 0) {
-    return `#000 0%, #000 ${formatPercent(opaqueEnd)}, transparent ${formatPercent(fadeOut)}`
+    return `#000 ${formatPercent(start)}, transparent ${formatPercent(start + segment)}`
   }
+
+  if (index === 1) {
+    return `#000 ${formatPercent(start)}, #000 ${formatPercent(start + segment)}, transparent ${formatPercent(start + segment * 2)}`
+  }
+
+  const fadeIn = start + (index - 2) * segment
+  const opaqueStart = start + (index - 1) * segment
+  const opaqueEnd = start + index * segment
+  const fadeOut = start + (index + 1) * segment
 
   return `transparent ${formatPercent(fadeIn)}, #000 ${formatPercent(opaqueStart)}, #000 ${formatPercent(opaqueEnd)}, transparent ${formatPercent(fadeOut)}`
 }
@@ -70,7 +74,7 @@ export function createProgressiveBlurModel(
     const stops = buildStops(index, start, segment)
     const mask =
       mode === 'radial'
-        ? `radial-gradient(circle at center, ${stops})`
+        ? `radial-gradient(closest-side at center, ${stops})`
         : `linear-gradient(${direction}, ${stops})`
 
     return {
@@ -81,7 +85,7 @@ export function createProgressiveBlurModel(
 
   const tintBackground =
     mode === 'radial'
-      ? `radial-gradient(circle at center, ${tint} 0%, transparent 100%)`
+      ? `radial-gradient(closest-side at center, ${tint} 0%, transparent 100%)`
       : `linear-gradient(${direction}, ${tint} 0%, transparent 100%)`
 
   return { tintBackground, layers }
