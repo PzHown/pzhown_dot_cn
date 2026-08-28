@@ -4,3 +4,33 @@
 @import "@pzhown/ui/effects.css";
 @import "@pzhown/ui/progressive-blur.css";
 @import "@pzhown/ui/components.css";
+
+/*
+ * Progressive Blur showcase notes:
+ * Chromium has a known bug when masked backdrop-filter descendants sit below
+ * an ancestor that combines overflow: hidden and border-radius. Keep the
+ * actual blur branch unclipped, and clip only the sibling background content.
+ */
+.section-shell:has([data-progressive-blur]) {
+  overflow: visible !important;
+}
+
+.blur-stage {
+  overflow: visible !important;
+}
+
+.blur-stage > .blur-content {
+  overflow: hidden;
+  border-radius: 30px;
+}
+
+/* Match the upstream demo model: linear blur is a side strip, not a full-card overlay. */
+.blur-stage > [data-progressive-blur="linear"][data-progressive-blur-side="bottom"] {
+  top: auto;
+  height: 120px;
+}
+
+/* Radial blur is localized around the center instead of covering the entire card. */
+.blur-stage > [data-progressive-blur="radial"] {
+  inset: 64px 96px;
+}
