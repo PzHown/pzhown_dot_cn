@@ -1,0 +1,46 @@
+name: Validate all shadcn React Aria components
+
+on:
+  push:
+    branches:
+      - chore/install-all-aria-components
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check shared UI
+        run: pnpm --filter @pzhown/web exec tsc -p ../../packages/ui/tsconfig.json --noEmit
+
+      - name: Check Astro application
+        run: pnpm --filter @pzhown/web check
+
+      - name: Remove one-off validation workflow
+        run: rm -f .github/workflows/validate-all-aria-components.yml
+
+      - name: Commit workflow cleanup
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: remove aria component validation workflow'
+          git push origin HEAD:chore/install-all-aria-components
