@@ -1,24 +1,26 @@
-# build output
-dist/
-
-# generated types
-.astro/
-
-# dependencies
 node_modules/
+.pnpm-store/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# Astro
+apps/web/.astro/
+apps/web/dist/
+
+# Next.js / Payload
+apps/cms/.next/
+apps/cms/media/
+apps/cms/payload.db
+apps/cms/payload.db-*
+apps/cms/payload.db-shm
+apps/cms/payload.db-wal
 
 # logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+*.log
 
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
+# editor / OS
 .DS_Store
-
-# jetbrains setting folder
 .idea/

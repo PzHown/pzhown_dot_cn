@@ -1,54 +1,46 @@
-# Astro Starter Kit: Basics
+# pzhown.cn
 
-```sh
-npm create astro@latest -- --template basics
+Monorepo for the public Astro site and the Payload CMS / admin backend.
+
+## Stack
+
+- `apps/web`: Astro 7 public site
+- `apps/cms`: Payload 3 on Next.js
+- Database: SQLite for local development by default, PostgreSQL for production
+- Package manager: pnpm workspaces
+
+## Requirements
+
+- Node.js 22.12+
+- pnpm 9+
+
+## Local development
+
+```bash
+pnpm install
+cp apps/cms/.env.example apps/cms/.env
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+- Astro: http://localhost:4321
+- Payload Admin: http://localhost:3000/admin
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The first visit to Payload Admin will guide you through creating the initial user.
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## Database selection
 
-## 🚀 Project Structure
+Local development defaults to SQLite:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```env
+DATABASE_ADAPTER=sqlite
+DATABASE_URL=file:./payload.db
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+For PostgreSQL:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```env
+DATABASE_ADAPTER=postgres
+DATABASE_URL=postgresql://user:password@localhost:5432/pzhown
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+In production, set `PAYLOAD_SECRET` to a strong secret and explicitly configure the database adapter and URL.
