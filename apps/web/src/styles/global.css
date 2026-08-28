@@ -43,6 +43,7 @@
 @import "@pzhown/ui/effects.css";
 @import "@pzhown/ui/progressive-blur.css";
 @import "@pzhown/ui/components.css";
+@import "./ui-semantic-tokens.css";
 
 /*
  * Progressive Blur showcase notes:
