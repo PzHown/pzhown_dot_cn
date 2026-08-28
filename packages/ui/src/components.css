@@ -39,6 +39,52 @@
   --pzhown-ui-shadow: 0 22px 65px rgb(0 0 0 / 0.42), 0 2px 10px rgb(0 0 0 / 0.22);
 }
 
+.pzhown-button[data-variant='default'] {
+  background: var(--pzhown-ui-primary);
+  color: var(--pzhown-ui-primary-foreground);
+}
+
+.pzhown-button[data-variant='default']:hover {
+  background: var(--pzhown-ui-primary-hover);
+}
+
+.pzhown-button[data-variant='secondary'] {
+  background: var(--pzhown-ui-muted);
+  color: var(--pzhown-ui-foreground);
+}
+
+.pzhown-button[data-variant='secondary']:hover,
+.pzhown-button[data-variant='outline']:hover,
+.pzhown-button[data-variant='ghost']:hover {
+  background: var(--pzhown-ui-accent);
+  color: var(--pzhown-ui-accent-foreground);
+}
+
+.pzhown-button[data-variant='outline'] {
+  border-color: var(--pzhown-ui-border);
+  background: var(--pzhown-ui-surface);
+  color: var(--pzhown-ui-foreground);
+}
+
+.pzhown-button[data-variant='ghost'],
+.pzhown-button[data-variant='link'] {
+  background: transparent;
+  color: var(--pzhown-ui-foreground);
+}
+
+.pzhown-button[data-variant='link']:hover {
+  text-decoration: underline;
+}
+
+.pzhown-button[data-variant='destructive'] {
+  background: var(--pzhown-ui-destructive-soft);
+  color: var(--pzhown-ui-destructive);
+}
+
+.pzhown-button[data-variant='destructive']:hover {
+  filter: brightness(0.96);
+}
+
 .pzhown-dialog-overlay {
   opacity: 0;
   background: rgb(0 0 0 / 0.16);
