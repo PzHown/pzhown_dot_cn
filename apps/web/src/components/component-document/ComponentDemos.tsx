@@ -818,6 +818,10 @@ function QuestionnaireDemo() {
               <Piece name="QuestionnaireChoice" value="b">移动端</Piece>
               <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>
             </Piece>
+            <div className="tw:grid tw:gap-2 tw:pt-2">
+              <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />
+              <Piece name="QuestionnaireError">示例错误信息</Piece>
+            </div>
           </Piece>
           <Piece name="QuestionnaireActions">
             <Piece name="QuestionnairePrevious" />
@@ -826,8 +830,6 @@ function QuestionnaireDemo() {
           </Piece>
         </Piece>
       </div>
-      <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />
-      <Piece name="QuestionnaireError">示例错误信息</Piece>
     </DemoStack>
   )
 }
