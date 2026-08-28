@@ -36,12 +36,15 @@ const rootStyle = `--pzhown-pb-tint:${model.tintBackground};${style}`
 >
   <div class="pzhown-progressive-blur__surface">
     {
-      model.layers.map((layer, index) => (
-        <div
-          class="pzhown-progressive-blur__layer"
-          style={`--pzhown-pb-layer:${index + 1};--pzhown-pb-blur:${layer.blur.toFixed(3)}px;--pzhown-pb-mask:${layer.mask};`}
-        />
-      ))
+      model.layers.map((layer, index) => {
+        const blur = `${layer.blur.toFixed(3)}px`
+        return (
+          <div
+            class="pzhown-progressive-blur__layer"
+            style={`z-index:${index + 1};-webkit-backdrop-filter:blur(${blur});backdrop-filter:blur(${blur});-webkit-mask:${layer.mask};mask:${layer.mask};background:rgb(255 255 255 / 0.001);`}
+          />
+        )
+      })
     }
   </div>
 </div>
