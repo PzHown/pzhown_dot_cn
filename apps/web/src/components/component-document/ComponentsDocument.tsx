@@ -55,6 +55,48 @@ function ThemeIcon({ dark }: { dark: boolean }) {
   )
 }
 
+type DemoErrorBoundaryProps = {
+  componentId: string
+  children: React.ReactNode
+}
+
+type DemoErrorBoundaryState = {
+  error: Error | null
+}
+
+class DemoErrorBoundary extends React.Component<DemoErrorBoundaryProps, DemoErrorBoundaryState> {
+  state: DemoErrorBoundaryState = { error: null }
+
+  static getDerivedStateFromError(error: Error): DemoErrorBoundaryState {
+    return { error }
+  }
+
+  componentDidCatch(error: Error) {
+    console.error(`[component-document:${this.props.componentId}]`, error)
+  }
+
+  componentDidUpdate(previousProps: DemoErrorBoundaryProps) {
+    if (previousProps.componentId !== this.props.componentId && this.state.error) {
+      this.setState({ error: null })
+    }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div role="alert" className="tw:rounded-xl tw:border tw:border-destructive/30 tw:bg-destructive/8 tw:p-4">
+          <strong className="tw:block tw:text-sm tw:text-destructive">该组件 Demo 运行失败</strong>
+          <p className="tw:mt-1 tw:mb-0 tw:text-xs tw:leading-5 tw:text-muted-foreground">
+            已隔离错误，不会影响其他组件。请查看控制台中的 component-document 日志。
+          </p>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
+
 function ComponentCard({ id }: { id: string }) {
   const doc = componentDocs.find((item) => item.id === id)
   if (!doc) return null
@@ -86,7 +128,13 @@ function ComponentCard({ id }: { id: string }) {
             </div>
           </div>
           <div className="tw:min-h-28 tw:rounded-2xl tw:border tw:border-border/65 tw:bg-background/70 tw:p-4 tw:shadow-[inset_0_1px_0_rgb(255_255_255/.42)] tw:md:p-5">
-            {Demo ? <Demo /> : <p className="tw:text-sm tw:text-destructive">此组件尚未建立 Demo。</p>}
+            {Demo ? (
+              <DemoErrorBoundary componentId={doc.id}>
+                <Demo />
+              </DemoErrorBoundary>
+            ) : (
+              <p className="tw:text-sm tw:text-destructive">此组件尚未建立 Demo。</p>
+            )}
           </div>
         </section>
 

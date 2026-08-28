@@ -242,7 +242,7 @@ function AvatarDemo() {
         </Piece>
       ))}
       <Piece name="Avatar">
-        <Piece name="AvatarImage" src="/favicon.svg" alt="PzHown" />
+        <Piece name="AvatarImage" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%2312171f%22/%3E%3Ctext x=%2232%22 y=%2240%22 text-anchor=%22middle%22 font-size=%2222%22 font-family=%22sans-serif%22 fill=%22white%22%3EPH%3C/text%3E%3C/svg%3E" alt="PzHown" />
         <Piece name="AvatarFallback">PH</Piece>
       </Piece>
       <Piece name="AvatarGroup">
@@ -269,11 +269,8 @@ function BreadcrumbDemo() {
     <Piece name="Breadcrumb">
       <Piece name="BreadcrumbList">
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbLink" href="#breadcrumb">首页</Piece></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbLink" href="#breadcrumb">设计系统</Piece></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbEllipsis" /></Piece>
-        <Piece name="BreadcrumbSeparator" />
         <Piece name="BreadcrumbItem"><Piece name="BreadcrumbPage">组件文档</Piece></Piece>
       </Piece>
     </Piece>
@@ -987,19 +984,21 @@ function SwitchDemo() {
 
 function TableDemo() {
   return (
-    <Piece name="Table" aria-label="组件状态表">
-      <Piece name="TableHeader">
-        <Piece name="TableHead" id="component">组件</Piece>
-        <Piece name="TableHead" id="state">状态</Piece>
-        <Piece name="TableHead" id="note">备注</Piece>
-      </Piece>
-      <Piece name="TableBody">
-        <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
-        <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
-        <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
+    <DemoStack>
+      <Piece name="Table" aria-label="组件状态表">
+        <Piece name="TableHeader">
+          <Piece name="TableHead" id="component">组件</Piece>
+          <Piece name="TableHead" id="state">状态</Piece>
+          <Piece name="TableHead" id="note">备注</Piece>
+        </Piece>
+        <Piece name="TableBody">
+          <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
+          <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
+          <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
+        </Piece>
       </Piece>
       <Piece name="TableCaption">组件状态表</Piece>
-    </Piece>
+    </DemoStack>
   )
 }
 
