@@ -13,6 +13,7 @@
     "./core": "./src/core.ts",
     "./components": "./src/components/index.ts",
     "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts",
     "./components.css": "./src/components.css",
     "./effects.css": "./src/effects.css",
