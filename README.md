@@ -35,6 +35,37 @@ The Astro frontend uses Tailwind CSS 4 through the official Vite plugin.
 
 The Payload backend uses Tailwind CSS 4 through PostCSS. Tailwind Preflight is intentionally disabled there and utilities use the `tw:` prefix, for example `tw:flex`, so Payload's built-in Admin styles are not reset or shadowed.
 
+### Squircle corners
+
+`@pzhown/ui/effects.css` globally applies `corner-shape: squircle` wherever the browser supports it. Existing `border-radius` values remain the source of corner size. Browsers without `corner-shape` support simply keep the normal rounded-corner rendering.
+
+```css
+.card {
+  border-radius: 24px;
+}
+```
+
+No extra class is required for the squircle shape.
+
+### Smooth gradients
+
+The shared effects stylesheet exposes perceptual and smootherstep gradient utilities.
+
+```html
+<div
+  class="gradient-smooth"
+  style="--gradient-angle: 135deg; --gradient-from: #fff; --gradient-to: transparent"
+></div>
+```
+
+Available utilities:
+
+- `gradient-oklab`: regular two-stop gradient interpolated in Oklab
+- `gradient-smooth`: linear smootherstep-eased gradient with Oklab interpolation
+- `gradient-smooth-radial`: radial smootherstep-eased gradient
+
+The smooth variants approximate `6t^5 - 15t^4 + 10t^3` with multiple CSS color stops, which makes the transition start and end more gently than a simple two-stop linear gradient.
+
 ### Progressive Blur
 
 Progressive Blur is implemented locally in `@pzhown/ui`. The visual core is CSS plus framework-neutral layer calculations, so there is no dependency on the former `progressive-blur` npm package.

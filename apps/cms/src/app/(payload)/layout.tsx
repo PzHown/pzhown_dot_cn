@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import '@payloadcms/next/css'
+import '@pzhown/ui/effects.css'
 import '@pzhown/ui/progressive-blur.css'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ServerFunctionClient } from 'payload'

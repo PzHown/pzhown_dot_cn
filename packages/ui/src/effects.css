@@ -1,0 +1,64 @@
+/* Global squircle corners with graceful border-radius fallback. */
+@supports (corner-shape: squircle) {
+  *,
+  *::before,
+  *::after {
+    corner-shape: squircle;
+  }
+}
+
+/* Perceptual two-stop gradient. */
+.gradient-oklab {
+  --gradient-angle: 180deg;
+  --gradient-from: transparent;
+  --gradient-to: transparent;
+
+  background-image: linear-gradient(
+    var(--gradient-angle) in oklab,
+    var(--gradient-from),
+    var(--gradient-to)
+  );
+}
+
+/*
+ * Smootherstep-eased gradient.
+ * The color progression approximates f(t) = 6t^5 - 15t^4 + 10t^3,
+ * while each segment is interpolated in Oklab for perceptual smoothness.
+ */
+.gradient-smooth {
+  --gradient-angle: 180deg;
+  --gradient-from: transparent;
+  --gradient-to: transparent;
+
+  background-image: linear-gradient(
+    var(--gradient-angle) in oklab,
+    var(--gradient-from) 0%,
+    color-mix(in oklab, var(--gradient-from) 98.3948%, var(--gradient-to) 1.6052%) 12.5%,
+    color-mix(in oklab, var(--gradient-from) 89.6484%, var(--gradient-to) 10.3516%) 25%,
+    color-mix(in oklab, var(--gradient-from) 72.4792%, var(--gradient-to) 27.5208%) 37.5%,
+    color-mix(in oklab, var(--gradient-from) 50%, var(--gradient-to) 50%) 50%,
+    color-mix(in oklab, var(--gradient-from) 27.5208%, var(--gradient-to) 72.4792%) 62.5%,
+    color-mix(in oklab, var(--gradient-from) 10.3516%, var(--gradient-to) 89.6484%) 75%,
+    color-mix(in oklab, var(--gradient-from) 1.6052%, var(--gradient-to) 98.3948%) 87.5%,
+    var(--gradient-to) 100%
+  );
+}
+
+.gradient-smooth-radial {
+  --gradient-position: center;
+  --gradient-from: transparent;
+  --gradient-to: transparent;
+
+  background-image: radial-gradient(
+    circle at var(--gradient-position) in oklab,
+    var(--gradient-from) 0%,
+    color-mix(in oklab, var(--gradient-from) 98.3948%, var(--gradient-to) 1.6052%) 12.5%,
+    color-mix(in oklab, var(--gradient-from) 89.6484%, var(--gradient-to) 10.3516%) 25%,
+    color-mix(in oklab, var(--gradient-from) 72.4792%, var(--gradient-to) 27.5208%) 37.5%,
+    color-mix(in oklab, var(--gradient-from) 50%, var(--gradient-to) 50%) 50%,
+    color-mix(in oklab, var(--gradient-from) 27.5208%, var(--gradient-to) 72.4792%) 62.5%,
+    color-mix(in oklab, var(--gradient-from) 10.3516%, var(--gradient-to) 89.6484%) 75%,
+    color-mix(in oklab, var(--gradient-from) 1.6052%, var(--gradient-to) 98.3948%) 87.5%,
+    var(--gradient-to) 100%
+  );
+}

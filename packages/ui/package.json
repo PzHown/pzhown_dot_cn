@@ -8,6 +8,7 @@
     "./astro": "./src/ProgressiveBlur.astro",
     "./react": "./src/ProgressiveBlur.tsx",
     "./core": "./src/core.ts",
+    "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
   "peerDependencies": {
