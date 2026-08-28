@@ -4,8 +4,10 @@ Monorepo for the public Astro site and the Payload CMS / admin backend.
 
 ## Stack
 
-- `apps/web`: Astro 7 public site
-- `apps/cms`: Payload 3 on Next.js
+- `apps/web`: Astro 7 + Tailwind CSS 4 public site
+- `apps/web`: React Islands are available for interactive components
+- `apps/web`: `progressive-blur` is installed for progressive backdrop blur effects
+- `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4
 - Database: SQLite for local development by default, PostgreSQL for production
 - Package manager: pnpm workspaces
 
@@ -26,6 +28,14 @@ pnpm dev
 - Payload Admin: http://localhost:3000/admin
 
 The first visit to Payload Admin will guide you through creating the initial user.
+
+## Styling
+
+The Astro frontend uses Tailwind CSS 4 through the official Vite plugin.
+
+The Payload backend uses Tailwind CSS 4 through PostCSS. Tailwind Preflight is intentionally disabled there and utilities use the `tw:` prefix, for example `tw:flex`, so Payload's built-in Admin styles are not reset or shadowed.
+
+`progressive-blur` is available in the Astro frontend through React Islands. Import it directly or from `src/components/ProgressiveBlur.tsx` when a page starts using the effect.
 
 ## Database selection
 

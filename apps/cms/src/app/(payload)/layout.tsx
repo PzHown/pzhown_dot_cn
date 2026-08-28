@@ -5,6 +5,7 @@ import type { ServerFunctionClient } from 'payload'
 import type { ReactNode } from 'react'
 
 import { importMap } from './admin/importMap.js'
+import '../../styles/tailwind.css'
 
 const serverFunction: ServerFunctionClient = async (args) => {
   'use server'
