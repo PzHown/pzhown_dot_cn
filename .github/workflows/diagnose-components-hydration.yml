@@ -6,10 +6,11 @@ on:
       - fix/components-hydration-blank
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  warning-scan:
+  browser:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,101 +26,155 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prepare client-only single-component diagnostic mode
+      - name: Fix remaining demo accessibility and composition warnings
         run: |
           node <<'NODE'
           const fs = require('fs')
+          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
+          let source = fs.readFileSync(path, 'utf8')
 
-          const componentPath = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
-          let componentSource = fs.readFileSync(componentPath, 'utf8')
-          const marker = "  const normalized = query.trim().toLowerCase()\n\n  const filtered = normalized\n"
-          if (!componentSource.includes(marker)) throw new Error('ComponentsDocument filter marker not found')
-          componentSource = componentSource.replace(
-            marker,
-            "  const normalized = query.trim().toLowerCase()\n  const diagnosticTarget = typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('component') ?? ''\n\n  const filtered = diagnosticTarget\n    ? componentDocs.filter((item) => item.id === diagnosticTarget)\n    : normalized\n"
-          )
-          fs.writeFileSync(componentPath, componentSource)
+          const replacements = [
+            [
+              `<Piece name="Combobox" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}>`,
+              `<Piece name="Combobox" aria-label="技术选择" defaultItems={[{ id: 'astro', name: 'Astro' }, { id: 'react', name: 'React Aria' }, { id: 'motion', name: 'Motion' }]}>`,
+            ],
+            [
+              `<Piece name="ComboboxInput" placeholder="搜索技术…" />\n        <Piece name="ComboboxTrigger" />`,
+              `<Piece name="ComboboxInput" placeholder="搜索技术…" />`,
+            ],
+            [
+              `<Piece name="Combobox" isDisabled>`,
+              `<Piece name="Combobox" aria-label="禁用技术选择" isDisabled>`,
+            ],
+            [
+              `<Piece name="Select" placeholder="请选择">`,
+              `<Piece name="Select" aria-label="组件选项" placeholder="请选择">`,
+            ],
+            [
+              `<Piece name="SelectContent">\n          <Piece name="SelectList">\n            <Piece name="SelectItem" id="a">选项 A</Piece>\n            <Piece name="SelectItem" id="b">选项 B</Piece>\n            <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>\n          </Piece>\n        </Piece>`,
+              `<Piece name="SelectContent">\n          <Piece name="SelectItem" id="a">选项 A</Piece>\n          <Piece name="SelectItem" id="b">选项 B</Piece>\n          <Piece name="SelectItem" id="c" isDisabled>禁用项</Piece>\n        </Piece>`,
+            ],
+            [
+              `<Piece name="Select" isDisabled placeholder="禁用选择框">`,
+              `<Piece name="Select" aria-label="禁用组件选项" isDisabled placeholder="禁用选择框">`,
+            ],
+            [
+              `<div className="tw:grid tw:h-28 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</div>`,
+              `<button type="button" className="tw:grid tw:h-28 tw:w-full tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/50 tw:text-sm tw:text-muted-foreground">在这里右键</button>`,
+            ],
+          ]
 
-          const pagePath = 'apps/web/src/pages/components.astro'
-          let pageSource = fs.readFileSync(pagePath, 'utf8')
-          if (!pageSource.includes('<ComponentsDocument client:load />')) throw new Error('components.astro client directive not found')
-          pageSource = pageSource.replace('<ComponentsDocument client:load />', '<ComponentsDocument client:only="react" />')
-          fs.writeFileSync(pagePath, pageSource)
+          for (const [from, to] of replacements) {
+            if (!source.includes(from)) throw new Error(`Patch target not found: ${from.slice(0, 80)}`)
+            source = source.replace(from, to)
+          }
+
+          fs.writeFileSync(path, source)
           NODE
+
+      - name: Commit demo fixes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/web/src/components/component-document/ComponentDemos.tsx
+          git commit -m 'fix(web): clean component demo accessibility warnings'
+          git push origin HEAD:fix/components-hydration-blank
+
+      - name: Check shared UI
+        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
+
+      - name: Check Astro
+        run: pnpm --filter @pzhown/web check
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
 
       - name: Install Playwright package
         run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
-      - name: Start Astro dev server
+      - name: Start production preview and dev server
         run: |
+          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           pnpm --filter @pzhown/web dev --host 127.0.0.1 --port 4322 > /tmp/astro-dev.log 2>&1 &
-          for i in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:4322/components/ >/dev/null; then
-              exit 0
+          for port in 4321 4322; do
+            ready=0
+            for i in $(seq 1 90); do
+              if curl -fsS "http://127.0.0.1:${port}/components/" >/dev/null; then
+                ready=1
+                break
+              fi
+              sleep 1
+            done
+            if [ "$ready" -ne 1 ]; then
+              cat /tmp/astro-preview.log || true
+              cat /tmp/astro-dev.log || true
+              exit 1
             fi
-            sleep 1
           done
-          cat /tmp/astro-dev.log
-          exit 1
 
-      - name: Scan all component demos for remaining warnings
+      - name: Require clean full browser console
         run: |
           node <<'NODE'
-          const fs = require('fs')
           const { chromium } = require('playwright')
 
-          const catalog = fs.readFileSync('apps/web/src/components/component-document/catalog.ts', 'utf8')
-          const ids = [...catalog.matchAll(/\bid:\s*'([^']+)'/g)].map((match) => match[1])
-          if (ids.length !== 58) throw new Error(`Expected 58 component ids, found ${ids.length}`)
+          async function inspect(browser, label, url) {
+            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+            const pageErrors = []
+            const messages = []
+            const failedResponses = []
+
+            page.on('pageerror', error => pageErrors.push(error.stack || error.message))
+            page.on('console', message => {
+              if (message.type() === 'error' || message.type() === 'warning') {
+                messages.push(`${message.type()}: ${message.text()}`)
+              }
+            })
+            page.on('response', response => {
+              if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`)
+            })
+
+            await page.goto(url, { waitUntil: 'networkidle' })
+            await page.waitForTimeout(2000)
+
+            const state = await page.evaluate(() => ({
+              root: Boolean(document.querySelector('.component-document')),
+              cards: document.querySelectorAll('[data-component]').length,
+              demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map(node => node.getAttribute('data-demo-error')),
+              tableRendered: Boolean(document.querySelector('[data-component="table"] [data-slot="table"]')),
+              text: document.body.innerText.length,
+            }))
+
+            console.log(`=== ${label} ===`)
+            console.log('STATE', JSON.stringify(state))
+            console.log('PAGE ERRORS', JSON.stringify(pageErrors))
+            console.log('MESSAGES', JSON.stringify(messages))
+            console.log('FAILED RESPONSES', JSON.stringify(failedResponses))
+            await page.close()
+
+            return { state, pageErrors, messages, failedResponses }
+          }
 
           ;(async () => {
             const browser = await chromium.launch({ channel: 'chrome', headless: true })
-            const offenders = []
-
-            for (const id of ids) {
-              const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
-              const messages = []
-              const pageErrors = []
-
-              page.on('pageerror', error => pageErrors.push(error.stack || error.message))
-              page.on('console', message => {
-                if (message.type() === 'error' || message.type() === 'warning') {
-                  messages.push(`${message.type()}: ${message.text()}`)
-                }
-              })
-
-              await page.goto(`http://127.0.0.1:4322/components/?component=${encodeURIComponent(id)}`, { waitUntil: 'networkidle' })
-              await page.waitForTimeout(350)
-
-              const state = await page.evaluate(() => ({
-                cards: Array.from(document.querySelectorAll('[data-component]')).map((node) => node.getAttribute('data-component')),
-                demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map((node) => node.getAttribute('data-demo-error')),
-              }))
-
-              if (state.cards.length !== 1 || state.cards[0] !== id || state.demoErrors.length || pageErrors.length) {
-                console.log('DIAGNOSTIC FAILURE', id, JSON.stringify({ state, pageErrors, messages }))
-                await browser.close()
-                process.exit(2)
-              }
-
-              const relevant = messages.filter((message) =>
-                message.includes('If you do not provide a visible label') ||
-                message.includes('PressResponder was rendered without a pressable child')
-              )
-
-              if (relevant.length) {
-                offenders.push({ id, messages: relevant })
-                console.log('OFFENDER', id, JSON.stringify(relevant))
-              }
-
-              await page.close()
-            }
-
+            const production = await inspect(browser, 'PRODUCTION', 'http://127.0.0.1:4321/components/')
+            const development = await inspect(browser, 'DEVELOPMENT', 'http://127.0.0.1:4322/components/')
             await browser.close()
-            console.log('OFFENDERS', JSON.stringify(offenders))
-            console.log('SCANNED', ids.length)
-          })().catch((error) => {
+
+            for (const result of [production, development]) {
+              if (
+                !result.state.root ||
+                result.state.cards !== 58 ||
+                result.state.demoErrors.length ||
+                !result.state.tableRendered ||
+                result.pageErrors.length ||
+                result.messages.length ||
+                result.failedResponses.length
+              ) {
+                process.exit(1)
+              }
+            }
+          })().catch(error => {
             console.error(error)
-            process.exit(2)
+            process.exit(1)
           })
           NODE
