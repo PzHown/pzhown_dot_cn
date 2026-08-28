@@ -28,8 +28,11 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Add UI-local TypeScript and React declarations
+        run: pnpm --filter @pzhown/ui add -D typescript@5.9.2 @types/react@19.2.14 @types/react-dom@19.2.3
+
       - name: Type-check shared UI
-        run: pnpm --filter @pzhown/web exec tsc -p ../../packages/ui/tsconfig.json --noEmit
+        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
 
       - name: Check Astro application
         run: pnpm --filter @pzhown/web check
@@ -37,10 +40,10 @@ jobs:
       - name: Remove one-off validation workflow
         run: rm -f .github/workflows/validate-all-aria-components.yml
 
-      - name: Commit workflow cleanup
+      - name: Commit validated dependency and workflow changes
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'chore: remove aria component validation workflow'
+          git commit -m 'chore(ui): add local type tooling and finish validation'
           git push origin HEAD:chore/install-all-aria-components
