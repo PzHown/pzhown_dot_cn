@@ -652,9 +652,11 @@ function InputGroupDemo() {
 }
 
 function InputOTPDemo() {
+  const [value, setValue] = React.useState('1263')
+
   return (
     <DemoStack>
-      <Piece name="InputOTP" maxLength={6} defaultValue="1263">
+      <Piece name="InputOTP" maxLength={6} value={value} onChange={setValue}>
         <Piece name="InputOTPGroup">
           {[0, 1, 2].map((index) => <Piece key={index} name="InputOTPSlot" index={index} />)}
         </Piece>
