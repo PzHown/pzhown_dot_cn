@@ -6,11 +6,10 @@ on:
       - feat/astro-full-component-lab
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,33 +25,23 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Keep Questionnaire input states inside item context
-        run: |
-          node <<'NODE'
-          const fs = require('fs')
-          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
-          let source = fs.readFileSync(path, 'utf8')
-          const from = `            <Piece name="QuestionnaireChoices" type="radio">\n              <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>\n              <Piece name="QuestionnaireChoice" value="b">移动端</Piece>\n              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>\n            </Piece>\n          </Piece>\n          <Piece name="QuestionnaireActions">`
-          const to = `            <Piece name="QuestionnaireChoices" type="radio">\n              <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>\n              <Piece name="QuestionnaireChoice" value="b">移动端</Piece>\n              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>\n            </Piece>\n            <div className="tw:grid tw:gap-2 tw:pt-2">\n              <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />\n              <Piece name="QuestionnaireError">示例错误信息</Piece>\n            </div>\n          </Piece>\n          <Piece name="QuestionnaireActions">`
-          if (!source.includes(from)) throw new Error('Questionnaire item patch target not found')
-          source = source.replace(from, to)
-          source = source.replace(`\n      <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />\n      <Piece name="QuestionnaireError">示例错误信息</Piece>`, '')
-          fs.writeFileSync(path, source)
-          NODE
-
-      - name: Commit questionnaire demo fix
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/web/src/components/component-document/ComponentDemos.tsx
-          git commit -m 'fix(web): keep questionnaire states in item context'
-          git push origin HEAD:feat/astro-full-component-lab
-
       - name: Check shared UI
         run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
 
       - name: Check Astro
         run: pnpm --filter @pzhown/web check
 
-      - name: Build Astro
+      - name: Add temporary SSR component trace
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          let source = fs.readFileSync(path, 'utf8')
+          const target = `  const Demo = componentDemos[id]\n\n  return (`
+          if (!source.includes(target)) throw new Error('SSR trace insertion target not found')
+          source = source.replace(target, `  const Demo = componentDemos[id]\n  console.log('[component-document:ssr]', id)\n\n  return (`)
+          fs.writeFileSync(path, source)
+          NODE
+
+      - name: Build Astro with trace
         run: pnpm --filter @pzhown/web build
