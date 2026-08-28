@@ -25,8 +25,44 @@ jobs:
         with:
           version: 10
 
+      - name: Resolve available aria-nova registry items
+        id: registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          components=(
+            accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble button button-group
+            calendar card carousel chart checkbox collapsible combobox command context-menu data-table date-picker dialog
+            direction drawer dropdown-menu empty field hover-card input input-group input-otp item kbd label marker menubar
+            message message-scroller native-select navigation-menu pagination popover progress questionnaire radio-group resizable
+            scroll-area select separator sheet sidebar skeleton slider spinner switch table tabs textarea toast toggle toggle-group
+            tooltip typography
+          )
+
+          available=()
+          unavailable=()
+          for component in "${components[@]}"; do
+            url="https://ui.shadcn.com/r/styles/aria-nova/${component}.json"
+            if curl -fsSL -o /dev/null "$url"; then
+              available+=("$component")
+            else
+              unavailable+=("$component")
+            fi
+          done
+
+          printf 'Available aria-nova components (%s):\n' "${#available[@]}"
+          printf '  %s\n' "${available[@]}"
+          printf 'Unavailable aria-nova registry entries (%s):\n' "${#unavailable[@]}"
+          if ((${#unavailable[@]})); then printf '  %s\n' "${unavailable[@]}"; fi
+
+          printf '%s\n' "${unavailable[@]}" > /tmp/unavailable-aria-components.txt
+          printf 'components=%s\n' "${available[*]}" >> "$GITHUB_OUTPUT"
+
       - name: Add every available aria-nova component
-        run: pnpm dlx shadcn@latest add --all --yes --cwd packages/ui
+        shell: bash
+        run: |
+          read -ra components <<< "${{ steps.registry.outputs.components }}"
+          pnpm dlx shadcn@latest add --yes --cwd packages/ui "${components[@]}"
 
       - name: Rebuild component barrel
         run: |
@@ -44,6 +80,19 @@ jobs:
           )
           NODE
 
+      - name: Save upstream availability note
+        run: |
+          {
+            echo '# shadcn aria-nova upstream availability'
+            echo
+            echo 'Generated from the shadcn component catalog on 2026-08-28.'
+            echo 'The following catalog entries did not have an aria-nova registry item at generation time:'
+            echo
+            while IFS= read -r component; do
+              [ -n "$component" ] && echo "- \`$component\`"
+            done < /tmp/unavailable-aria-components.txt
+          } > packages/ui/UPSTREAM_COMPONENTS.md
+
       - name: Remove one-off workflow
         run: rm -f .github/workflows/install-all-aria-components.yml
 
@@ -52,5 +101,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'feat(ui): install all shadcn React Aria components'
+          git commit -m 'feat(ui): install all available shadcn React Aria components'
           git push origin HEAD:chore/install-all-aria-components
