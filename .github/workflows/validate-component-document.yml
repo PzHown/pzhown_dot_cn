@@ -26,54 +26,26 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Align demos with local component composition
+      - name: Keep Questionnaire input states inside item context
         run: |
           node <<'NODE'
           const fs = require('fs')
-
-          function patch(path, from, to) {
-            let source = fs.readFileSync(path, 'utf8')
-            if (!source.includes(from)) throw new Error(`Patch target not found: ${path}`)
-            source = source.replace(from, to)
-            fs.writeFileSync(path, source)
-          }
-
-          const demos = 'apps/web/src/components/component-document/ComponentDemos.tsx'
-          patch(
-            demos,
-            '<Piece name="CollapsibleTrigger" render={<Piece name="Button" variant="outline" />}>展开状态</Piece>',
-            '<Piece name="CollapsibleTrigger" className="tw:inline-flex tw:h-9 tw:items-center tw:rounded-xl tw:border tw:border-input tw:bg-background tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:hover:bg-muted tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50">展开状态</Piece>'
-          )
-          patch(
-            demos,
-            '<Piece name="CollapsibleTrigger" render={<Piece name="Button" variant="outline" />}>收起状态</Piece>',
-            '<Piece name="CollapsibleTrigger" className="tw:inline-flex tw:h-9 tw:items-center tw:rounded-xl tw:border tw:border-input tw:bg-background tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:hover:bg-muted tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50">收起状态</Piece>'
-          )
-          patch(
-            demos,
-            `      {['left', 'right', 'top', 'bottom'].map((side) => (\n        <Piece key={side} name="Sheet">\n          <Piece name="SheetTrigger" render={<Piece name="Button" variant="outline" />}>{side}</Piece>\n          <Piece name="SheetContent" side={side}>\n            <Piece name="SheetHeader">\n              <Piece name="SheetTitle">Sheet · {side}</Piece>\n              <Piece name="SheetDescription">检查边缘进入、遮罩、焦点与关闭。</Piece>\n            </Piece>\n          </Piece>\n        </Piece>\n      ))}`,
-            `      {['left', 'right', 'top', 'bottom'].map((side) => (\n        <Piece key={side} name="SheetTrigger">\n          <Piece name="Button" variant="outline">{side}</Piece>\n          <Piece name="SheetContent" side={side}>\n            <Piece name="SheetHeader">\n              <Piece name="SheetTitle">Sheet · {side}</Piece>\n              <Piece name="SheetDescription">检查边缘进入、遮罩、焦点与关闭。</Piece>\n            </Piece>\n          </Piece>\n        </Piece>\n      ))}`
-          )
-
-          const catalog = 'apps/web/src/components/component-document/catalog.ts'
-          patch(
-            catalog,
-            "composition: ['AlertDialog', '├─ AlertDialogTrigger', '└─ AlertDialogContent', '   ├─ AlertDialogHeader', '   ├─ AlertDialogFooter', '   ├─ AlertDialogCancel', '   └─ AlertDialogAction'],",
-            "composition: ['AlertDialogTrigger', '├─ trigger', '└─ AlertDialogContent', '   ├─ AlertDialogHeader', '   ├─ AlertDialogFooter', '   ├─ AlertDialogCancel', '   └─ AlertDialogAction'],"
-          )
-          patch(
-            catalog,
-            "composition: ['Sheet', '├─ SheetTrigger', '└─ SheetContent', '   ├─ SheetHeader', '   ├─ SheetTitle / SheetDescription', '   └─ SheetFooter'],",
-            "composition: ['SheetTrigger', '├─ trigger', '└─ SheetContent', '   ├─ SheetHeader', '   ├─ SheetTitle / SheetDescription', '   └─ SheetFooter'],"
-          )
+          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
+          let source = fs.readFileSync(path, 'utf8')
+          const from = `            <Piece name="QuestionnaireChoices" type="radio">\n              <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>\n              <Piece name="QuestionnaireChoice" value="b">移动端</Piece>\n              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>\n            </Piece>\n          </Piece>\n          <Piece name="QuestionnaireActions">`
+          const to = `            <Piece name="QuestionnaireChoices" type="radio">\n              <Piece name="QuestionnaireChoice" value="a">桌面端</Piece>\n              <Piece name="QuestionnaireChoice" value="b">移动端</Piece>\n              <Piece name="QuestionnaireChoice" value="c" isDisabled>禁用选项</Piece>\n            </Piece>\n            <div className="tw:grid tw:gap-2 tw:pt-2">\n              <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />\n              <Piece name="QuestionnaireError">示例错误信息</Piece>\n            </div>\n          </Piece>\n          <Piece name="QuestionnaireActions">`
+          if (!source.includes(from)) throw new Error('Questionnaire item patch target not found')
+          source = source.replace(from, to)
+          source = source.replace(`\n      <Piece name="QuestionnaireInput" placeholder="文本输入状态" aria-invalid="true" />\n      <Piece name="QuestionnaireError">示例错误信息</Piece>`, '')
+          fs.writeFileSync(path, source)
           NODE
 
-      - name: Commit composition fixes
+      - name: Commit questionnaire demo fix
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/web/src/components/component-document
-          git commit -m 'fix(web): align component document composition demos'
+          git add apps/web/src/components/component-document/ComponentDemos.tsx
+          git commit -m 'fix(web): keep questionnaire states in item context'
           git push origin HEAD:feat/astro-full-component-lab
 
       - name: Check shared UI
