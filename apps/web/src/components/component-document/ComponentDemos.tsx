@@ -987,12 +987,16 @@ function SwitchDemo() {
 
 function TableDemo() {
   return (
-    <Piece name="Table">
-      <Piece name="TableHeader"><Piece name="TableRow"><Piece name="TableHead">组件</Piece><Piece name="TableHead">状态</Piece><Piece name="TableHead">备注</Piece></Piece></Piece>
+    <Piece name="Table" aria-label="组件状态表">
+      <Piece name="TableHeader">
+        <Piece name="TableHead" id="component">组件</Piece>
+        <Piece name="TableHead" id="state">状态</Piece>
+        <Piece name="TableHead" id="note">备注</Piece>
+      </Piece>
       <Piece name="TableBody">
-        <Piece name="TableRow"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
-        <Piece name="TableRow" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
-        <Piece name="TableRow"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
+        <Piece name="TableRow" id="button"><Piece name="TableCell">Button</Piece><Piece name="TableCell">Default</Piece><Piece name="TableCell">普通行</Piece></Piece>
+        <Piece name="TableRow" id="switch" data-state="selected"><Piece name="TableCell">Switch</Piece><Piece name="TableCell">Selected</Piece><Piece name="TableCell">选中行</Piece></Piece>
+        <Piece name="TableRow" id="input"><Piece name="TableCell">Input</Piece><Piece name="TableCell">Invalid</Piece><Piece name="TableCell">悬停检查</Piece></Piece>
       </Piece>
       <Piece name="TableCaption">组件状态表</Piece>
     </Piece>
