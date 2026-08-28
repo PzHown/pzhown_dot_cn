@@ -28,8 +28,10 @@ jobs:
       - name: Build Astro
         run: pnpm --filter @pzhown/web build
 
-      - name: Install Chromium
-        run: npx -y playwright@latest install --with-deps chromium
+      - name: Install Playwright for diagnostic only
+        run: |
+          pnpm add -Dw playwright@latest --ignore-workspace-root-check
+          pnpm exec playwright install --with-deps chromium
 
       - name: Start preview
         run: |
@@ -46,7 +48,7 @@ jobs:
 
       - name: Open components page in Chromium
         run: |
-          npx -y -p playwright@latest node <<'NODE'
+          node <<'NODE'
           const { chromium } = require('playwright')
 
           ;(async () => {
@@ -59,11 +61,11 @@ jobs:
               console.error('PAGEERROR:', error.stack || error.message)
             })
             page.on('console', (message) => {
-              if (message.type() === 'error') {
-                const text = message.text()
-                errors.push(`CONSOLE ERROR: ${text}`)
-                console.error('CONSOLE ERROR:', text)
+              const text = message.text()
+              if (message.type() === 'error' || message.type() === 'warning') {
+                console.error(`CONSOLE ${message.type().toUpperCase()}:`, text)
               }
+              if (message.type() === 'error') errors.push(`CONSOLE ERROR: ${text}`)
             })
 
             const response = await page.goto('http://127.0.0.1:4321/components', { waitUntil: 'networkidle' })
@@ -79,7 +81,6 @@ jobs:
             }))
             console.log('PAGE STATE', JSON.stringify(state))
 
-            await page.screenshot({ path: '/tmp/components-page.png', fullPage: false })
             await browser.close()
 
             if (!state.documentRoot || state.componentCards < 50 || state.textLength < 1000 || errors.length) {
