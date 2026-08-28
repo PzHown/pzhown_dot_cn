@@ -6,12 +6,25 @@ on:
       - fix/components-hydration-blank
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  browser:
-    if: github.actor != 'github-actions[bot]'
+  input-warning:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - field
+          - input
+          - input-group
+          - input-otp
+          - native-select
+          - questionnaire
+          - radio-group
+          - slider
+          - tabs
+          - textarea
     steps:
       - uses: actions/checkout@v4
 
@@ -26,131 +39,72 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply scoped hydration and demo prop fixes
+      - name: Render only candidate demo
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           node <<'NODE'
           const fs = require('fs')
-          const path = 'apps/web/src/components/component-document/ComponentDemos.tsx'
+          const path = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          const target = process.env.TARGET
           let source = fs.readFileSync(path, 'utf8')
-
-          function replace(from, to, label) {
-            if (!source.includes(from)) throw new Error(`Patch target not found: ${label}`)
-            source = source.replace(from, to)
-          }
-
-          replace(
-            `function DemoStack({ children, className = '' }: { children: React.ReactNode; className?: string }) {\n  return <div className={\`tw:grid tw:gap-3 \${className}\`}>{children}</div>\n}\n`,
-            `function DemoStack({ children, className = '' }: { children: React.ReactNode; className?: string }) {\n  return <div className={\`tw:grid tw:gap-3 \${className}\`}>{children}</div>\n}\n\nfunction ClientMounted({ children }: { children: React.ReactNode }) {\n  const [mounted, setMounted] = React.useState(false)\n\n  React.useEffect(() => {\n    setMounted(true)\n  }, [])\n\n  if (!mounted) {\n    return (\n      <div\n        data-client-mount-placeholder\n        className=\"tw:grid tw:min-h-24 tw:place-items-center tw:rounded-xl tw:border tw:border-dashed tw:border-border tw:bg-muted/30 tw:text-xs tw:text-muted-foreground\"\n      >\n        客户端组件加载中…\n      </div>\n    )\n  }\n\n  return <>{children}</>\n}\n`,
-            'ClientMounted helper'
-          )
-
-          replace(
-            `function QuestionnaireDemo() {\n  return (\n    <DemoStack>\n      <div className=\"tw:rounded-xl tw:border tw:border-border tw:p-4\">\n        <Piece name=\"Questionnaire\" defaultValue={{ question: 'a' }}>\n          <Piece name=\"QuestionnaireProgress\">1 / 3</Piece>\n          <Piece name=\"QuestionnaireItem\" id=\"question\">\n            <Piece name=\"QuestionnaireTitle\">你更常使用哪种设备？</Piece>\n            <Piece name=\"QuestionnaireDescription\">用于检查 choice 的选中、焦点和禁用状态。</Piece>\n            <Piece name=\"QuestionnaireChoices\" type=\"radio\">\n              <Piece name=\"QuestionnaireChoice\" value=\"a\">桌面端</Piece>\n              <Piece name=\"QuestionnaireChoice\" value=\"b\">移动端</Piece>\n              <Piece name=\"QuestionnaireChoice\" value=\"c\" isDisabled>禁用选项</Piece>\n            </Piece>\n            <div className=\"tw:grid tw:gap-2 tw:pt-2\">\n              <Piece name=\"QuestionnaireInput\" placeholder=\"文本输入状态\" aria-invalid=\"true\" />\n              <Piece name=\"QuestionnaireError\">示例错误信息</Piece>\n            </div>\n          </Piece>\n          <Piece name=\"QuestionnaireActions\">\n            <Piece name=\"QuestionnairePrevious\" />\n            <Piece name=\"QuestionnaireSkip\" />\n            <Piece name=\"QuestionnaireNext\" />\n          </Piece>\n        </Piece>\n      </div>\n    </DemoStack>\n  )\n}`,
-            `function QuestionnaireDemo() {\n  return (\n    <DemoStack>\n      <div className=\"tw:rounded-xl tw:border tw:border-border tw:p-4\">\n        <Piece name=\"Questionnaire\" defaultValue={{ question: 'a' }}>\n          <Piece name=\"QuestionnaireProgress\">1 / 3</Piece>\n          <Piece name=\"QuestionnaireItem\" id=\"question\">\n            <Piece name=\"QuestionnaireTitle\">你更常使用哪种设备？</Piece>\n            <Piece name=\"QuestionnaireDescription\">用于检查 choice 的选中、焦点和禁用状态。</Piece>\n            <Piece name=\"QuestionnaireChoices\" type=\"radio\">\n              <Piece name=\"QuestionnaireChoice\" value=\"a\">桌面端</Piece>\n              <Piece name=\"QuestionnaireChoice\" value=\"b\">移动端</Piece>\n              <Piece name=\"QuestionnaireChoice\" value=\"c\" disabled>禁用选项</Piece>\n            </Piece>\n          </Piece>\n          <Piece name=\"QuestionnaireActions\">\n            <Piece name=\"QuestionnairePrevious\" />\n            <Piece name=\"QuestionnaireSkip\" />\n            <Piece name=\"QuestionnaireNext\" />\n          </Piece>\n        </Piece>\n      </div>\n      <div className=\"tw:rounded-xl tw:border tw:border-border tw:p-4\">\n        <Piece name=\"Questionnaire\">\n          <Piece name=\"QuestionnaireItem\" id=\"text\">\n            <Piece name=\"QuestionnaireTitle\">自由输入</Piece>\n            <Piece name=\"QuestionnaireDescription\">单独展示文本输入与错误状态，避免把不同题型混进同一 Item。</Piece>\n            <Piece name=\"QuestionnaireInput\" aria-label=\"问卷文本输入\" placeholder=\"文本输入状态\" aria-invalid=\"true\" />\n            <Piece name=\"QuestionnaireError\">示例错误信息</Piece>\n          </Piece>\n        </Piece>\n      </div>\n    </DemoStack>\n  )\n}`,
-            'Questionnaire demo props'
-          )
-
-          replace(
-            `function TableDemo() {\n  return (\n    <DemoStack>\n      <Piece name=\"Table\" aria-label=\"组件状态表\">\n        <Piece name=\"TableHeader\">\n          <Piece name=\"TableHead\" id=\"component\">组件</Piece>\n          <Piece name=\"TableHead\" id=\"state\">状态</Piece>\n          <Piece name=\"TableHead\" id=\"note\">备注</Piece>\n        </Piece>\n        <Piece name=\"TableBody\">\n          <Piece name=\"TableRow\" id=\"button\"><Piece name=\"TableCell\">Button</Piece><Piece name=\"TableCell\">Default</Piece><Piece name=\"TableCell\">普通行</Piece></Piece>\n          <Piece name=\"TableRow\" id=\"switch\" data-state=\"selected\"><Piece name=\"TableCell\">Switch</Piece><Piece name=\"TableCell\">Selected</Piece><Piece name=\"TableCell\">选中行</Piece></Piece>\n          <Piece name=\"TableRow\" id=\"input\"><Piece name=\"TableCell\">Input</Piece><Piece name=\"TableCell\">Invalid</Piece><Piece name=\"TableCell\">悬停检查</Piece></Piece>\n        </Piece>\n      </Piece>\n      <Piece name=\"TableCaption\">组件状态表</Piece>\n    </DemoStack>\n  )\n}`,
-            `function TableDemo() {\n  // React Aria Table collection currently triggers a recoverable React 19 SSR\n  // hydration error in Astro. Keep the workaround scoped to this demo so the\n  // other 57 components retain normal SSR + hydration.\n  return (\n    <ClientMounted>\n      <DemoStack>\n        <Piece name=\"Table\" aria-label=\"组件状态表\">\n          <Piece name=\"TableHeader\">\n            <Piece name=\"TableHead\" id=\"component\" isRowHeader>组件</Piece>\n            <Piece name=\"TableHead\" id=\"state\">状态</Piece>\n            <Piece name=\"TableHead\" id=\"note\">备注</Piece>\n          </Piece>\n          <Piece name=\"TableBody\">\n            <Piece name=\"TableRow\" id=\"button\"><Piece name=\"TableCell\">Button</Piece><Piece name=\"TableCell\">Default</Piece><Piece name=\"TableCell\">普通行</Piece></Piece>\n            <Piece name=\"TableRow\" id=\"switch\" data-state=\"selected\"><Piece name=\"TableCell\">Switch</Piece><Piece name=\"TableCell\">Selected</Piece><Piece name=\"TableCell\">选中行</Piece></Piece>\n            <Piece name=\"TableRow\" id=\"input\"><Piece name=\"TableCell\">Input</Piece><Piece name=\"TableCell\">Invalid</Piece><Piece name=\"TableCell\">悬停检查</Piece></Piece>\n          </Piece>\n        </Piece>\n        <Piece name=\"TableCaption\">组件状态表</Piece>\n      </DemoStack>\n    </ClientMounted>\n  )\n}`,
-            'Table client mount workaround'
-          )
-
+          const begin = source.indexOf('  const filtered = normalized\n')
+          const finish = source.indexOf('\n\n  return (', begin)
+          if (begin < 0 || finish < 0) throw new Error('filtered block not found')
+          source = source.slice(0, begin) + `  const filtered = componentDocs.filter((item) => item.id === '${target}')` + source.slice(finish)
           fs.writeFileSync(path, source)
           NODE
-
-      - name: Commit source fixes
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/web/src/components/component-document/ComponentDemos.tsx
-          git commit -m 'fix(web): isolate table hydration and correct questionnaire demo props'
-          git push origin HEAD:fix/components-hydration-blank
-
-      - name: Check shared UI
-        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
-
-      - name: Check Astro
-        run: pnpm --filter @pzhown/web check
-
-      - name: Build Astro
-        run: pnpm --filter @pzhown/web build
 
       - name: Install Playwright package
         run: pnpm add -Dw playwright@latest --ignore-workspace-root-check
 
-      - name: Start production preview and dev server
+      - name: Start Astro dev server
         run: |
-          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           pnpm --filter @pzhown/web dev --host 127.0.0.1 --port 4322 > /tmp/astro-dev.log 2>&1 &
-          for port in 4321 4322; do
-            ready=0
-            for i in $(seq 1 90); do
-              if curl -fsS "http://127.0.0.1:${port}/components/" >/dev/null; then
-                ready=1
-                break
-              fi
-              sleep 1
-            done
-            if [ "$ready" -ne 1 ]; then
-              cat /tmp/astro-preview.log || true
-              cat /tmp/astro-dev.log || true
-              exit 1
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:4322/components/ >/dev/null; then
+              exit 0
             fi
+            sleep 1
           done
+          cat /tmp/astro-dev.log
+          exit 1
 
-      - name: Verify full component document hydration
+      - name: Inspect candidate console
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           node <<'NODE'
           const { chromium } = require('playwright')
 
-          async function inspect(browser, label, url) {
-            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
-            const pageErrors = []
-            const messages = []
-            const responses = []
-            page.on('pageerror', error => pageErrors.push(error.stack || error.message))
-            page.on('console', message => {
-              if (message.type() === 'error' || message.type() === 'warning') messages.push(`${message.type()}: ${message.text()}`)
-            })
-            page.on('response', response => {
-              if (response.status() >= 400) responses.push(`${response.status()} ${response.url()}`)
-            })
-            await page.goto(url, { waitUntil: 'networkidle' })
-            await page.waitForTimeout(2000)
-            const state = await page.evaluate(() => ({
-              root: Boolean(document.querySelector('.component-document')),
-              cards: document.querySelectorAll('[data-component]').length,
-              demoErrors: Array.from(document.querySelectorAll('[data-demo-error]')).map(node => node.getAttribute('data-demo-error')),
-              tableRendered: Boolean(document.querySelector('[data-component="table"] [data-slot="table"]')),
-              text: document.body.innerText.length,
-            }))
-            console.log(`=== ${label} ===`)
-            console.log('STATE', JSON.stringify(state))
-            console.log('PAGE ERRORS', JSON.stringify(pageErrors))
-            console.log('MESSAGES', JSON.stringify(messages))
-            console.log('FAILED RESPONSES', JSON.stringify(responses))
-            await page.close()
-            return { state, pageErrors, messages, responses }
-          }
-
           ;(async () => {
             const browser = await chromium.launch({ channel: 'chrome', headless: true })
-            const production = await inspect(browser, 'PRODUCTION', 'http://127.0.0.1:4321/components/')
-            const development = await inspect(browser, 'DEVELOPMENT', 'http://127.0.0.1:4322/components/')
+            const page = await browser.newPage()
+            const messages = []
+            const pageErrors = []
+
+            page.on('pageerror', error => pageErrors.push(error.stack || error.message))
+            page.on('console', message => {
+              if (message.type() === 'error' || message.type() === 'warning') {
+                messages.push(`${message.type()}: ${message.text()}`)
+              }
+            })
+
+            await page.goto('http://127.0.0.1:4322/components/', { waitUntil: 'networkidle' })
+            await page.waitForTimeout(1200)
+
+            const cards = await page.locator('[data-component]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-component')))
+            console.log('TARGET', process.env.TARGET)
+            console.log('CARDS', JSON.stringify(cards))
+            console.log('PAGE ERRORS', JSON.stringify(pageErrors))
+            console.log('MESSAGES', JSON.stringify(messages))
+
             await browser.close()
 
-            for (const result of [production, development]) {
-              if (!result.state.root || result.state.cards !== 58 || result.state.demoErrors.length || !result.state.tableRendered || result.pageErrors.length || result.responses.length) {
-                process.exit(1)
-              }
-            }
-
-            const importantWarnings = development.messages.filter(message =>
-              message.includes('both value and defaultValue') ||
-              message.includes('isDisabled') ||
-              message.includes('Failed to load resource')
-            )
-            if (importantWarnings.length) process.exit(1)
-          })().catch(error => { console.error(error); process.exit(1) })
+            if (cards.length !== 1 || cards[0] !== process.env.TARGET || pageErrors.length) process.exit(2)
+            if (messages.some(message => message.includes('both value and defaultValue'))) process.exit(1)
+          })().catch(error => {
+            console.error(error)
+            process.exit(2)
+          })
           NODE
