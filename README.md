@@ -7,7 +7,7 @@ Monorepo for the public Astro site and the Payload CMS / admin backend.
 - `apps/web`: Astro 7 + Tailwind CSS 4 + Motion public site
 - `apps/web`: React Islands are available for interactive components
 - `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4 + Motion
-- `packages/ui`: shared UI system built with Base UI + shadcn-style source components
+- `packages/ui`: shared UI system built with React Aria Components + shadcn-style source components
 - Database: SQLite for local development by default, PostgreSQL for production
 - Package manager: pnpm workspaces
 
@@ -106,7 +106,7 @@ import ProgressiveBlur from '@pzhown/ui/react'
 
 ## UI components
 
-`@pzhown/ui` uses Base UI primitives with shadcn-style source components. The initial component set is:
+`@pzhown/ui` uses React Aria Components as its interaction and accessibility primitive layer, with shadcn-style source ownership and PzHown visual tokens. The initial component set is:
 
 - Button
 - Input
@@ -116,6 +116,8 @@ import ProgressiveBlur from '@pzhown/ui/react'
 - Dropdown Menu
 - Tabs
 - Switch
+
+React Aria owns adaptive mouse, touch, keyboard, focus, screen-reader, overlay, and selection behavior. The PzHown layer owns squircle corners, translucent surfaces, OKLCH tokens, blur, gradients, and interaction styling.
 
 Next.js / Payload custom UI can import components directly:
 
@@ -133,11 +135,11 @@ import { Button } from '@pzhown/ui/react'
 <Button client:idle>Open</Button>
 ```
 
-Presentation-only Astro components should remain native Astro where possible. Base UI React components are intended for stateful controls such as dialogs, menus, popovers, tabs, switches, and tooltips.
+Presentation-only Astro components should remain native Astro where possible. React Aria components are intended for stateful controls such as dialogs, menus, popovers, tabs, switches, and tooltips.
 
-The shared component theme is intentionally scoped to the `.pzhown-ui` class so it does not overwrite Payload's built-in Admin theme. Squircle corners, translucent surfaces, and the shared design tokens are applied by the component layer.
+The shared component theme is intentionally scoped to the `.pzhown-ui` class so it does not overwrite Payload's built-in Admin theme. The component layer uses React Aria state attributes such as `data-hovered`, `data-pressed`, `data-selected`, `data-focus-visible`, `data-entering`, and `data-exiting` for adaptive interaction styling.
 
-A `packages/ui/components.json` file is included for future shadcn CLI additions. The package uses the Base UI / Nova base, neutral tokens, Lucide icons, Tailwind CSS variables, and the workspace UI aliases.
+A `packages/ui/components.json` file is included for future shadcn CLI additions. The package uses the React Aria / Nova base, neutral tokens, Lucide icons, Tailwind CSS variables, and the workspace UI aliases.
 
 ## Animation
 
@@ -155,7 +157,7 @@ Next.js / Payload React components use the React API:
 import { motion, AnimatePresence } from 'motion/react'
 ```
 
-Use CSS first for simple hover, focus, color, opacity, and transition effects. Use Motion for state-driven animation, springs, gestures, layout transitions, scroll-linked animation, and coordinated UI transitions.
+Use CSS first for simple hover, focus, color, opacity, pressed, selected, entering, and exiting state transitions exposed by React Aria. Use Motion for richer state-driven animation, springs, gestures, layout transitions, scroll-linked animation, and coordinated UI transitions.
 
 ## Database selection
 
