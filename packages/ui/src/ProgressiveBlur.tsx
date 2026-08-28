@@ -35,10 +35,14 @@ export function ProgressiveBlur({
     >
       <div className="pzhown-progressive-blur__surface">
         {model.layers.map((layer, index) => {
-          const layerStyle: CustomProperties = {
-            '--pzhown-pb-layer': `${index + 1}`,
-            '--pzhown-pb-blur': `${layer.blur.toFixed(3)}px`,
-            '--pzhown-pb-mask': layer.mask,
+          const blur = `blur(${layer.blur.toFixed(3)}px)`
+          const layerStyle: CSSProperties = {
+            zIndex: index + 1,
+            backdropFilter: blur,
+            WebkitBackdropFilter: blur,
+            mask: layer.mask,
+            WebkitMask: layer.mask,
+            background: 'rgb(255 255 255 / 0.001)',
           }
 
           return <div className="pzhown-progressive-blur__layer" key={index} style={layerStyle} />
