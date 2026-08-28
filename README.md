@@ -6,8 +6,8 @@ Monorepo for the public Astro site and the Payload CMS / admin backend.
 
 - `apps/web`: Astro 7 + Tailwind CSS 4 public site
 - `apps/web`: React Islands are available for interactive components
-- `apps/web`: `progressive-blur` is installed for progressive backdrop blur effects
 - `apps/cms`: Payload 3 on Next.js + Tailwind CSS 4
+- `packages/ui`: shared framework-light UI primitives
 - Database: SQLite for local development by default, PostgreSQL for production
 - Package manager: pnpm workspaces
 
@@ -35,7 +35,29 @@ The Astro frontend uses Tailwind CSS 4 through the official Vite plugin.
 
 The Payload backend uses Tailwind CSS 4 through PostCSS. Tailwind Preflight is intentionally disabled there and utilities use the `tw:` prefix, for example `tw:flex`, so Payload's built-in Admin styles are not reset or shadowed.
 
-`progressive-blur` is available in the Astro frontend through React Islands. Import it directly or from `src/components/ProgressiveBlur.tsx` when a page starts using the effect.
+### Progressive Blur
+
+Progressive Blur is implemented locally in `@pzhown/ui`. The visual core is CSS plus framework-neutral layer calculations, so there is no dependency on the former `progressive-blur` npm package.
+
+Astro can render it with zero client JavaScript:
+
+```astro
+---
+import ProgressiveBlur from '@pzhown/ui/astro'
+---
+
+<ProgressiveBlur side="bottom" strength={64} steps={8} />
+```
+
+Next.js / React can use the same implementation as a Server Component because it has no hooks or browser APIs:
+
+```tsx
+import { LinearBlur, RadialBlur } from '@pzhown/ui/react'
+
+<LinearBlur side="bottom" strength={64} steps={8} />
+```
+
+Both adapters support `strength`, `steps`, `falloff`, and `tint`. Linear blur also supports `top`, `right`, `bottom`, and `left`; radial blur fades outward from the center.
 
 ## Database selection
 

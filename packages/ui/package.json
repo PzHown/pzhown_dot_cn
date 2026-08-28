@@ -1,0 +1,21 @@
+{
+  "name": "@pzhown/ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/core.ts",
+    "./astro": "./src/ProgressiveBlur.astro",
+    "./react": "./src/ProgressiveBlur.tsx",
+    "./core": "./src/core.ts",
+    "./progressive-blur.css": "./src/progressive-blur.css"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}

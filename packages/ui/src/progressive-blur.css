@@ -1,0 +1,35 @@
+.pzhown-progressive-blur {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+.pzhown-progressive-blur__tint,
+.pzhown-progressive-blur__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.pzhown-progressive-blur__tint {
+  background: var(--pzhown-pb-tint, transparent);
+}
+
+.pzhown-progressive-blur__layer {
+  -webkit-backdrop-filter: blur(var(--pzhown-pb-blur, 0px));
+  backdrop-filter: blur(var(--pzhown-pb-blur, 0px));
+  -webkit-mask-image: var(--pzhown-pb-mask);
+  mask-image: var(--pzhown-pb-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .pzhown-progressive-blur__layer {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

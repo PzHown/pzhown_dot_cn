@@ -1,0 +1,42 @@
+---
+import { createProgressiveBlurModel, type ProgressiveBlurOptions } from './core'
+
+type Props = ProgressiveBlurOptions & {
+  class?: string
+  style?: string
+  id?: string
+}
+
+const {
+  mode = 'linear',
+  side = 'top',
+  strength = 64,
+  steps = 8,
+  falloff = 100,
+  tint = 'transparent',
+  class: className,
+  style = '',
+  ...attrs
+} = Astro.props
+
+const model = createProgressiveBlurModel({ mode, side, strength, steps, falloff, tint })
+const rootStyle = `--pzhown-pb-tint:${model.tintBackground};${style}`
+---
+
+<div
+  {...attrs}
+  aria-hidden="true"
+  class:list={['pzhown-progressive-blur', className]}
+  data-progressive-blur={mode}
+  style={rootStyle}
+>
+  <div class="pzhown-progressive-blur__tint"></div>
+  {
+    model.layers.map((layer) => (
+      <div
+        class="pzhown-progressive-blur__layer"
+        style={`--pzhown-pb-blur:${layer.blur.toFixed(3)}px;--pzhown-pb-mask:${layer.mask};`}
+      />
+    ))
+  }
+</div>

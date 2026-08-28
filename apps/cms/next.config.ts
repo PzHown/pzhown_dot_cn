@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ['@pzhown/ui'],
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
