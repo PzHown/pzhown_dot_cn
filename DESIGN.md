@@ -50,7 +50,7 @@
 
 ### `apple-design`
 
-负责视觉语言：层级、材质、色彩、Squircle、留白、阴影、透明度和 Apple-inspired 的克制感。它不是阅读、布局和动效的最高级规范。
+负责视觉语言：层级、材质、色彩、灰度与 Neutral、Squircle、留白、阴影、透明度和 Apple-inspired 的克制感。它不是阅读、布局和动效的最高级规范。
 
 ### `interaction-motion`
 
@@ -105,9 +105,64 @@
 
 - 采用 Apple-inspired，而不是 Apple clone。
 - 使用排版、留白、材质和空间建立层级，减少“每块一圈灰边框”。
+- **先用灰度 / Neutral 与明度建立层级，再用色相承载品牌、状态和重点。**
 - Squircle、Smooth Gradient、Progressive Blur 是工具，不是必须出现的装饰。
 - 玻璃/透明材质只在需要保留上下文或表达前后层级时使用。
 - 深色模式重新验证亮度、对比和眩光，不简单反色。
+
+## 灰度与色彩策略
+
+灰度是项目视觉层级的基础骨架，不是“没有颜色时的备用方案”。
+
+### Neutral 负责
+
+- 信息层级。
+- 阅读节奏。
+- Canvas / Surface / Elevated Surface 的深度关系。
+- Foreground / Secondary / Tertiary 文本权重。
+- Separator / Disabled 等辅助状态。
+
+### 彩色负责
+
+- 品牌强调。
+- 主要交互重点。
+- Success / Warning / Destructive 等语义状态。
+- 少量视觉聚焦和氛围。
+
+### Token 规则
+
+业务组件不得直接依赖 `gray-500`、`zinc-700` 等物理色阶，应消费语义 token，例如：
+
+```text
+Canvas
+Surface 1
+Surface 2
+Elevated Surface
+Foreground
+Secondary Foreground
+Tertiary Foreground
+Separator
+Disabled
+Accent
+Success
+Warning
+Destructive
+```
+
+底层可以使用 OKLCH 构造 Neutral scale，但浅色、深色和高对比主题分别映射语义 token，而不是对同一灰阶做简单反转。
+
+### Grayscale Test
+
+重要页面和关键组件完成后进行灰度审查。临时去掉色相后，以下关系仍必须成立：
+
+- 主标题与正文。
+- 正文与元数据。
+- 主导航与当前状态。
+- 主要操作与次要操作。
+- Surface 层级。
+- Error / Warning / Success 的非颜色线索。
+
+如果页面转成灰度后结构明显坍塌，先调整字号、字重、空间、形状、位置和明度层级，再恢复彩色。
 
 ## 设计审查顺序
 
@@ -119,9 +174,10 @@
 4. 窄屏、平板、宽屏和可变窗口是否自然？
 5. React Aria 的键盘、触控、focus、selected、disabled 是否完整？
 6. 视觉语言是否统一且克制？
-7. 动效是否解释变化且支持 reduced motion？
-8. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
-9. 是否优先复用了 `@pzhown/ui` 和现有 token？
+7. **转为灰度后，标题、正文、导航、主要操作和状态层级是否仍然清楚？**
+8. 动效是否解释变化且支持 reduced motion？
+9. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
+10. 是否优先复用了 `@pzhown/ui` 和现有 token？
 
 ## 参考理念来源
 
