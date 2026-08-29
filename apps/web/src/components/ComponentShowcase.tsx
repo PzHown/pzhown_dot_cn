@@ -91,23 +91,24 @@ export default function ComponentShowcase() {
         </div>
       </Card>
 
-      <Card title="Real Optical Glass">
+      <Card title="PallavAg Optical Lens">
         <div className="demo-glass-stage">
-          {refractionBackdrop}
           <LiquidGlassSurface
             material="large"
-            refract={refractionBackdrop}
-            behind="#5842d6"
-            width={260}
-            height={112}
-            radius={28}
-            className="demo-real-glass"
+            x={0.5}
+            y={0.5}
+            width={230}
+            height={110}
+            radius={36}
+            draggable
+            style={{ minHeight: 250, overflow: 'hidden', borderRadius: 24 }}
           >
-            <strong>真实折射</strong>
-            <span>SVG displacement + chromatic dispersion</span>
+            <div style={{ position: 'relative', minHeight: 250 }}>
+              {refractionBackdrop}
+            </div>
           </LiquidGlassSurface>
         </div>
-        <p className="demo-muted">这个示例使用显式 refract 副本，因此 Safari / Firefox 也能看到位移折射；普通浮动组件在 Chrome / Edge 可直接折射 live DOM。</p>
+        <p className="demo-muted">PallavAg 对容器内的 live DOM 做 SVG displacement；拖动镜片可以直接观察 Safari / Firefox / Chromium 的跨浏览器折射。标准 iOS 27 组件仍使用官方参考的 tint + blur + shadow 材质，不强制叠加 displacement。</p>
       </Card>
 
       <Card title="Fields">
@@ -172,21 +173,21 @@ export default function ComponentShowcase() {
           <Dialog>
             <DialogTrigger><Button variant="glass">Dialog</Button></DialogTrigger>
             <DialogContent aria-label="确认操作">
-              <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>这是从零实现并接入真实折射引擎的 iOS 27 大型 Liquid Glass 对话框。</DialogDescription></DialogHeader>
+              <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>标准 iOS 27 Thick Material 对话框；组件材质不由折射库反向定义。</DialogDescription></DialogHeader>
               <DialogFooter><DialogClose><Button variant="gray">取消</Button></DialogClose><DialogClose><Button>确认</Button></DialogClose></DialogFooter>
             </DialogContent>
           </Dialog>
           <Sheet>
             <SheetTrigger><Button variant="glass">Sheet</Button></SheetTrigger>
             <SheetContent>
-              <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>34px 顶部圆角、系统 Grabber 与真实光学材质层。</SheetDescription></SheetHeader>
+              <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>34px 顶部圆角、系统 Grabber 与 iOS 27 Thick Material。</SheetDescription></SheetHeader>
               <ListSection><ListRow disclosure>编辑资料</ListRow><ListRow disclosure>通知设置</ListRow></ListSection>
               <SheetFooter><SheetClose><Button>完成</Button></SheetClose></SheetFooter>
             </SheetContent>
           </Sheet>
           <Popover>
             <PopoverTrigger><Button variant="glass">Popover</Button></PopoverTrigger>
-            <PopoverContent><strong>Popover</strong><p className="demo-muted">Medium Liquid Glass + displacement engine。</p></PopoverContent>
+            <PopoverContent><strong>Popover</strong><p className="demo-muted">Medium Liquid Glass，按 iOS 27 参考材质呈现。</p></PopoverContent>
           </Popover>
         </div>
         <ContextMenu items={[{ label: '复制' }, { label: '分享…' }, { label: '删除', destructive: true }]}>
@@ -205,7 +206,7 @@ export default function ComponentShowcase() {
       <Card title="iOS 27 Chrome">
         <div className="demo-phone">
           <Toolbar><ToolbarGroup><Button variant="plain" size="small">返回</Button></ToolbarGroup><ToolbarTitle>图库</ToolbarTitle><ToolbarGroup><Button variant="glass" size="small" iconOnly aria-label="更多">•••</Button></ToolbarGroup></Toolbar>
-          <div className="demo-phone__content"><p>Toolbar 54px</p><p>Tab Bar 总高度 95px</p><p>Chrome / Edge：live DOM refraction</p></div>
+          <div className="demo-phone__content"><p>Toolbar 54px</p><p>Tab Bar 总高度 95px</p><p>标准 iOS 27 Large Liquid Glass</p></div>
           <TabBar value={tab} onValueChange={setTab}>
             <TabBarItem value="home" icon="⌂">首页</TabBarItem>
             <TabBarItem value="search" icon="⌕">搜索</TabBarItem>
