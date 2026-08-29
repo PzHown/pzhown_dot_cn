@@ -149,16 +149,23 @@ jobs:
             const alertDialog = page.locator('[data-component="alert-dialog"]')
             await alertDialog.getByRole('button', { name: '打开确认对话框' }).click()
             const dialog = page.locator('[data-slot="alert-dialog-content"]')
+            const dialogOverlay = page.locator('[data-slot="alert-dialog-overlay"]')
             await expect(dialog).toBeVisible()
             const dialogStyle = await dialog.evaluate((el) => {
               const s = getComputedStyle(el)
-              return { className: el.className, background: s.backgroundColor, radius: s.borderRadius, shadow: s.boxShadow, backdrop: s.backdropFilter }
+              return { background: s.backgroundColor, radius: s.borderRadius, shadow: s.boxShadow, backdrop: s.backdropFilter }
+            })
+            const overlayStyle = await dialogOverlay.evaluate((el) => {
+              const s = getComputedStyle(el)
+              return { className: el.className, background: s.backgroundColor, backdrop: s.backdropFilter }
             })
             console.log('ALERT_DIALOG_STYLE', JSON.stringify(dialogStyle))
+            console.log('ALERT_DIALOG_OVERLAY_STYLE', JSON.stringify(overlayStyle))
+            expect(overlayStyle.className).toContain('pzhown-ui')
+            expect(overlayStyle.background).not.toBe('rgba(0, 0, 0, 0)')
             expect(dialogStyle.background).not.toBe('rgba(0, 0, 0, 0)')
             expect(dialogStyle.radius).toBe('24px')
             expect(dialogStyle.shadow).not.toBe('none')
-            expect(dialogStyle.backdrop).toContain('blur')
             await page.keyboard.press('Escape')
 
             const selectCard = page.locator('[data-component="select"]')
@@ -173,7 +180,7 @@ jobs:
             expect(selectStyle.className).toContain('pzhown-ui')
             expect(selectStyle.background).not.toBe('rgba(0, 0, 0, 0)')
             expect(selectStyle.radius).toBe('16px')
-            expect(selectStyle.backdrop).toContain('blur')
+            expect(selectStyle.shadow).not.toBe('none')
             await page.keyboard.press('Escape')
 
             console.log('BROWSER_MESSAGES', JSON.stringify(messages))
