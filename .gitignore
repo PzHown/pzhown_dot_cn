@@ -24,3 +24,10 @@ apps/cms/payload.db-wal
 # editor / OS
 .DS_Store
 .idea/
+
+# TypeScript incremental build metadata
+*.tsbuildinfo
+
+# browser test artifacts
+test-results/
+playwright-report/

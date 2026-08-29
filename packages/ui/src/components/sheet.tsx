@@ -51,7 +51,7 @@ function SheetOverlay({
       data-slot="sheet-overlay"
       isDismissable
       className={cn(
-        "tw:fixed tw:inset-0 tw:z-50 tw:bg-black/10 tw:transition-opacity tw:duration-150 tw:data-entering:opacity-0 tw:data-exiting:opacity-0 tw:supports-backdrop-filter:backdrop-blur-xs",
+        "pzhown-ui tw:fixed tw:inset-0 tw:z-50 tw:bg-black/10 tw:transition-opacity tw:duration-150 tw:data-entering:opacity-0 tw:data-exiting:opacity-0 tw:supports-backdrop-filter:backdrop-blur-xs",
         className
       )}
       {...props}
