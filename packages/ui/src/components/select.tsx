@@ -90,7 +90,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "tw:flex tw:w-full tw:items-center tw:justify-between tw:gap-2 tw:rounded-lg tw:border tw:border-input tw:bg-transparent tw:pr-3 tw:pl-4 tw:text-sm tw:whitespace-nowrap tw:transition-colors tw:outline-none tw:select-none tw:focus-visible:border-ring tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50 tw:disabled:cursor-not-allowed tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-3 tw:aria-invalid:ring-destructive/20 tw:data-placeholder:text-muted-foreground tw:data-[size=default]:h-11 tw:data-[size=sm]:h-10 tw:*:data-[slot=select-value]:line-clamp-1 tw:*:data-[slot=select-value]:flex tw:*:data-[slot=select-value]:items-center tw:*:data-[slot=select-value]:gap-2 tw:dark:bg-input/30 tw:dark:hover:bg-input/50 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
+        "tw:flex tw:w-full tw:items-center tw:justify-between tw:gap-2 tw:px-3 tw:text-sm tw:whitespace-nowrap tw:outline-none tw:select-none tw:data-[size=default]:h-11 tw:data-[size=sm]:h-10 tw:*:data-[slot=select-value]:line-clamp-1 tw:*:data-[slot=select-value]:flex tw:*:data-[slot=select-value]:items-center tw:*:data-[slot=select-value]:gap-2 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
         className
       )}
       {...props}
@@ -180,7 +180,7 @@ function SelectInput({ className, ...props }: SearchFieldProps) {
       data-slot="select-input-wrapper"
       className={cn("tw:p-1 tw:pb-0", className)}
     >
-      <InputGroup>
+      <InputGroup className="tw:h-10">
         <InputGroupInput
           data-slot="select-input"
           className="tw:[&::-webkit-search-cancel-button]:hidden"

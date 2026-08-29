@@ -17,7 +17,7 @@ function InputOTP({
     <OTPInput
       data-slot="input-otp"
       containerClassName={cn(
-        "cn-input-otp flex items-center has-disabled:opacity-50",
+        "pzhown-ui tw:flex tw:items-center tw:has-[:disabled]:opacity-50",
         containerClassName
       )}
       spellCheck={false}
@@ -32,7 +32,7 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="input-otp-group"
       className={cn(
-        "tw:flex tw:items-center tw:rounded-lg tw:has-aria-invalid:border-destructive tw:has-aria-invalid:ring-3 tw:has-aria-invalid:ring-destructive/20 tw:dark:has-aria-invalid:ring-destructive/40",
+        "tw:flex tw:items-center tw:rounded-lg tw:has-aria-invalid:border-destructive tw:has-aria-invalid:ring-3 tw:has-aria-invalid:ring-destructive/20",
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ function InputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        "tw:relative tw:flex tw:size-8 tw:items-center tw:justify-center tw:border-y tw:border-r tw:border-input tw:text-sm tw:transition-all tw:outline-none tw:first:rounded-l-lg tw:first:border-l tw:last:rounded-r-lg tw:aria-invalid:border-destructive tw:data-[active=true]:z-10 tw:data-[active=true]:border-ring tw:data-[active=true]:ring-3 tw:data-[active=true]:ring-ring/50 tw:data-[active=true]:aria-invalid:border-destructive tw:data-[active=true]:aria-invalid:ring-destructive/20 tw:dark:bg-input/30 tw:dark:data-[active=true]:aria-invalid:ring-destructive/40",
+        "tw:relative tw:flex tw:h-11 tw:w-10 tw:items-center tw:justify-center tw:border-y tw:border-r tw:border-input tw:bg-[var(--pzhown-ui-surface-1)] tw:text-sm tw:transition-[border-color,background-color,box-shadow] tw:outline-none tw:first:rounded-l-lg tw:first:border-l tw:last:rounded-r-lg tw:aria-invalid:border-destructive tw:data-[active=true]:z-10 tw:data-[active=true]:border-ring tw:data-[active=true]:ring-3 tw:data-[active=true]:ring-ring/50 tw:data-[active=true]:aria-invalid:border-destructive tw:data-[active=true]:aria-invalid:ring-destructive/20",
         className
       )}
       {...props}
@@ -78,8 +78,7 @@ function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
       role="separator"
       {...props}
     >
-      <MinusIcon
-      />
+      <MinusIcon />
     </div>
   )
 }

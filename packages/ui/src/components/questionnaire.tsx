@@ -60,7 +60,7 @@ function QuestionnaireTitle({
     <QuestionnairePrimitive.Title
       data-slot="questionnaire-title"
       className={cn(
-        "tw: tw:text-base tw:leading-snug tw:font-medium tw:text-pretty tw:[&:not(:has(~[data-slot=questionnaire-description]))]:mb-4",
+        "tw:text-base tw:leading-snug tw:font-medium tw:text-pretty tw:[&:not(:has(~[data-slot=questionnaire-description]))]:mb-4",
         className
       )}
       {...props}
@@ -166,8 +166,7 @@ function QuestionnaireInput({
       <QuestionnairePrimitive.Input
         data-slot="questionnaire-input"
         className={cn(
-          "tw:h-8 tw:min-h-11 tw:w-full tw:min-w-0 tw:rounded-lg tw:border tw:border-input tw:bg-transparent tw:px-2.5 tw:py-1 tw:text-base tw:transition-[color,box-shadow,background-color] tw:outline-none tw:focus-visible:border-ring tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50 tw:disabled:pointer-events-none tw:disabled:cursor-not-allowed tw:disabled:bg-input/50 tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-3 tw:aria-invalid:ring-destructive/20 tw:sm:min-h-0 tw:md:text-sm tw:dark:bg-input/30 tw:dark:disabled:bg-input/80 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40",
-          "tw:selection:bg-primary tw:selection:text-primary-foreground tw:placeholder:text-muted-foreground",
+          "tw:h-11 tw:w-full tw:min-w-0 tw:px-3 tw:text-sm tw:outline-none tw:selection:bg-primary tw:selection:text-primary-foreground",
           className
         )}
         {...props}

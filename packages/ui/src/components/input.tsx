@@ -15,7 +15,7 @@ function Input({ className, type, ...props }: InputProps) {
       type={type}
       data-slot="input"
       className={cn(
-        'pzhown-ui pzhown-input tw:h-11 tw:w-full tw:min-w-0 tw:px-4 tw:text-sm tw:outline-none tw:file:inline-flex tw:file:border-0 tw:file:bg-transparent tw:file:text-[var(--pzhown-ui-foreground)]',
+        'pzhown-ui pzhown-input tw:h-11 tw:w-full tw:min-w-0 tw:px-3 tw:text-sm tw:outline-none tw:selection:bg-primary tw:selection:text-primary-foreground tw:file:inline-flex tw:file:h-full tw:file:border-0 tw:file:bg-transparent tw:file:text-[var(--pzhown-ui-foreground)]',
         className,
       )}
       {...props}

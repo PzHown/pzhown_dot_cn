@@ -14,7 +14,7 @@ function InputGroup({ className, ...props }: GroupProps) {
     <Group
       data-slot="input-group"
       className={cn(
-        "tw:group/input-group tw:relative tw:flex tw:h-11 tw:w-full tw:min-w-0 tw:items-center tw:rounded-lg tw:border tw:border-input tw:transition-colors tw:outline-none tw:in-data-[slot=combobox-content]:focus-within:border-inherit tw:in-data-[slot=combobox-content]:focus-within:ring-0 tw:has-disabled:bg-input/50 tw:has-disabled:opacity-50 tw:has-[[data-slot=input-group-control]:focus-visible]:border-ring tw:has-[[data-slot=input-group-control]:focus-visible]:ring-3 tw:has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50 tw:has-[[data-slot][aria-invalid=true]]:border-destructive tw:has-[[data-slot][aria-invalid=true]]:ring-3 tw:has-[[data-slot][aria-invalid=true]]:ring-destructive/20 tw:has-[>[data-align=block-end]]:h-auto tw:has-[>[data-align=block-end]]:flex-col tw:has-[>[data-align=block-start]]:h-auto tw:has-[>[data-align=block-start]]:flex-col tw:has-[>textarea]:h-auto tw:dark:bg-input/30 tw:dark:has-disabled:bg-input/80 tw:dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 tw:has-[>[data-align=block-end]]:[&>input]:pt-3 tw:has-[>[data-align=block-start]]:[&>input]:pb-3 tw:has-[>[data-align=inline-end]]:[&>input]:pr-2 tw:has-[>[data-align=inline-start]]:[&>input]:pl-2",
+        "tw:group/input-group tw:relative tw:flex tw:h-11 tw:w-full tw:min-w-0 tw:items-center tw:outline-none tw:has-[>[data-align=block-end]]:h-auto tw:has-[>[data-align=block-end]]:flex-col tw:has-[>[data-align=block-start]]:h-auto tw:has-[>[data-align=block-start]]:flex-col tw:has-[>textarea]:h-auto tw:has-[>[data-align=block-end]]:[&>input]:pt-3 tw:has-[>[data-align=block-start]]:[&>input]:pb-3 tw:has-[>[data-align=inline-end]]:[&>input]:pr-2 tw:has-[>[data-align=inline-start]]:[&>input]:pl-2",
         className
       )}
       {...props}
@@ -27,12 +27,12 @@ const inputGroupAddonVariants = cva(
   {
     variants: {
       align: {
-        "inline-start": "tw:order-first tw:pl-3",
-        "inline-end": "tw:order-last tw:pr-3",
+        "inline-start": "tw:order-first tw:pl-3 tw:has-[>button]:pl-1",
+        "inline-end": "tw:order-last tw:pr-3 tw:has-[>button]:pr-1",
         "block-start":
-          "tw:order-first tw:w-full tw:justify-start tw:px-4 tw:pt-3 tw:group-has-[>input]/input-group:pt-3 tw:[.border-b]:pb-3",
+          "tw:order-first tw:w-full tw:justify-start tw:px-3 tw:pt-3 tw:group-has-[>input]/input-group:pt-3 tw:[.border-b]:pb-3",
         "block-end":
-          "tw:order-last tw:w-full tw:justify-start tw:px-4 tw:pb-3 tw:group-has-[>input]/input-group:pb-3 tw:[.border-t]:pt-3",
+          "tw:order-last tw:w-full tw:justify-start tw:px-3 tw:pb-3 tw:group-has-[>input]/input-group:pb-3 tw:[.border-t]:pt-3",
       },
     },
     defaultVariants: {
@@ -56,7 +56,7 @@ function InputGroupAddon({
         if ((e.target as HTMLElement).closest("button")) {
           return
         }
-        e.currentTarget.parentElement?.querySelector("input")?.focus()
+        e.currentTarget.parentElement?.querySelector<HTMLElement>("input, textarea")?.focus()
       }}
       {...props}
     />
@@ -122,7 +122,7 @@ function InputGroupInput({
     <Input
       data-slot="input-group-control"
       className={cn(
-        "tw:flex-1 tw:rounded-none tw:border-0 tw:bg-transparent tw:shadow-none tw:ring-0 tw:focus-visible:ring-0 tw:disabled:bg-transparent tw:aria-invalid:ring-0 tw:dark:bg-transparent tw:dark:disabled:bg-transparent",
+        "tw:h-full tw:flex-1 tw:rounded-none tw:border-0 tw:bg-transparent tw:shadow-none tw:ring-0 tw:focus-visible:ring-0 tw:disabled:bg-transparent tw:aria-invalid:ring-0 tw:dark:bg-transparent tw:dark:disabled:bg-transparent",
         className
       )}
       {...props}

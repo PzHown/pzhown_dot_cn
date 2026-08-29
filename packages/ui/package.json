@@ -17,6 +17,7 @@
     "./lib/*": "./src/lib/*.ts",
     "./components.css": "./src/components.css",
     "./ios-theme.css": "./src/ios-theme.css",
+    "./form-controls.css": "./src/form-controls.css",
     "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
