@@ -205,3 +205,21 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='inp
   box-shadow: none;
   opacity: 0.5;
 }
+
+/* Nested controls must not render a second field surface inside their owner. */
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group'] > .pzhown-input[data-slot='input-group-control'] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  opacity: 1;
+}
+
+/* Legacy theme rules targeted the questionnaire wrapper. Keep it layout-only. */
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='questionnaire-input-wrapper'] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
