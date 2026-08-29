@@ -63,7 +63,7 @@ function SelectValue<T extends object>({
     <SelectValuePrimitive
       data-slot="select-value"
       className={cn(
-        "tw:flex tw:flex-1 tw:text-left tw:data-placeholder:text-muted-foreground",
+        "tw:flex tw:flex-1 tw:items-center tw:text-left tw:data-placeholder:text-muted-foreground",
         className
       )}
       {...props}
@@ -90,7 +90,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "tw:flex tw:w-full tw:items-center tw:justify-between tw:gap-1.5 tw:rounded-lg tw:border tw:border-input tw:bg-transparent tw:py-2 tw:pr-2 tw:pl-2.5 tw:text-sm tw:whitespace-nowrap tw:transition-colors tw:outline-none tw:select-none tw:focus-visible:border-ring tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50 tw:disabled:cursor-not-allowed tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-3 tw:aria-invalid:ring-destructive/20 tw:data-placeholder:text-muted-foreground tw:data-[size=default]:h-8 tw:data-[size=sm]:h-7 tw:data-[size=sm]:rounded-[min(var(--radius-md),10px)] tw:*:data-[slot=select-value]:line-clamp-1 tw:*:data-[slot=select-value]:flex tw:*:data-[slot=select-value]:items-center tw:*:data-[slot=select-value]:gap-1.5 tw:dark:bg-input/30 tw:dark:hover:bg-input/50 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
+        "tw:flex tw:w-full tw:items-center tw:justify-between tw:gap-2 tw:rounded-lg tw:border tw:border-input tw:bg-transparent tw:pr-3 tw:pl-4 tw:text-sm tw:whitespace-nowrap tw:transition-colors tw:outline-none tw:select-none tw:focus-visible:border-ring tw:focus-visible:ring-3 tw:focus-visible:ring-ring/50 tw:disabled:cursor-not-allowed tw:disabled:opacity-50 tw:aria-invalid:border-destructive tw:aria-invalid:ring-3 tw:aria-invalid:ring-destructive/20 tw:data-placeholder:text-muted-foreground tw:data-[size=default]:h-11 tw:data-[size=sm]:h-10 tw:*:data-[slot=select-value]:line-clamp-1 tw:*:data-[slot=select-value]:flex tw:*:data-[slot=select-value]:items-center tw:*:data-[slot=select-value]:gap-2 tw:dark:bg-input/30 tw:dark:hover:bg-input/50 tw:dark:aria-invalid:border-destructive/50 tw:dark:aria-invalid:ring-destructive/40 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
         className
       )}
       {...props}
@@ -164,7 +164,7 @@ function SelectList<T extends object>({
     <ListBoxPrimitive
       data-slot="select-list"
       className={cn(
-        "tw:group/select-list tw:max-h-[inherit] tw:overflow-x-hidden tw:overflow-y-auto tw:p-0 tw:outline-hidden",
+        "tw:group/select-list tw:max-h-[inherit] tw:overflow-x-hidden tw:overflow-y-auto tw:p-1 tw:outline-hidden",
         className
       )}
       {...props}
@@ -200,7 +200,7 @@ function SelectLabel({
   return (
     <HeaderPrimitive
       data-slot="select-label"
-      className={cn("tw:px-1.5 tw:py-1 tw:text-xs tw:text-muted-foreground", className)}
+      className={cn("tw:px-3 tw:py-2 tw:text-xs tw:text-muted-foreground", className)}
       {...props}
     />
   )
@@ -216,7 +216,7 @@ function SelectItem({
       data-slot="select-item"
       textValue={typeof children === "string" ? children : undefined}
       className={cn(
-        "tw:relative tw:flex tw:w-full tw:cursor-default tw:items-center tw:gap-1.5 tw:rounded-md tw:py-1 tw:pr-8 tw:pl-1.5 tw:text-sm tw:outline-hidden tw:select-none tw:focus:bg-accent tw:focus:text-accent-foreground tw:not-data-[variant=destructive]:focus:**:text-accent-foreground tw:data-focused:bg-accent tw:data-focused:text-accent-foreground tw:data-disabled:pointer-events-none tw:data-disabled:opacity-50 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4 tw:*:[span]:last:flex tw:*:[span]:last:items-center tw:*:[span]:last:gap-2",
+        "tw:relative tw:flex tw:min-h-11 tw:w-full tw:cursor-default tw:items-center tw:gap-2 tw:rounded-md tw:pr-10 tw:pl-3 tw:text-sm tw:outline-hidden tw:select-none tw:focus:bg-accent tw:focus:text-accent-foreground tw:not-data-[variant=destructive]:focus:**:text-accent-foreground tw:data-focused:bg-accent tw:data-focused:text-accent-foreground tw:data-disabled:pointer-events-none tw:data-disabled:opacity-50 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4 tw:*:[span]:last:flex tw:*:[span]:last:items-center tw:*:[span]:last:gap-2",
         className
       )}
       {...props}
@@ -226,7 +226,7 @@ function SelectItem({
           <span className="tw:flex tw:flex-1 tw:shrink-0 tw:gap-2 tw:whitespace-nowrap">
             {children}
           </span>
-          <span className="tw:pointer-events-none tw:absolute tw:right-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
+          <span className="tw:pointer-events-none tw:absolute tw:right-3 tw:flex tw:size-4 tw:items-center tw:justify-center">
             {isSelected ? (
               <CheckIcon className="tw:pointer-events-none" />
             ) : null}
@@ -255,7 +255,7 @@ function SelectEmpty({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="select-empty"
       className={cn(
-        "tw:hidden tw:w-full tw:justify-center tw:py-2 tw:text-center tw:text-sm tw:text-muted-foreground tw:group-data-empty/select-list:flex",
+        "tw:hidden tw:w-full tw:justify-center tw:py-3 tw:text-center tw:text-sm tw:text-muted-foreground tw:group-data-empty/select-list:flex",
         className
       )}
       {...props}

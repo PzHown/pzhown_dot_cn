@@ -81,7 +81,7 @@ function TabsTrigger({
       id={id ?? value}
       data-slot="tabs-trigger"
       className={cn(
-        'pzhown-tabs-trigger tw:relative tw:inline-flex tw:h-8 tw:flex-1 tw:items-center tw:justify-center tw:gap-1.5 tw:whitespace-nowrap tw:px-3 tw:text-sm tw:font-medium tw:outline-none tw:[&_svg]:pointer-events-none tw:[&_svg]:size-4 tw:[&_svg]:shrink-0',
+        'pzhown-tabs-trigger tw:relative tw:inline-flex tw:h-10 tw:flex-1 tw:items-center tw:justify-center tw:gap-2 tw:whitespace-nowrap tw:px-4 tw:text-sm tw:font-medium tw:outline-none tw:[&_svg]:pointer-events-none tw:[&_svg]:size-4 tw:[&_svg]:shrink-0',
         className,
       )}
       {...props}
