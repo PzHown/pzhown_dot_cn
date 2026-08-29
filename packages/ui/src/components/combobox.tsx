@@ -147,7 +147,7 @@ function ComboboxContent({
       offset={offset}
       crossOffset={crossOffset}
       triggerRef={anchor}
-      className={cn("pzhown-ui tw:relative tw:isolate tw:z-50 tw:max-h-72 tw:w-(--trigger-width) tw:min-w-36 tw:origin-(--trigger-anchor-point) tw:overflow-hidden tw:rounded-lg tw:bg-popover tw:text-popover-foreground tw:shadow-md tw:ring-1 tw:ring-foreground/10 tw:duration-100 tw:data-entering:animate-in tw:data-entering:fade-in-0 tw:data-entering:zoom-in-95 tw:data-exiting:animate-out tw:data-exiting:fade-out-0 tw:data-exiting:zoom-out-95 tw:data-[placement=bottom]:slide-in-from-top-2 tw:data-[placement=left]:slide-in-from-right-2 tw:data-[placement=right]:slide-in-from-left-2 tw:data-[placement=top]:slide-in-from-bottom-2 tw:**:data-[slot$=-item]:data-focused:bg-foreground/10 tw:*:data-[slot=input-group]:m-1 tw:*:data-[slot=input-group]:mb-0 tw:*:data-[slot=input-group]:h-8 tw:*:data-[slot=input-group]:border-input/30 tw:*:data-[slot=input-group]:bg-input/30 tw:*:data-[slot=input-group]:shadow-none", className )}
+      className={cn("pzhown-ui tw:relative tw:isolate tw:z-50 tw:max-h-72 tw:w-(--trigger-width) tw:min-w-36 tw:origin-(--trigger-anchor-point) tw:overflow-hidden tw:rounded-lg tw:bg-popover tw:text-popover-foreground tw:shadow-md tw:ring-1 tw:ring-foreground/10 tw:duration-100 tw:data-entering:animate-in tw:data-entering:fade-in-0 tw:data-entering:zoom-in-95 tw:data-exiting:animate-out tw:data-exiting:fade-out-0 tw:data-exiting:zoom-out-95 tw:data-[placement=bottom]:slide-in-from-top-2 tw:data-[placement=left]:slide-in-from-right-2 tw:data-[placement=right]:slide-in-from-left-2 tw:data-[placement=top]:slide-in-from-bottom-2 tw:**:data-[slot$=-item]:data-focused:bg-foreground/10 tw:*:data-[slot=input-group]:m-1 tw:*:data-[slot=input-group]:mb-0 tw:*:data-[slot=input-group]:h-10 tw:*:data-[slot=input-group]:shadow-none", className )}
       {...props}
     />
   )
@@ -179,7 +179,7 @@ function ComboboxItem<T extends object>({
       data-slot="combobox-item"
       textValue={typeof children === "string" ? children : undefined}
       className={cn(
-        "tw:relative tw:flex tw:w-full tw:cursor-default tw:items-center tw:gap-2 tw:rounded-md tw:py-1 tw:pr-8 tw:pl-1.5 tw:text-sm tw:outline-hidden tw:select-none tw:data-focused:bg-accent tw:data-focused:text-accent-foreground tw:not-data-[variant=destructive]:data-focused:**:text-accent-foreground tw:data-highlighted:bg-accent tw:data-highlighted:text-accent-foreground tw:not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground tw:data-disabled:pointer-events-none tw:data-disabled:opacity-50 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
+        "tw:relative tw:flex tw:min-h-11 tw:w-full tw:cursor-default tw:items-center tw:gap-2 tw:rounded-md tw:pr-10 tw:pl-3 tw:text-sm tw:outline-hidden tw:select-none tw:data-focused:bg-accent tw:data-focused:text-accent-foreground tw:not-data-[variant=destructive]:data-focused:**:text-accent-foreground tw:data-highlighted:bg-accent tw:data-highlighted:text-accent-foreground tw:not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground tw:data-disabled:pointer-events-none tw:data-disabled:opacity-50 tw:[&_svg]:pointer-events-none tw:[&_svg]:shrink-0 tw:[&_svg:not([class*=size-])]:size-4",
         className
       )}
       {...props}
@@ -187,7 +187,7 @@ function ComboboxItem<T extends object>({
       {composeRenderProps(children, (children, { isSelected }) => (
         <>
           {children}
-          <span className="tw:pointer-events-none tw:absolute tw:right-2 tw:flex tw:size-4 tw:items-center tw:justify-center">
+          <span className="tw:pointer-events-none tw:absolute tw:right-3 tw:flex tw:size-4 tw:items-center tw:justify-center">
             {isSelected ? (
               <CheckIcon className="tw:pointer-events-none" />
             ) : null}
@@ -215,7 +215,7 @@ function ComboboxLabel({ className, ...props }: HeaderProps) {
   return (
     <HeaderPrimitive
       data-slot="combobox-label"
-      className={cn("tw:px-2 tw:py-1.5 tw:text-xs tw:text-muted-foreground", className)}
+      className={cn("tw:px-3 tw:py-2 tw:text-xs tw:text-muted-foreground", className)}
       {...props}
     />
   )
@@ -226,7 +226,7 @@ function ComboboxEmpty({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="combobox-empty"
       className={cn(
-        "tw:hidden tw:w-full tw:justify-center tw:py-2 tw:text-center tw:text-sm tw:text-muted-foreground tw:group-data-empty/combobox-content:flex",
+        "tw:hidden tw:w-full tw:justify-center tw:py-3 tw:text-center tw:text-sm tw:text-muted-foreground tw:group-data-empty/combobox-content:flex",
         className
       )}
       {...props}
@@ -249,7 +249,7 @@ function ComboboxChips({ children, className, ...props }: GroupProps) {
     <Group
       data-slot="combobox-chips"
       className={cn(
-        "tw:flex tw:min-h-8 tw:flex-wrap tw:items-center tw:gap-1 tw:rounded-lg tw:border tw:border-input tw:bg-transparent tw:bg-clip-padding tw:px-2.5 tw:py-1 tw:text-sm tw:transition-colors tw:focus-within:border-ring tw:focus-within:ring-3 tw:focus-within:ring-ring/50 tw:has-aria-invalid:border-destructive tw:has-aria-invalid:ring-3 tw:has-aria-invalid:ring-destructive/20 tw:has-data-[slot=combobox-chip]:px-1 tw:dark:bg-input/30 tw:dark:has-aria-invalid:border-destructive/50 tw:dark:has-aria-invalid:ring-destructive/40",
+        "tw:flex tw:min-h-11 tw:flex-wrap tw:items-center tw:gap-1 tw:px-2 tw:py-1 tw:text-sm tw:has-data-[slot=combobox-chip]:px-1",
         className
       )}
       {...props}
@@ -301,7 +301,7 @@ function ComboboxChip({
     <TagPrimitive
       data-slot="combobox-chip"
       className={cn(
-        "tw:flex tw:h-[calc(--spacing(5.25))] tw:w-fit tw:items-center tw:justify-center tw:gap-1 tw:rounded-sm tw:bg-muted tw:px-1.5 tw:text-xs tw:font-medium tw:whitespace-nowrap tw:text-foreground tw:has-disabled:pointer-events-none tw:has-disabled:cursor-not-allowed tw:has-disabled:opacity-50 tw:has-data-[slot=combobox-chip-remove]:pr-0",
+        "tw:flex tw:h-8 tw:w-fit tw:items-center tw:justify-center tw:gap-1 tw:rounded-md tw:bg-muted tw:px-2 tw:text-xs tw:font-medium tw:whitespace-nowrap tw:text-foreground tw:has-disabled:pointer-events-none tw:has-disabled:cursor-not-allowed tw:has-disabled:opacity-50 tw:has-data-[slot=combobox-chip-remove]:pr-0",
         className
       )}
       {...props}
@@ -327,7 +327,7 @@ function ComboboxChipsInput({ className, ...props }: InputProps) {
   return (
     <InputPrimitive
       data-slot="combobox-chip-input"
-      className={cn("tw:min-w-16 tw:flex-1 tw:outline-none", className)}
+      className={cn("tw:min-h-8 tw:min-w-16 tw:flex-1 tw:bg-transparent tw:text-sm tw:outline-none", className)}
       onKeyDown={(e) => {
         if (
           e.key === "Backspace" &&
