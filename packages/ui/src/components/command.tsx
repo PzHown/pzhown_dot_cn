@@ -6,7 +6,6 @@ import {
   Collection,
   composeRenderProps,
   Header,
-  Input,
   Menu,
   MenuItem,
   MenuSection,
@@ -32,6 +31,7 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupInput,
 } from "@pzhown/ui/components/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
 
@@ -112,12 +112,12 @@ function CommandInput({ className, ...props }: InputProps) {
       data-slot="command-input-wrapper"
       className="tw:p-1 tw:pb-0"
     >
-      <InputGroup className="tw:h-8! tw:rounded-lg! tw:border-input/30 tw:bg-input/30 tw:shadow-none! tw:*:data-[slot=input-group-addon]:pl-2!">
-        <Input
+      <InputGroup className="tw:h-10 tw:shadow-none!">
+        <InputGroupInput
           {...props}
-          data-slot="command-input"
+          data-slot="input-group-control"
           className={cn(
-            "tw:w-full tw:text-sm tw:outline-hidden tw:disabled:cursor-not-allowed tw:disabled:opacity-50 tw:[&::-webkit-search-cancel-button]:hidden",
+            "tw:[&::-webkit-search-cancel-button]:hidden",
             className
           )}
         />
