@@ -2,57 +2,76 @@
 
 ## 总则
 
-- 交互语义优先使用 React Aria Components，不自行重写键盘导航、focus 管理和 ARIA。
-- 视觉样式归 `@pzhown/ui` 所有；React Aria 只负责行为与状态。
-- 必须覆盖 `hovered / pressed / focus-visible / selected / disabled / invalid / loading` 中与组件有关的状态。
-- 不把所有组件都做成相同灰边框矩形。不同组件应通过角色、surface、层级和反馈区分。
+- 组件视觉严格服从根目录 `DESIGN.md` 与 `ios27-design-system`，不使用“泛 Apple / 泛玻璃”替代具体 iOS 27 规格。
+- 组件结构优先复用 `@pzhown/ui`；缺少 primitive 时从原生语义 HTML + React 状态重新实现。
+- `react-cupertino-ui` 只用于研究 anatomy、状态归属和组合方式，不是视觉源，也不是强制 runtime 依赖。
+- 不恢复旧 shadcn / aria-nova / Base UI 组件壳和跨组件 CSS 修补链。
+- 必须覆盖与组件有关的 rest / hover / pressed / focus-visible / selected / disabled / invalid / pending 状态。
+- 不把所有组件都做成相同灰边框矩形，也不把所有组件都做成 Liquid Glass。
 
 ## Button
 
-- 主操作使用一个明确的 prominent/default 样式；同一区域不要同时出现多个“最强按钮”。
-- 自定义按钮必须有可感知 pressed 状态。
-- 视觉高度可以紧凑，但触控命中区域按项目标准至少约 44×44 CSS px；必要时用伪元素扩展 hit area。
-- icon-only 按钮必须提供可访问名称；桌面端必要时提供 tooltip。
-- destructive 操作使用明确语义色，并在高风险动作中增加确认或可撤销机制。
+- iOS 27 视觉高度按 `DESIGN.md` 使用 Small 28、Medium 36、Large 50；视觉尺寸与触控命中区分离。
+- 同一任务区只保留一个最强 filled action。
+- pressed 必须立即可感知；不要依赖 Hover 才看得出可点击。
+- icon-only 必须有可访问名称；桌面端必要时可以 Tooltip 补充，但 Tooltip 不能承担完成任务必需的信息。
+- destructive 使用系统 Red，高风险动作还需要确认、Undo 或其他恢复机制。
 
-## Input / Form
+## TextField / Textarea / Select
 
-- 输入框的 focus-visible 比 hover 更重要，focus ring 要清晰但不要刺眼。
-- placeholder 不能替代 label；复杂表单优先保留明确字段名和帮助文本。
-- 错误状态不能只靠红色，配合文本/图标说明。
-- 不用过重 inset shadow 模拟原生控件。
+- 基础字段几何、圆角、字体和 Focus 以 `DESIGN.md` 为准。
+- placeholder 不能替代 label；复杂表单保留字段名、帮助文本和错误文本。
+- invalid 优先于普通 Focus 色，并且不能只靠红色表达错误。
+- 原生 `<select>` 在能满足任务时优先，避免为了“像 iOS”重写一个键盘和屏幕阅读器都不可靠的伪选择器。
+- 不用重 inset shadow 模拟原生控件。
 
-## Tabs / Segmented
+## Switch / Checkbox / Radio / Slider
 
-- 少量互斥视图优先使用 Tabs/segmented；不要把普通导航强行做成 segmented control。
-- selected 状态应通过位置、surface 或 indicator 明确表达；避免只改变文字颜色。
-- 切换内容时保持布局稳定；需要强调连续性时用 Motion layout 动画。
+- Switch 表达即时开/关；需要提交才生效的选择不要伪装成 Switch。
+- Switch 使用系统 Green，并通过 thumb 位置 + 颜色共同表达状态。
+- Checkbox / Radio 优先保留原生表单语义，再用关联视觉层表达 iOS 27 状态。
+- Slider 使用原生 range 语义；视觉 track/thumb 可以 iOS 化，但键盘和值语义不能丢失。
 
-## Dialog / Popover / Menu / Tooltip
+## SegmentedControl / TabBar
 
-- Dialog 用于需要聚焦处理的任务，不要把普通信息都弹窗化。
-- Overlay 的 blur/遮罩仅用于降低背景竞争，不应让背景完全失去上下文。
-- Popover 和 Menu 保持与触发元素的空间关系，进出动画从触发方向产生。
-- Tooltip 只补充说明，不承载完成任务必需的信息。
-- 菜单项 highlight 使用柔和 surface 和足够对比； destructive 项语义明确。
+- 少量互斥视图使用 SegmentedControl；页面主导航使用 TabBar / Navigation，不把所有链接都做成 segmented。
+- selected 必须通过 surface/indicator/位置等持续线索表达，不只变文字颜色。
+- iOS 27 Tab Bar 使用 Large Liquid Glass system chrome；selected item 可以有局部 glass indicator，但禁止继续套第二层大面积玻璃。
 
-## Switch
+## ListSection / ListRow
 
-- Switch 表达即时开/关状态，不用于需要“提交”才能生效的设置。
-- thumb 移动应短促自然；checked 状态同时通过位置与颜色表达。
-- 不要只靠颜色区分开/关。
+- 常规行高以 `DESIGN.md` 当前 iOS 27 值为准（52px）。
+- Grouped Surface 是内容分组的默认手段，不把设置列表每一行单独做 Card。
+- Separator 使用 0.5px 级别结构线，并按内容 inset，不用粗边框制造层级。
+- disclosure、trailing value、switch 等末端内容必须保持稳定对齐和足够命中空间。
+
+## Dialog / Sheet / Popover / ContextMenu
+
+- 每个 Overlay 自己拥有 open state、Portal、Escape、外部点击/遮罩行为和 focus return；不要用跨组件 CSS 假装交互完整。
+- Dialog 用于需要聚焦处理的任务，不把普通提示全部弹窗化。
+- Bottom Sheet 使用系统 grabber、安全区和 34px 顶部圆角。
+- Popover / ContextMenu 使用 Medium Liquid Glass，保持与触发点的空间关系。
+- 菜单 destructive 项使用系统 Red；disabled 项不保留正常 Hover/Pressed 暗示。
+
+## Badge / Avatar / Progress / Loading
+
+- Badge 是轻量状态/元数据，不升级为第二个 CTA。
+- Avatar 保持稳定圆形和清晰 fallback，不用装饰性玻璃覆盖人像。
+- Progress 是确定性进度；Spinner 用于无法确定总进度的短时等待。
+- Skeleton 保持布局稳定；Reduced Motion 下关闭 shimmer。
 
 ## Card 与 Surface
 
 Card 不是默认组件。先判断是否真的需要容器：
 
 - 如果内容通过 spacing 和标题已经能分组，不加 Card。
-- 如果需要突出一个独立对象，再使用 surface。
+- 如果需要突出独立对象，再使用 Grouped Surface。
 - Card 内避免继续套多个同级 Card。
-- 只有需要视觉分隔时才用边框；优先使用背景层级或极轻分隔线。
+- 内容面不默认 Liquid Glass；Glass 保留给 system chrome、浮层和必要控件。
 
-## 官方参考
+## 官方与项目参考
 
-- Buttons：https://developer.apple.com/design/human-interface-guidelines/buttons
-- Feedback：https://developer.apple.com/design/human-interface-guidelines/feedback
-- Components 总览：https://developer.apple.com/design/human-interface-guidelines/components
+- 根目录 `DESIGN.md`：本项目最终规范。
+- iOS 27 Web 基准：https://github.com/seunghan91/ios27-design-system
+- 结构参考：https://github.com/Andersonlimahw/react-cupertino-ui
+- Apple HIG Components：https://developer.apple.com/design/human-interface-guidelines/components
