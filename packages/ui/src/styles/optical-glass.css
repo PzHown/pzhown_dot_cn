@@ -4,9 +4,13 @@
 .ios27-optical-host{position:relative;isolation:isolate}
 .ios27-optical-glass__backdrop{position:absolute!important;inset:0!important;z-index:0;width:100%!important;height:100%!important;overflow:hidden;border-radius:inherit!important;pointer-events:none!important}
 .ios27-optical-content{position:relative;z-index:1}
-.ios27-optical-glass--small{background:var(--glass-small-bg)}
-.ios27-optical-glass--medium{background:var(--glass-medium-bg)}
-.ios27-optical-glass--large{background:var(--glass-large-bg)}
+
+/* GlassMaterial uses the wrapper background as the tint over the refracted
+   backdrop. It MUST stay translucent: an opaque surface hides displacement. */
+.ios27-optical-glass{background:transparent}
+.ios27-optical-glass--small{background:color-mix(in srgb,var(--glass-small-bg) 42%,transparent)}
+.ios27-optical-glass--medium{background:color-mix(in srgb,var(--glass-medium-bg) 58%,transparent)}
+.ios27-optical-glass--large{background:color-mix(in srgb,var(--glass-large-bg) 68%,transparent)}
 
 /* The optical engine owns refraction/frost. Remove the former blur-only layer
    from components that now host a real displacement lens. */
