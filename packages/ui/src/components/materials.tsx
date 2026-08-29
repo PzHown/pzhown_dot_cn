@@ -82,8 +82,7 @@ export function LiquidGlassSurface({
   )
 }
 
-export interface LiquidGlassBackdropProps
-  extends Omit<LiquidGlassSurfaceProps, 'children'> {}
+export type LiquidGlassBackdropProps = Omit<LiquidGlassSurfaceProps, 'children'>
 
 /** Decorative, non-interactive optical layer placed behind crisp component UI. */
 export function LiquidGlassBackdrop({
