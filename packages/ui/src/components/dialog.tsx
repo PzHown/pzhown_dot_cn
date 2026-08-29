@@ -106,9 +106,9 @@ function DialogContent({
           {children}
           {showCloseButton && (
             <DialogClose
-              variant="ghost"
+              variant="secondary"
               size="icon-sm"
-              className="tw:absolute tw:top-2 tw:right-2 tw:size-11 tw:rounded-full tw:text-muted-foreground hover:tw:text-foreground"
+              className="tw:absolute tw:top-2 tw:right-2 tw:size-11 tw:rounded-full"
               aria-label="Close"
             >
               <XIcon className="tw:size-[18px]" />
