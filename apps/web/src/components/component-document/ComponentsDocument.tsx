@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useTheme } from '@pzhown/ui/react'
 import { componentDemos } from './ComponentDemos'
 import { categories, componentDocs } from './catalog'
 
@@ -168,7 +169,8 @@ function ComponentCard({ id }: { id: string }) {
 
 export default function ComponentsDocument() {
   const [query, setQuery] = React.useState('')
-  const [dark, setDark] = React.useState(false)
+  const { resolvedMode, setMode } = useTheme()
+  const dark = resolvedMode === 'dark'
   const normalized = query.trim().toLowerCase()
 
   const filtered = normalized
@@ -181,7 +183,7 @@ export default function ComponentsDocument() {
     : componentDocs
 
   return (
-    <div className="component-document pzhown-ui tw:min-h-screen tw:bg-background tw:text-foreground" data-theme={dark ? 'dark' : 'light'}>
+    <div className="component-document pzhown-ui tw:min-h-screen tw:bg-background tw:text-foreground">
       <style>{labCss}</style>
 
       <header className="tw:border-b tw:border-border/70 tw:bg-background/88 tw:backdrop-blur-xl">
@@ -199,7 +201,7 @@ export default function ComponentsDocument() {
             <span className="tw:rounded-full tw:border tw:border-border tw:bg-card tw:px-3 tw:py-2 tw:text-xs tw:font-semibold">{componentDocs.length} 个本地组件</span>
             <button
               type="button"
-              onClick={() => setDark((value) => !value)}
+              onClick={() => setMode(dark ? 'light' : 'dark')}
               className="tw:inline-flex tw:h-9 tw:items-center tw:gap-2 tw:rounded-xl tw:border tw:border-border tw:bg-card tw:px-3 tw:text-xs tw:font-semibold tw:text-foreground tw:transition hover:tw:bg-muted focus-visible:tw:outline-none focus-visible:tw:ring-3 focus-visible:tw:ring-ring/50"
             >
               <ThemeIcon dark={dark} />
