@@ -18,6 +18,7 @@
     "./components.css": "./src/components.css",
     "./ios-theme.css": "./src/ios-theme.css",
     "./form-controls.css": "./src/form-controls.css",
+    "./liquid-glass.css": "./src/liquid-glass.css",
     "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
