@@ -96,26 +96,11 @@ export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivEl
 }
 
 /**
- * Standard iOS 27 material backdrop.
- *
- * This deliberately does not invoke the displacement engine. It mirrors
- * ios27-design-system's Liquid Glass material recipe; PallavAg remains opt-in.
+ * Compatibility shim for components created while the old optical engine was
+ * embedded as a backdrop child. Standard iOS 27 components now draw their
+ * material directly in CSS, matching ios27-design-system, so no extra layer is
+ * rendered here. New components should not add this shim.
  */
-export function LiquidGlassBackdrop({
-  material = 'medium',
-  className,
-  ...props
-}: LiquidGlassBackdropProps) {
-  return (
-    <div
-      {...props}
-      aria-hidden="true"
-      data-material={material}
-      className={cx(
-        'ios27-optical-glass__backdrop',
-        `ios27-optical-glass--${material}`,
-        className,
-      )}
-    />
-  )
+export function LiquidGlassBackdrop(_props: LiquidGlassBackdropProps) {
+  return null
 }
