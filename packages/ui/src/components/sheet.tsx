@@ -80,7 +80,7 @@ function Sheet({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "tw:fixed tw:z-50 tw:flex tw:flex-col tw:gap-4 tw:bg-popover tw:bg-clip-padding tw:text-sm tw:text-popover-foreground tw:shadow-lg tw:transition tw:duration-200 tw:ease-in-out tw:data-entering:opacity-0 tw:data-exiting:opacity-0 tw:data-[side=bottom]:inset-x-0 tw:data-[side=bottom]:bottom-0 tw:data-[side=bottom]:h-auto tw:data-[side=bottom]:border-t tw:data-[side=bottom]:data-entering:translate-y-[2.5rem] tw:data-[side=bottom]:data-exiting:translate-y-[2.5rem] tw:data-[side=left]:inset-y-0 tw:data-[side=left]:left-0 tw:data-[side=left]:h-full tw:data-[side=left]:w-3/4 tw:data-[side=left]:border-r tw:data-[side=left]:data-entering:translate-x-[-2.5rem] tw:data-[side=left]:data-exiting:translate-x-[-2.5rem] tw:data-[side=right]:inset-y-0 tw:data-[side=right]:right-0 tw:data-[side=right]:h-full tw:data-[side=right]:w-3/4 tw:data-[side=right]:border-l tw:data-[side=right]:data-entering:translate-x-[2.5rem] tw:data-[side=right]:data-exiting:translate-x-[2.5rem] tw:data-[side=top]:inset-x-0 tw:data-[side=top]:top-0 tw:data-[side=top]:h-auto tw:data-[side=top]:border-b tw:data-[side=top]:data-entering:translate-y-[-2.5rem] tw:data-[side=top]:data-exiting:translate-y-[-2.5rem] tw:data-[side=left]:sm:max-w-sm tw:data-[side=right]:sm:max-w-sm",
+          "tw:fixed tw:z-50 tw:flex tw:flex-col tw:gap-0 tw:bg-popover tw:bg-clip-padding tw:text-sm tw:text-popover-foreground tw:shadow-lg tw:transition tw:duration-200 tw:ease-in-out tw:data-entering:opacity-0 tw:data-exiting:opacity-0 tw:data-[side=bottom]:inset-x-0 tw:data-[side=bottom]:bottom-0 tw:data-[side=bottom]:h-auto tw:data-[side=bottom]:border-t tw:data-[side=bottom]:data-entering:translate-y-[2.5rem] tw:data-[side=bottom]:data-exiting:translate-y-[2.5rem] tw:data-[side=left]:inset-y-0 tw:data-[side=left]:left-0 tw:data-[side=left]:h-full tw:data-[side=left]:w-3/4 tw:data-[side=left]:border-r tw:data-[side=left]:data-entering:translate-x-[-2.5rem] tw:data-[side=left]:data-exiting:translate-x-[-2.5rem] tw:data-[side=right]:inset-y-0 tw:data-[side=right]:right-0 tw:data-[side=right]:h-full tw:data-[side=right]:w-3/4 tw:data-[side=right]:border-l tw:data-[side=right]:data-entering:translate-x-[2.5rem] tw:data-[side=right]:data-exiting:translate-x-[2.5rem] tw:data-[side=top]:inset-x-0 tw:data-[side=top]:top-0 tw:data-[side=top]:h-auto tw:data-[side=top]:border-b tw:data-[side=top]:data-entering:translate-y-[-2.5rem] tw:data-[side=top]:data-exiting:translate-y-[-2.5rem] tw:data-[side=left]:sm:max-w-sm tw:data-[side=right]:sm:max-w-sm",
           className
         )}
       >
@@ -91,8 +91,8 @@ function Sheet({
           {children}
           {showCloseButton && (
             <SheetClose
-              variant="ghost"
-              className="tw:absolute tw:top-2 tw:right-2 tw:size-11 tw:rounded-full tw:text-muted-foreground hover:tw:text-foreground"
+              variant="secondary"
+              className="tw:absolute tw:top-2 tw:right-2 tw:size-11 tw:rounded-full"
               size="icon-sm"
               aria-label="Close"
             >
@@ -132,7 +132,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("tw:flex tw:flex-col tw:gap-0.5 tw:p-4 tw:pr-16", className)}
+      className={cn("tw:flex tw:flex-col tw:gap-1 tw:p-4 tw:pr-16", className)}
       {...props}
     />
   )
@@ -172,7 +172,7 @@ function SheetDescription({
   return (
     <div
       data-slot="sheet-description"
-      className={cn("tw:text-sm tw:text-muted-foreground", className)}
+      className={cn("tw:text-sm tw:leading-relaxed tw:text-muted-foreground", className)}
       {...props}
     />
   )
