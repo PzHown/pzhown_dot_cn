@@ -45,8 +45,9 @@
 @import "@pzhown/ui/components.css";
 @import "@pzhown/ui/ios-theme.css";
 @import "@pzhown/ui/form-controls.css";
-/* Final material layer: must load last so field state CSS cannot flatten glass. */
+/* Final material layers: load after state CSS so interaction states keep glass. */
 @import "@pzhown/ui/liquid-glass.css";
+@import "@pzhown/ui/liquid-glass-components.css";
 
 /*
  * Progressive Blur showcase notes:
