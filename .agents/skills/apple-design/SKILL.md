@@ -53,7 +53,7 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 
 ## 组件视觉
 
-- Button、TextField、Textarea、Select、SegmentedControl、Switch、List、Toolbar、TabBar、Dialog、Sheet、Popover、ContextMenu 等优先扩展 `@pzhown/ui`。
+- Button、TextField、Textarea、Select、SegmentedControl、Switch、List、Toolbar、TabBar、Dialog、Sheet、Popover、ContextMenu、Tooltip、DropdownMenu、Toast、AlertDialog、Tabs、Breadcrumb、Sidebar、CommandPalette、FormField、Combobox、DatePicker、DataTable、Pagination、EmptyState 等优先扩展 `@pzhown/ui`。
 - 新组件从原生语义 HTML + React 状态开始；复杂行为确实需要第三方 primitive 时才局部引入，不恢复旧 shadcn / aria-nova / Base UI 体系。
 - 交互语义和状态由组件自身/必要的行为 primitive 决定；`interaction-affordance` 决定可发现性；本 Skill 负责最终 iOS 27 视觉。
 - 使用 surface、position、indicator、opacity、motion 等状态差异，不粗暴用重边框表达所有 hovered / pressed / selected。
