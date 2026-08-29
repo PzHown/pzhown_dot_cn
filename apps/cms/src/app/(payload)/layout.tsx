@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import '@payloadcms/next/css'
+import '../../styles/tailwind.css'
 import '@pzhown/ui/components.css'
 import '@pzhown/ui/effects.css'
 import '@pzhown/ui/progressive-blur.css'
@@ -8,7 +9,6 @@ import type { ServerFunctionClient } from 'payload'
 import type { ReactNode } from 'react'
 
 import { importMap } from './admin/importMap.js'
-import '../../styles/tailwind.css'
 
 const serverFunction: ServerFunctionClient = async (args) => {
   'use server'

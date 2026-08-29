@@ -752,6 +752,7 @@
 }
 
 :where(.pzhown-ui, .pzhown-ui *)[data-slot='breadcrumb-separator'] {
+  background: transparent;
   color: var(--pzhown-ui-foreground-tertiary);
 }
 
@@ -927,13 +928,23 @@
 
 .pzhown-dropdown-label,
 .pzhown-dropdown-shortcut,
-:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-label'],
-:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-shortcut'] {
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-label'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-shortcut'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='select-label'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-label'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='command-shortcut'] {
   color: var(--pzhown-ui-foreground-secondary);
 }
 
 .pzhown-dropdown-separator,
-:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-separator'] {
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='select-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='command-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='item-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='field-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='sidebar-separator'],
+:where(.pzhown-ui, .pzhown-ui *)[data-slot='button-group-separator'] {
   background: var(--pzhown-ui-separator);
 }
 
