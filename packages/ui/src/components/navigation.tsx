@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { LiquidGlassBackdrop } from './materials'
 import { cx, useControllableState } from './shared'
 
 export interface PageProps extends React.HTMLAttributes<HTMLElement> {
@@ -32,7 +33,17 @@ export interface ToolbarProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function Toolbar({ placement = 'top', className, children, ...props }: ToolbarProps) {
-  return <nav {...props} data-placement={placement} className={cx('ios27-toolbar', `ios27-toolbar--${placement}`, className)}>{children}</nav>
+  return (
+    <nav
+      {...props}
+      data-placement={placement}
+      data-glass="large"
+      className={cx('ios27-toolbar', `ios27-toolbar--${placement}`, 'ios27-optical-host', className)}
+    >
+      <LiquidGlassBackdrop material="large" />
+      <div className="ios27-toolbar__content ios27-optical-content">{children}</div>
+    </nav>
+  )
 }
 
 export function ToolbarGroup({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -102,7 +113,10 @@ export function TabBar({ value, defaultValue = '', onValueChange, minimized = fa
   return (
     <TabBarContext.Provider value={{ value: selected, setValue: setSelected }}>
       <nav {...props} aria-label={ariaLabel} data-minimized={minimized || undefined} className={cx('ios27-tabbar', className)}>
-        <div className="ios27-tabbar__platter">{children}</div>
+        <div className="ios27-tabbar__platter ios27-optical-host" data-glass="large">
+          <LiquidGlassBackdrop material="large" />
+          <div className="ios27-tabbar__platter-content ios27-optical-content">{children}</div>
+        </div>
       </nav>
     </TabBarContext.Provider>
   )
