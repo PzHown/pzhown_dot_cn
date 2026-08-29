@@ -34,7 +34,7 @@
 - 页面/组件的 gap、padding、视觉重心和 attention flow：看[空间构图](../spatial-composition/HUMAN.md)。
 - 选择、记忆与流程的认知负担：看[认知工效](../cognitive-ergonomics/HUMAN.md)。
 - Link/Button 怎么看起来可操作：看[交互可供性](../interaction-affordance/HUMAN.md)。
-- 最终颜色、材质、Squircle：看[Apple 视觉](../apple-design/HUMAN.md)。
+- 最终颜色、材质、圆角：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 页面切换和复杂动画：看[交互动效](../interaction-motion/HUMAN.md)。
 
 ## 详细规则

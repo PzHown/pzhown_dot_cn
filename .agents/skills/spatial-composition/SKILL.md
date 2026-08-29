@@ -147,7 +147,7 @@ primary anchor
 - 阅读行长、字号、行高和长文舒适：使用 `perceptual-reading`。
 - 响应式结构、Container Query 和重排：使用 `adaptive-layout`。
 - Link/Button/Clickable Surface 的语义与状态：使用 `interaction-affordance`。
-- Neutral、颜色、Squircle、Glass、Blur、Shadow：使用 `apple-design`。
+- Neutral、颜色、圆角、Glass、Blur、Shadow：使用 `apple-design`。
 - 状态变化和空间连续动画：使用 `interaction-motion`。
 
 ## 实现审查

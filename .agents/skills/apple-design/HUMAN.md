@@ -4,7 +4,7 @@
 
 ## 它解决什么问题
 
-这个 Skill 负责项目最终的视觉语言：层级、Neutral 灰度、颜色、材质、Squircle、阴影、透明度、Glass 和 Progressive Blur。
+这个 Skill 负责项目最终的视觉语言：层级、Neutral 灰度、颜色、材质、圆角、阴影、透明度、Glass 和 Progressive Blur。
 
 它借鉴 Apple HIG 的清晰、克制、材质和连续形状原则，但不是把网页做成 iOS/macOS 仿制品。
 
@@ -16,14 +16,14 @@
 
 ## 什么时候看它
 
-当任务涉及颜色、灰度、Surface、Squircle、边框、阴影、Glass、Blur、视觉层级、品牌气质、暗色模式和组件外观时，看这里。
+当任务涉及颜色、灰度、Surface、圆角、边框、阴影、Glass、Blur、视觉层级、品牌气质、暗色模式和组件外观时，看这里。
 
 ## 它主要负责
 
 - Apple-inspired，而不是 Apple clone。
 - Neutral / Canvas / Surface / Foreground 等语义层级。
 - OKLCH/Oklab 色彩与 Smooth Gradient。
-- `corner-shape: squircle` 的连续圆角体系。
+- 基于 `border-radius` / radius token 的统一圆角体系。
 - Solid / Translucent / Progressive Blur 等材质边界。
 - 减少默认 shadcn 式“每块一圈灰边框”。
 - 浅色、深色、高对比环境中的视觉重映射。

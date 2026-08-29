@@ -24,7 +24,7 @@ SQLite（本地）/ PostgreSQL（生产）
 
 - `apps/web`：公共博客前台。Astro-first，静态内容优先，只有真正需要状态时才使用 React Island。
 - `apps/cms`：Payload CMS、Admin、API 与后续自定义后台业务界面。
-- `packages/ui`：React Aria、Motion、Squircle、Progressive Blur、颜色 Token 等共享 UI 能力。
+- `packages/ui`：React Aria、Motion、标准圆角、Progressive Blur、颜色 Token 等共享 UI 能力。
 
 更具体的安装、运行与代码结构看 [`README.md`](./README.md)。正式设计契约看 [`DESIGN.md`](./DESIGN.md)。Agent 执行规则看 [`AGENTS.md`](./AGENTS.md)。
 

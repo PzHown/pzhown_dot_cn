@@ -10,7 +10,7 @@
 - React Aria Components：交互语义、键盘、Focus、Overlay 行为。
 - Motion：spring、presence、layout、gesture。
 - Tailwind CSS 4：布局与 utility，使用项目 `tw:` prefix。
-- `effects.css`：Squircle、Smooth Gradient 等全局视觉能力。
+- `effects.css`：Smooth Gradient 等共享视觉能力。
 - Progressive Blur：本地共享实现。
 
 ## Astro
@@ -32,9 +32,9 @@
 
 不要重新实现其键盘/焦点行为。
 
-## Squircle
+## 圆角
 
-正常设置 radius：
+直接使用标准 radius：
 
 ```css
 .card {
@@ -42,17 +42,7 @@
 }
 ```
 
-由共享样式在浏览器支持时应用：
-
-```css
-@supports (corner-shape: squircle) {
-  *, *::before, *::after {
-    corner-shape: squircle;
-  }
-}
-```
-
-不要为普通圆角加入 SVG mask 或复杂 Bézier。
+优先从共享 radius token 或组件既有层级选择值。不要为普通圆角加入 SVG mask、复杂 Bézier 或额外的全局曲率覆盖。
 
 ## 渐变
 

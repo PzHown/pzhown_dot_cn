@@ -55,6 +55,6 @@ Apple HIG 将 material 用于 foreground/background 分层和上下文保留，�
 
 ## Shape 与材质
 
-- 连续曲率、Squircle、圆形等形状会影响高光和阴影的视觉解释。
+- 连续曲率、圆角、圆形等形状会影响高光和阴影的视觉解释。
 - 内外容器曲率关系不自然时，先修几何关系，再加阴影掩盖。
 - 图标、控件和 Surface 的边缘光学关系由 `spatial-composition` 做最小 optical adjustment，最终形状风格由 `apple-design` 决定。

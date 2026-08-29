@@ -26,7 +26,7 @@
 ## 它不负责
 
 - 具体 easing、duration、spring 参数：看[交互动效](../interaction-motion/HUMAN.md)。
-- 最终颜色、材质、Squircle 和 Shadow 风格：看[Apple 视觉](../apple-design/HUMAN.md)。
+- 最终颜色、材质、圆角和 Shadow 风格：看[Apple 视觉](../apple-design/HUMAN.md)。
 - gap、视觉重量和整体重心：看[空间构图](../spatial-composition/HUMAN.md)。
 - 页面结构何时重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
 - Loading / Error / Undo 等系统状态：看[系统反馈](../system-feedback/HUMAN.md)。

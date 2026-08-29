@@ -105,7 +105,7 @@ description: 为 pzhown_dot_cn 统一所有可交互元素的“可点击感”�
 - Card/内容块应不应该存在：优先 `content-presentation`。
 - 控件内部 inset、icon-label gap、相邻目标之间的视觉间距和静态重心：使用 `spatial-composition`。
 - 不同设备的重排与输入能力：优先 `adaptive-layout`。
-- 颜色、Squircle、Surface、材质：使用 `apple-design`。
+- 颜色、圆角、Surface、材质：使用 `apple-design`。
 - Presence、共享元素、页面过渡和复杂 gesture：使用 `interaction-motion`。
 
 ## 参考资料

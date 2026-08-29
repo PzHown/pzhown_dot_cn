@@ -30,7 +30,7 @@
 - 正文行长、字号、行高与阅读舒适：看[感知阅读](../perceptual-reading/HUMAN.md)。
 - 列、pane、导航和目录何时重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
 - 可点击元素的语义和状态：看[交互可供性](../interaction-affordance/HUMAN.md)。
-- 颜色、材质、Squircle、Glass、Blur：看[Apple 视觉](../apple-design/HUMAN.md)。
+- 颜色、材质、圆角、Glass、Blur：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 动画如何解释状态变化：看[交互动效](../interaction-motion/HUMAN.md)。
 
 ## 怎么理解它和跨设备布局的区别

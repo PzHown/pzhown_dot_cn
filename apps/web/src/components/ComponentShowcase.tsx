@@ -96,7 +96,7 @@ export default function ComponentShowcase() {
                 <DialogHeader>
                   <DialogTitle>React Aria component layer</DialogTitle>
                   <DialogDescription>
-                    React Aria owns adaptive interaction and accessibility; PzHown UI owns squircle, blur, surfaces and motion language.
+                    React Aria owns adaptive interaction and accessibility; PzHown UI owns rounded surfaces, blur and motion language.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -111,7 +111,7 @@ export default function ComponentShowcase() {
               <PopoverContent>
                 <PopoverHeader>
                   <PopoverTitle>Adaptive surface</PopoverTitle>
-                  <PopoverDescription>React Aria positioning with a translucent squircle surface and soft entrance motion.</PopoverDescription>
+                  <PopoverDescription>React Aria positioning with a translucent rounded surface and soft entrance motion.</PopoverDescription>
                 </PopoverHeader>
               </PopoverContent>
             </Popover>
@@ -149,7 +149,7 @@ export default function ComponentShowcase() {
               <TabsTrigger value="system">System</TabsTrigger>
             </TabsList>
             <TabsContent value="design" className="tw:pt-4 tw:text-sm tw:leading-6 tw:text-black/55">
-              Squircle corners, Oklab color interpolation and progressive blur form the visual foundation.
+              Rounded surfaces, Oklab color interpolation and progressive blur form the visual foundation.
             </TabsContent>
             <TabsContent value="motion" className="tw:pt-4 tw:text-sm tw:leading-6 tw:text-black/55">
               Motion handles larger spring, gesture and layout transitions while React Aria exposes interaction states.

@@ -20,7 +20,7 @@ import '../styles/global.css'
         <div class="eyebrow">PZHOWN / UI LAB</div>
         <h1>Shared visual system,<br />rendered in Astro.</h1>
         <p class="hero-copy">
-          Squircle corners, perceptual gradients, progressive blur, Motion, and React Aria components — all in one preview surface.
+          Rounded surfaces, perceptual gradients, progressive blur, Motion, and React Aria components — all in one preview surface.
         </p>
         <div class="hero-pills" aria-label="Technology stack">
           <span>Astro 7</span>
@@ -35,25 +35,25 @@ import '../styles/global.css'
         <header class="section-heading">
           <div>
             <p class="section-kicker">01 / CORNERS</p>
-            <h2>Squircle</h2>
+            <h2>Rounded corners</h2>
           </div>
-          <p>`corner-shape: squircle` globally upgrades every existing border radius where the browser supports it.</p>
+          <p>Standard CSS border radius keeps corner geometry explicit and consistent across supported browsers.</p>
         </header>
 
-        <div class="squircle-grid">
-          <article class="squircle-demo radius-12">
+        <div class="radius-grid">
+          <article class="radius-demo radius-12">
             <span>12</span>
             <small>Compact</small>
           </article>
-          <article class="squircle-demo radius-20">
+          <article class="radius-demo radius-20">
             <span>20</span>
             <small>Control</small>
           </article>
-          <article class="squircle-demo radius-32">
+          <article class="radius-demo radius-32">
             <span>32</span>
             <small>Card</small>
           </article>
-          <article class="squircle-demo radius-48">
+          <article class="radius-demo radius-48">
             <span>48</span>
             <small>Hero</small>
           </article>
@@ -186,7 +186,7 @@ import '../styles/global.css'
             <p class="section-kicker">05 / COMPONENTS</p>
             <h2>React Aria + owned UI source</h2>
           </div>
-          <p>Adaptive interaction primitives run as one React island while PzHown UI owns the visual language, squircle surfaces and Motion integration.</p>
+          <p>Adaptive interaction primitives run as one React island while PzHown UI owns the visual language, rounded surfaces and Motion integration.</p>
         </header>
         <ComponentShowcase client:load />
       </section>
@@ -399,13 +399,13 @@ import '../styles/global.css'
     line-height: 1.7;
   }
 
-  .squircle-grid {
+  .radius-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
   }
 
-  .squircle-demo {
+  .radius-demo {
     min-height: 190px;
     display: flex;
     flex-direction: column;
@@ -418,13 +418,13 @@ import '../styles/global.css'
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), 0 18px 45px rgb(17 24 39 / 0.06);
   }
 
-  .squircle-demo span {
+  .radius-demo span {
     font-size: 34px;
     font-weight: 620;
     letter-spacing: -0.04em;
   }
 
-  .squircle-demo small {
+  .radius-demo small {
     margin-top: 3px;
     color: rgb(18 19 22 / 0.45);
     font-size: 12px;
@@ -712,7 +712,7 @@ import '../styles/global.css'
       gap: 12px;
     }
 
-    .squircle-grid,
+    .radius-grid,
     .gradient-grid {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -747,7 +747,7 @@ import '../styles/global.css'
       font-size: clamp(45px, 15vw, 70px);
     }
 
-    .squircle-grid,
+    .radius-grid,
     .gradient-grid {
       grid-template-columns: 1fr;
     }
@@ -756,7 +756,7 @@ import '../styles/global.css'
       grid-column: auto;
     }
 
-    .squircle-demo {
+    .radius-demo {
       min-height: 150px;
     }
 

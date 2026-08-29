@@ -34,7 +34,7 @@
 - `.agents/skills/system-feedback/SKILL.md`
   - Loading、Progress、Skeleton、Empty、Success、Error、Retry、Undo 与长任务反馈。
 - `.agents/skills/apple-design/SKILL.md`
-  - Apple-inspired 视觉语言、Squircle、色彩、Neutral、材质、阴影、透明与 Blur。
+  - Apple-inspired 视觉语言、色彩、Neutral、圆角、材质、阴影、透明与 Blur。
 - `.agents/skills/interaction-motion/SKILL.md`
   - Motion、View Transitions、Presence、共享元素、手势与高级微交互。
 - `.agents/skills/perceptual-naturalness/SKILL.md`
@@ -80,7 +80,7 @@
 - 视觉构图允许非对称，但主要注意力锚点、视觉重量和 attention flow 必须与内容优先级一致。
 - 不把实现层的所有选项直接暴露给用户；优先 Recognition、合理默认值和渐进披露。
 - 系统状态变化后尽量保持滚动、输入、选择与上下文，失败时提供可恢复路径。
-- 圆角优先使用全局 `corner-shape: squircle`。
+- 圆角使用组件既有 `border-radius` / radius token；不要引入额外的全局角形状规则。
 - 色彩与渐变优先使用语义 token、OKLCH/Oklab 和现有 Smooth Gradient。
 - Progressive Blur 只用于建立上下文/层级，不把长文正文放在持续高强度 Blur 上。
 - Payload 原生 Admin 不做全局重皮；自定义 Dashboard/业务 UI 才使用共享设计系统。
