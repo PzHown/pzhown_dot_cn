@@ -84,7 +84,7 @@
 
 ### `apple-design`
 
-负责最终视觉语言：材质、色彩、Neutral、Squircle、阴影、透明度和 Apple-inspired 的克制感。它不重新定义空间、导航、认知、交互或系统状态语义。
+负责最终视觉语言：材质、色彩、Neutral、圆角、阴影、透明度和 Apple-inspired 的克制感。它不重新定义空间、导航、认知、交互或系统状态语义。
 
 ### `interaction-motion`
 
@@ -106,7 +106,7 @@
 - Motion 用于 spring、presence、layout、gesture；简单状态优先 CSS。
 - 自然性不等于“慢 + Spring + 低饱和 + 大圆角”；直接操控优先即时、增量、可逆和可中断，颜色/渐变需要感知连续时优先 Oklab/OKLCH。
 - `@pzhown/ui` 是共享组件、Token 与基础视觉规则的优先入口。
-- 圆角优先使用现有 `corner-shape: squircle` 体系。
+- 圆角使用组件既有 `border-radius` 与 radius token，不叠加额外的全局角形状规则。
 - 自定义色彩优先使用 OKLCH/Oklab 和语义 token。
 - Progressive Blur 只用于建立上下文和空间层级，不能成为大面积阅读背景。
 - Payload 原生 Admin 不做全局重皮；自定义业务界面才使用共享设计系统。
@@ -281,7 +281,7 @@ Task state      → system-feedback
 - 采用 Apple-inspired，而不是 Apple clone。
 - 在空间、导航、认知和交互关系成立后，再用灰度、材质、形状和色彩完成表达。
 - **先用 Neutral 与明度建立层级，再用色相承载品牌、状态和重点。**
-- Squircle、Smooth Gradient、Progressive Blur 是工具，不是必须装饰。
+- Smooth Gradient、Progressive Blur 是工具，不是必须装饰。
 - Glass/Blur 只在需要保留上下文或表达前后层级时使用。
 - 深色模式重新验证亮度、对比和眩光，不简单反色。
 

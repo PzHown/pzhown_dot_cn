@@ -33,17 +33,15 @@ The first visit to Payload Admin will guide you through creating the initial use
 
 Both apps use Tailwind CSS 4 with the `tw:` prefix. Payload does not enable Tailwind Preflight, so its built-in Admin styles remain isolated from the custom UI system.
 
-### Squircle corners
+### Rounded corners
 
-`@pzhown/ui/effects.css` globally applies `corner-shape: squircle` wherever the browser supports it. Existing `border-radius` values remain the source of corner size. Browsers without `corner-shape` support simply keep the normal rounded-corner rendering.
+Shared UI uses normal CSS `border-radius` values directly. Corner size remains explicit at the component or token layer.
 
 ```css
 .card {
   border-radius: 24px;
 }
 ```
-
-No extra class is required for the squircle shape.
 
 ### Smooth gradients
 
@@ -117,7 +115,7 @@ import ProgressiveBlur from '@pzhown/ui/react'
 - Tabs
 - Switch
 
-React Aria owns adaptive mouse, touch, keyboard, focus, screen-reader, overlay, and selection behavior. The PzHown layer owns squircle corners, translucent surfaces, OKLCH tokens, blur, gradients, and interaction styling.
+React Aria owns adaptive mouse, touch, keyboard, focus, screen-reader, overlay, and selection behavior. The PzHown layer owns rounded surfaces, translucent materials, OKLCH tokens, blur, gradients, and interaction styling.
 
 Next.js / Payload custom UI can import components directly:
 

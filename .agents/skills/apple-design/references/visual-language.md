@@ -44,7 +44,7 @@
 
 ## 圆角与形状
 
-- 默认使用 CSS `border-radius` 定尺寸，并由全局 `corner-shape: squircle` 在支持浏览器中升级为超椭圆。
+- 默认直接使用 CSS `border-radius` 定尺寸，并通过统一 radius 层级保持组件之间的形状关系。
 - 推荐层级：紧凑控件 10–14px；普通控件 14–18px；Card 20–28px；Hero/大 Surface 28–40px。
 - 胶囊只用于真正适合 pill/capsule 语义的控件，如筛选器、小型 segmented control、状态标签。
 - 同一容器内的内外圆角保持层级关系，内层 radius 通常小于外层。

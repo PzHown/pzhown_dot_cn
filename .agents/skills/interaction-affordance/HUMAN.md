@@ -33,7 +33,7 @@
 - Card/目录/脚注在内容里的角色：看[内容呈现](../content-presentation/HUMAN.md)。
 - 不同设备上的结构重排：看[跨设备布局](../adaptive-layout/HUMAN.md)。
 - 控件 padding、icon-label gap、相邻目标的空间节奏和静态视觉重心：看[空间构图](../spatial-composition/HUMAN.md)。
-- 颜色、Squircle 和 Surface 最终长相：看[Apple 视觉](../apple-design/HUMAN.md)。
+- 颜色、圆角和 Surface 最终长相：看[Apple 视觉](../apple-design/HUMAN.md)。
 - 操作级 Loading / Success / Error / Retry：看[系统反馈](../system-feedback/HUMAN.md)。
 - 复杂动画和空间连续性：看[交互动效](../interaction-motion/HUMAN.md)。
 

@@ -1,12 +1,3 @@
-/* Global squircle corners with graceful border-radius fallback. */
-@supports (corner-shape: squircle) {
-  *,
-  *::before,
-  *::after {
-    corner-shape: squircle;
-  }
-}
-
 /* Perceptual two-stop gradient. */
 .gradient-oklab {
   --gradient-angle: 180deg;
