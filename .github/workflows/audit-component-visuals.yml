@@ -1,0 +1,69 @@
+name: Audit component visuals
+
+on:
+  push:
+    branches:
+      - refactor/skill-component-visuals
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit component slots and visual utilities
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = require('path')
+
+          const root = 'packages/ui/src/components'
+          const files = fs.readdirSync(root).filter((file) => file.endsWith('.tsx')).sort()
+          const slotCounts = new Map()
+          const fileReports = []
+          const tokenCounts = {
+            rounded: 0,
+            border: 0,
+            ring: 0,
+            shadow: 0,
+            backdrop: 0,
+            bgSemantic: 0,
+            textSemantic: 0,
+          }
+
+          for (const file of files) {
+            const source = fs.readFileSync(path.join(root, file), 'utf8')
+            const slots = [...source.matchAll(/data-slot=["'`]([^"'`]+)["'`]/g)].map((match) => match[1])
+            const uniqueSlots = [...new Set(slots)]
+            uniqueSlots.forEach((slot) => slotCounts.set(slot, (slotCounts.get(slot) || 0) + 1))
+
+            const classes = [...source.matchAll(/tw:[^\s"'`]+/g)].map((match) => match[0])
+            const visual = classes.filter((value) => /(?:rounded|border|ring|shadow|backdrop|bg-(?:background|card|popover|primary|secondary|muted|accent|destructive)|text-(?:foreground|card-foreground|popover-foreground|primary-foreground|secondary-foreground|muted-foreground|accent-foreground|destructive))/.test(value))
+            for (const value of visual) {
+              if (value.includes('rounded')) tokenCounts.rounded++
+              if (/tw:(?:[^:]+:)*border/.test(value)) tokenCounts.border++
+              if (value.includes('ring')) tokenCounts.ring++
+              if (value.includes('shadow')) tokenCounts.shadow++
+              if (value.includes('backdrop')) tokenCounts.backdrop++
+              if (/bg-(?:background|card|popover|primary|secondary|muted|accent|destructive)/.test(value)) tokenCounts.bgSemantic++
+              if (/text-(?:foreground|card-foreground|popover-foreground|primary-foreground|secondary-foreground|muted-foreground|accent-foreground|destructive)/.test(value)) tokenCounts.textSemantic++
+            }
+
+            fileReports.push({ file, slots: uniqueSlots, visual: [...new Set(visual)].slice(0, 24) })
+          }
+
+          console.log(`COMPONENT_FILES ${files.length}`)
+          console.log('VISUAL_TOKEN_COUNTS', JSON.stringify(tokenCounts))
+          console.log('\nSLOTS')
+          for (const [slot, count] of [...slotCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+            console.log(`${slot}\t${count}`)
+          }
+          console.log('\nFILES')
+          for (const report of fileReports) {
+            console.log(`\n## ${report.file}`)
+            console.log(`slots: ${report.slots.join(', ') || '-'}`)
+            console.log(`visual: ${report.visual.join(' ') || '-'}`)
+          }
+          NODE
