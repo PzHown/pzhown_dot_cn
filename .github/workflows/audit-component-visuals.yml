@@ -1,4 +1,4 @@
-name: Audit component visuals
+name: Finalize component visual refactor
 
 on:
   push:
@@ -6,64 +6,107 @@ on:
       - refactor/skill-component-visuals
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  audit:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Audit component slots and visual utilities
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Finalize scoped component visual system
         run: |
           node <<'NODE'
           const fs = require('fs')
-          const path = require('path')
 
-          const root = 'packages/ui/src/components'
-          const files = fs.readdirSync(root).filter((file) => file.endsWith('.tsx')).sort()
-          const slotCounts = new Map()
-          const fileReports = []
-          const tokenCounts = {
-            rounded: 0,
-            border: 0,
-            ring: 0,
-            shadow: 0,
-            backdrop: 0,
-            bgSemantic: 0,
-            textSemantic: 0,
+          function replace(path, from, to) {
+            let source = fs.readFileSync(path, 'utf8')
+            if (!source.includes(from)) throw new Error(`Patch target not found in ${path}`)
+            source = source.replace(from, to)
+            fs.writeFileSync(path, source)
           }
 
-          for (const file of files) {
-            const source = fs.readFileSync(path.join(root, file), 'utf8')
-            const slots = [...source.matchAll(/data-slot=["'`]([^"'`]+)["'`]/g)].map((match) => match[1])
-            const uniqueSlots = [...new Set(slots)]
-            uniqueSlots.forEach((slot) => slotCounts.set(slot, (slotCounts.get(slot) || 0) + 1))
+          replace(
+            'packages/ui/src/components.css',
+            `.pzhown-dropdown-label,\n.pzhown-dropdown-shortcut,\n:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-label'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-shortcut'] {\n  color: var(--pzhown-ui-foreground-secondary);\n}\n\n.pzhown-dropdown-separator,\n:where(.pzhown-ui, .pzhown-ui *)[data-slot$='-separator'] {\n  background: var(--pzhown-ui-separator);\n}`,
+            `.pzhown-dropdown-label,\n.pzhown-dropdown-shortcut,\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-label'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-shortcut'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='select-label'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-label'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='command-shortcut'] {\n  color: var(--pzhown-ui-foreground-secondary);\n}\n\n.pzhown-dropdown-separator,\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='context-menu-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='select-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='command-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='item-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='field-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='sidebar-separator'],\n:where(.pzhown-ui, .pzhown-ui *)[data-slot='button-group-separator'] {\n  background: var(--pzhown-ui-separator);\n}`
+          )
 
-            const classes = [...source.matchAll(/tw:[^\s"'`]+/g)].map((match) => match[0])
-            const visual = classes.filter((value) => /(?:rounded|border|ring|shadow|backdrop|bg-(?:background|card|popover|primary|secondary|muted|accent|destructive)|text-(?:foreground|card-foreground|popover-foreground|primary-foreground|secondary-foreground|muted-foreground|accent-foreground|destructive))/.test(value))
-            for (const value of visual) {
-              if (value.includes('rounded')) tokenCounts.rounded++
-              if (/tw:(?:[^:]+:)*border/.test(value)) tokenCounts.border++
-              if (value.includes('ring')) tokenCounts.ring++
-              if (value.includes('shadow')) tokenCounts.shadow++
-              if (value.includes('backdrop')) tokenCounts.backdrop++
-              if (/bg-(?:background|card|popover|primary|secondary|muted|accent|destructive)/.test(value)) tokenCounts.bgSemantic++
-              if (/text-(?:foreground|card-foreground|popover-foreground|primary-foreground|secondary-foreground|muted-foreground|accent-foreground|destructive)/.test(value)) tokenCounts.textSemantic++
-            }
+          replace(
+            'packages/ui/src/components.css',
+            `:where(.pzhown-ui, .pzhown-ui *)[data-slot='breadcrumb-separator'] {\n  color: var(--pzhown-ui-foreground-tertiary);\n}`,
+            `:where(.pzhown-ui, .pzhown-ui *)[data-slot='breadcrumb-separator'] {\n  background: transparent;\n  color: var(--pzhown-ui-foreground-tertiary);\n}`
+          )
 
-            fileReports.push({ file, slots: uniqueSlots, visual: [...new Set(visual)].slice(0, 24) })
+          replace(
+            'packages/ui/src/components/alert.tsx',
+            `      data-slot="alert"\n      role="alert"`,
+            `      data-slot="alert"\n      data-variant={variant ?? "default"}\n      role="alert"`
+          )
+
+          replace(
+            'apps/web/src/styles/global.css',
+            `@import "@pzhown/ui/components.css";\n@import "./ui-semantic-tokens.css";`,
+            `@import "@pzhown/ui/components.css";`
+          )
+
+          fs.rmSync('apps/web/src/styles/ui-semantic-tokens.css')
+
+          const theme = `\n/* Generate semantic utilities used by @pzhown/ui without enabling Preflight.\n * Values resolve only where the shared component scope defines the variables. */\n@theme inline {\n  --color-background: var(--background);\n  --color-foreground: var(--foreground);\n  --color-card: var(--card);\n  --color-card-foreground: var(--card-foreground);\n  --color-popover: var(--popover);\n  --color-popover-foreground: var(--popover-foreground);\n  --color-primary: var(--primary);\n  --color-primary-foreground: var(--primary-foreground);\n  --color-secondary: var(--secondary);\n  --color-secondary-foreground: var(--secondary-foreground);\n  --color-muted: var(--muted);\n  --color-muted-foreground: var(--muted-foreground);\n  --color-accent: var(--accent);\n  --color-accent-foreground: var(--accent-foreground);\n  --color-destructive: var(--destructive);\n  --color-border: var(--border);\n  --color-input: var(--input);\n  --color-ring: var(--ring);\n  --color-chart-1: var(--chart-1);\n  --color-chart-2: var(--chart-2);\n  --color-chart-3: var(--chart-3);\n  --color-chart-4: var(--chart-4);\n  --color-chart-5: var(--chart-5);\n  --color-sidebar: var(--sidebar);\n  --color-sidebar-foreground: var(--sidebar-foreground);\n  --color-sidebar-primary: var(--sidebar-primary);\n  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);\n  --color-sidebar-accent: var(--sidebar-accent);\n  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);\n  --color-sidebar-border: var(--sidebar-border);\n  --color-sidebar-ring: var(--sidebar-ring);\n}\n`
+
+          const cmsTailwindPath = 'apps/cms/src/styles/tailwind.css'
+          let cmsTailwind = fs.readFileSync(cmsTailwindPath, 'utf8')
+          if (!cmsTailwind.includes('@theme inline')) {
+            cmsTailwind = cmsTailwind.trimEnd() + '\n' + theme
+            fs.writeFileSync(cmsTailwindPath, cmsTailwind)
           }
 
-          console.log(`COMPONENT_FILES ${files.length}`)
-          console.log('VISUAL_TOKEN_COUNTS', JSON.stringify(tokenCounts))
-          console.log('\nSLOTS')
-          for (const [slot, count] of [...slotCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-            console.log(`${slot}\t${count}`)
-          }
-          console.log('\nFILES')
-          for (const report of fileReports) {
-            console.log(`\n## ${report.file}`)
-            console.log(`slots: ${report.slots.join(', ') || '-'}`)
-            console.log(`visual: ${report.visual.join(' ') || '-'}`)
-          }
+          replace(
+            'apps/cms/src/app/(payload)/layout.tsx',
+            `import '@payloadcms/next/css'\nimport '@pzhown/ui/components.css'\nimport '@pzhown/ui/effects.css'\nimport '@pzhown/ui/progressive-blur.css'`,
+            `import '@payloadcms/next/css'\nimport '../../styles/tailwind.css'\nimport '@pzhown/ui/components.css'\nimport '@pzhown/ui/effects.css'\nimport '@pzhown/ui/progressive-blur.css'`
+          )
+
+          replace(
+            'apps/cms/src/app/(payload)/layout.tsx',
+            `\nimport { importMap } from './admin/importMap.js'\nimport '../../styles/tailwind.css'`,
+            `\nimport { importMap } from './admin/importMap.js'`
+          )
+
+          fs.rmSync('.github/workflows/audit-component-visuals.yml')
           NODE
+
+          test ! -e apps/web/src/styles/ui-semantic-tokens.css
+          ! git grep -n "ui-semantic-tokens.css" -- .
+
+      - name: Check shared UI
+        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
+
+      - name: Check Astro
+        run: pnpm --filter @pzhown/web check
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
+
+      - name: Check CMS
+        run: pnpm --filter @pzhown/cms check
+
+      - name: Commit refactor
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'refactor(ui): finalize shared component visual system'
+          git push origin HEAD:refactor/skill-component-visuals
