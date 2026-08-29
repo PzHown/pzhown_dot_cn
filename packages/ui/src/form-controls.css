@@ -92,6 +92,19 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
   opacity: 1;
 }
 
+/* Browser autofill must stay inside the app theme instead of painting yellow/blue. */
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='questionnaire-input']):is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--pzhown-ui-foreground);
+  caret-color: var(--pzhown-ui-foreground);
+  box-shadow: 0 0 0 1000px var(--pzhown-field-background) inset;
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='questionnaire-input']):is(:autofill, :-webkit-autofill):focus-visible {
+  box-shadow:
+    0 0 0 1000px var(--pzhown-field-focus-background) inset,
+    0 0 0 3px var(--pzhown-ui-focus-soft);
+}
+
 /* Hover is intentionally below focus, invalid and disabled. */
 :is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
@@ -146,6 +159,12 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
 }
 
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='questionnaire-input']):is(:autofill, :-webkit-autofill):focus-visible:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+  box-shadow:
+    0 0 0 1000px var(--pzhown-field-focus-background) inset,
+    0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
+}
+
 /* Disabled is the terminal state and must not inherit hover/focus emphasis. */
 :is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
@@ -196,6 +215,11 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+}
+
+/* Shared Input consumers must not regress below the component geometry. */
+:is(.pzhown-ui, .pzhown-ui *).pzhown-input[data-slot='sidebar-input'] {
+  height: 2.75rem;
 }
 
 :is(.pzhown-ui, .pzhown-ui *)[data-slot='native-select-wrapper']:has(select:disabled) [data-slot='native-select-icon'] {
