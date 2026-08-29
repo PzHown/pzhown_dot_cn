@@ -108,7 +108,7 @@ function DialogContent({
             <DialogClose
               variant="ghost"
               size="icon-sm"
-              className="tw:absolute tw:top-2.5 tw:right-2.5 tw:size-10 tw:rounded-full tw:text-muted-foreground hover:tw:text-foreground"
+              className="tw:absolute tw:top-2 tw:right-2 tw:size-11 tw:rounded-full tw:text-muted-foreground hover:tw:text-foreground"
               aria-label="Close"
             >
               <XIcon className="tw:size-[18px]" />
@@ -124,7 +124,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn('tw:flex tw:flex-col tw:gap-1.5 tw:pr-12', className)}
+      className={cn('tw:flex tw:flex-col tw:gap-1.5 tw:pr-16', className)}
       {...props}
     />
   )
