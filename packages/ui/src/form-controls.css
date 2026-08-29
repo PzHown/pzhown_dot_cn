@@ -15,9 +15,21 @@
   [data-slot='combobox-chips'],
   [data-slot='questionnaire-input']
 ) {
-  border: 1px solid var(--pzhown-ui-separator-strong);
+  --pzhown-field-background: var(--pzhown-ui-surface-1);
+  --pzhown-field-border: var(--pzhown-ui-separator-strong);
+  --pzhown-field-hover-background: color-mix(in oklab, var(--pzhown-ui-surface-1), var(--pzhown-ui-surface-2) 24%);
+  --pzhown-field-hover-border: color-mix(in oklab, var(--pzhown-ui-separator-strong), var(--pzhown-ui-foreground) 18%);
+  --pzhown-field-focus-background: var(--pzhown-ui-surface-1);
+  --pzhown-field-focus-border: color-mix(in oklab, var(--pzhown-ui-focus), transparent 28%);
+  --pzhown-field-invalid-border: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 22%);
+  --pzhown-field-disabled-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-disabled-border: var(--pzhown-ui-separator);
+  --pzhown-field-readonly-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-readonly-border: var(--pzhown-ui-separator);
+
+  border: 1px solid var(--pzhown-field-border);
   border-radius: var(--pzhown-ui-radius-control);
-  background: var(--pzhown-ui-surface-1);
+  background: var(--pzhown-field-background);
   color: var(--pzhown-ui-foreground);
   box-shadow: none;
   outline: none;
@@ -28,91 +40,7 @@
     opacity var(--pzhown-ui-duration-fast) ease;
 }
 
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='questionnaire-input']
-)::placeholder,
-:is(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-chip-input']::placeholder {
-  color: var(--pzhown-ui-foreground-tertiary);
-  opacity: 1;
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='questionnaire-input']
-):hover:not(:disabled):not([readonly]):not([aria-invalid='true']),
-:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger'][data-hovered]:not([aria-invalid='true']),
-:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):hover:not(:has(:disabled, [data-disabled], [readonly], [aria-invalid='true'])) {
-  border-color: color-mix(in oklab, var(--pzhown-ui-separator-strong), var(--pzhown-ui-foreground) 18%);
-  background: color-mix(in oklab, var(--pzhown-ui-surface-1), var(--pzhown-ui-surface-2) 24%);
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='questionnaire-input']
-):focus-visible,
-:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]),
-:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within {
-  border-color: color-mix(in oklab, var(--pzhown-ui-focus), transparent 28%);
-  background: var(--pzhown-ui-surface-1);
-  box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='select-trigger'],
-  [data-slot='questionnaire-input']
-):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
-  border-color: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 22%);
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='questionnaire-input']
-):focus-visible:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within:has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
-  border-color: var(--pzhown-ui-destructive);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(
-  .pzhown-input,
-  [data-slot='textarea'],
-  [data-slot='native-select'],
-  [data-slot='select-trigger'],
-  [data-slot='questionnaire-input']
-):is(:disabled, [data-disabled]),
-:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has(:disabled, [data-disabled]) {
-  border-color: var(--pzhown-ui-separator);
-  background: var(--pzhown-ui-surface-2);
-  color: var(--pzhown-ui-foreground-tertiary);
-  box-shadow: none;
-  opacity: 0.56;
-  cursor: not-allowed;
-}
-
-:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='textarea'], [data-slot='questionnaire-input'])[readonly],
-:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:has([readonly]) {
-  border-color: var(--pzhown-ui-separator);
-  background: var(--pzhown-ui-surface-2);
-  color: var(--pzhown-ui-foreground-secondary);
-  box-shadow: none;
-  cursor: default;
-}
-
-/* iOS theme keeps a filled base field while preserving the same state order. */
+/* iOS keeps the filled field base, but state priority remains shared. */
 html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
@@ -140,70 +68,116 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
   [data-slot='combobox-chips'],
   [data-slot='questionnaire-input']
 ) {
-  border-color: transparent;
-  background: var(--pzhown-ui-surface-2);
+  --pzhown-field-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-border: transparent;
+  --pzhown-field-hover-background: color-mix(in oklab, var(--pzhown-ui-surface-2), var(--pzhown-ui-surface-3) 36%);
+  --pzhown-field-hover-border: transparent;
+  --pzhown-field-focus-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-focus-border: color-mix(in oklab, var(--pzhown-ui-focus), transparent 48%);
+  --pzhown-field-invalid-border: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 18%);
+  --pzhown-field-disabled-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-disabled-border: transparent;
+  --pzhown-field-readonly-background: var(--pzhown-ui-surface-2);
+  --pzhown-field-readonly-border: transparent;
 }
 
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+)::placeholder,
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-chip-input']::placeholder {
+  color: var(--pzhown-ui-foreground-tertiary);
+  opacity: 1;
+}
+
+/* Hover is intentionally below focus, invalid and disabled. */
+:is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
   [data-slot='native-select'],
   [data-slot='questionnaire-input']
 ):hover:not(:disabled):not([readonly]):not([aria-invalid='true']),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger'][data-hovered]:not([aria-invalid='true']),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):hover:not(:has(:disabled, [data-disabled], [readonly], [aria-invalid='true'])) {
-  border-color: transparent;
-  background: color-mix(in oklab, var(--pzhown-ui-surface-2), var(--pzhown-ui-surface-3) 36%);
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger'][data-hovered]:not([data-disabled]):not([aria-invalid='true']),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:hover:not([data-disabled]):not(:has(> [data-slot='input-group-control']:is(:disabled, [data-disabled], [readonly], [aria-invalid='true']))),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-chips']:hover:not([data-disabled]):not([aria-invalid='true']) {
+  border-color: var(--pzhown-field-hover-border);
+  background: var(--pzhown-field-hover-background);
 }
 
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+/* Keyboard focus is visible; nested group controls delegate focus to the owner. */
+:is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
   [data-slot='native-select'],
   [data-slot='questionnaire-input']
 ):focus-visible,
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within {
-  border-color: color-mix(in oklab, var(--pzhown-ui-focus), transparent 48%);
-  background: var(--pzhown-ui-surface-2);
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within {
+  border-color: var(--pzhown-field-focus-border);
+  background: var(--pzhown-field-focus-background);
   box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
 }
 
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+/* Invalid overrides normal focus color. */
+:is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
   [data-slot='native-select'],
   [data-slot='select-trigger'],
   [data-slot='questionnaire-input']
 ):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
-  border-color: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 18%);
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:has(> [data-slot='input-group-control']:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false']))) {
+  border-color: var(--pzhown-field-invalid-border);
 }
 
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+:is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
   [data-slot='native-select'],
   [data-slot='questionnaire-input']
 ):focus-visible:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within:has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:focus-within:has(> [data-slot='input-group-control']:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false']))) {
   border-color: var(--pzhown-ui-destructive);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
 }
 
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+/* Disabled is the terminal state and must not inherit hover/focus emphasis. */
+:is(.pzhown-ui, .pzhown-ui *):is(
   .pzhown-input,
   [data-slot='textarea'],
   [data-slot='native-select'],
   [data-slot='select-trigger'],
-  [data-slot='questionnaire-input']
+  [data-slot='questionnaire-input'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips']
 ):is(:disabled, [data-disabled]),
-html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has(:disabled, [data-disabled]) {
-  border-color: transparent;
-  background: var(--pzhown-ui-surface-2);
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:has(> [data-slot='input-group-control']:is(:disabled, [data-disabled])) {
+  border-color: var(--pzhown-field-disabled-border);
+  background: var(--pzhown-field-disabled-background);
+  color: var(--pzhown-ui-foreground-tertiary);
   box-shadow: none;
-  opacity: 0.5;
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+
+/* Readonly remains focusable/selectable, but does not advertise editability. */
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='textarea'], [data-slot='questionnaire-input'])[readonly],
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:has(> [data-slot='input-group-control'][readonly]) {
+  border-color: var(--pzhown-field-readonly-border);
+  background: var(--pzhown-field-readonly-background);
+  color: var(--pzhown-ui-foreground-secondary);
+  cursor: default;
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='textarea'], [data-slot='questionnaire-input'])[readonly]:focus-visible,
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:focus-within:has(> [data-slot='input-group-control'][readonly]) {
+  border-color: var(--pzhown-field-focus-border);
+  box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
 }
 
 /* Nested controls must not render a second field surface inside their owner. */
@@ -222,4 +196,8 @@ html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='inp
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+}
+
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='native-select-wrapper']:has(select:disabled) [data-slot='native-select-icon'] {
+  opacity: 0.5;
 }
