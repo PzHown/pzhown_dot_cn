@@ -16,6 +16,7 @@
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts",
     "./components.css": "./src/components.css",
+    "./ios-theme.css": "./src/ios-theme.css",
     "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
