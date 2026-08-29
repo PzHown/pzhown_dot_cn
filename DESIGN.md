@@ -171,6 +171,8 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 旧 shadcn、aria-nova、Base UI 组件实现和用于修补它们的主题覆盖层全部退役。新组件必须从自身 DOM、状态和 CSS 开始符合 iOS 27，而不是先生成通用 Web 组件，再靠全局 CSS 把它“改得像 iOS”。
 
+`@samasante/liquid-glass` 作为**纯光学引擎**接入：它只负责 SDF displacement、折射、色散、边缘高光和 frost，不定义组件几何、颜色语义、交互状态或信息架构。所有产品组件仍由 `@pzhown/ui` 自己拥有 API 与 DOM。
+
 项目原有两项视觉能力继续保留，但与组件体系解耦：**Progressive Blur** 用于滚动边缘和上下文过渡；**Oklab / smootherstep Gradient** 用于感知连续的渐变。
 
 ## Colors
@@ -215,11 +217,13 @@ iOS 27 相比 iOS 26 提高了系统 Chrome 尺寸，项目以新值为准：
 
 Liquid Glass 是内容上方的功能层，而不是背景装饰。
 
-- Large Glass：`rgba(250,250,250,.70)`，40px Web blur/shadow 近似；深色为 `rgba(0,0,0,.80)`。
+- Large Glass：`rgba(250,250,250,.70)` 作为 tint 语义；深色为 `rgba(0,0,0,.80)`。
 - Medium Glass：浅色 `.60`，深色 `.60`。
 - Small Glass：浅色 `#F7F7F7` + `0.5px #DDD`；深色为 `rgba(0,0,0,.60)` + 微弱白色内边缘。
-- Reduce Transparency 或不支持 backdrop-filter 时，必须降级到不透明 Grouped Surface。
-- Card、文章、表格、长列表内容区域优先靠 Surface 和 spacing 建层级，不用重阴影。
+- 真实光学层统一通过 `LiquidGlassSurface` / `LiquidGlassBackdrop` 调用 `@samasante/liquid-glass`，禁止组件自己重新实现一套 `feDisplacementMap` 或 WebGL shader。
+- Chrome / Edge 的通用浮层允许直接折射 live DOM；Safari / Firefox 的通用浮层保持 frost / tint / edge-light。若某个已知背景必须跨浏览器出现位移折射，使用显式 `refract={backgroundCopy}` 模式。
+- Reduce Transparency 时关闭光学层并降级到不透明 Grouped Surface；不能为了“真玻璃”违背系统可访问性设置。
+- Card、文章、表格、长列表内容区域优先靠 Surface 和 spacing 建层级，不用重阴影，也不启用 displacement。
 
 ## Shapes
 
@@ -238,24 +242,28 @@ Liquid Glass 是内容上方的功能层，而不是背景装饰。
 
 组件源码必须自己拥有 anatomy 与状态，不再依赖跨组件修补 CSS。
 
-- **Button**：视觉高度 28 / 36 / 50px；触控命中区可独立扩展，不能为了 44px hit target 破坏 iOS 27 的视觉尺寸。
-- **TextField / SearchBar**：36px 基础字段几何，Focus 使用系统 Blue ring；错误状态优先于普通 Focus 色。
+- **Button**：视觉高度 28 / 36 / 50px；触控命中区可独立扩展，不能为了 44px hit target 破坏 iOS 27 的视觉尺寸。只有 `variant="glass"` 启用 Small Optical Glass。
+- **TextField / SearchBar**：36px 基础字段几何，Focus 使用系统 Blue ring；错误状态优先于普通 Focus 色；普通输入面不启用 displacement。
 - **Switch**：51×31px，开启使用系统 Green。
 - **Checkbox / Radio / Slider / SegmentedControl**：原生表单语义优先，状态视觉按系统 Tint。
-- **ListSection / ListRow**：52px 常规行，0.5px inset separator。
-- **Toolbar / TabBar**：Large Liquid Glass；TabBar selected item 可以形成局部玻璃 indicator，但禁止叠加第二层大面积玻璃。
-- **Dialog / Sheet / Popover / ContextMenu**：各自拥有 Portal、Escape、遮罩/外部点击行为；不再套旧 Base UI DOM。
-- **Progressive Blur / Gradient**：属于 Effects，不是普通组件皮肤。
+- **ListSection / ListRow**：52px 常规行，0.5px inset separator；内容列表保持 Grouped Surface。
+- **Toolbar / TabBar**：Large Optical Liquid Glass；TabBar selected item 可以形成局部玻璃 indicator，但禁止叠加第二层大面积玻璃。
+- **Dialog / Sheet**：Large Optical Liquid Glass；各自拥有 Portal、Escape、遮罩/外部点击行为。
+- **Popover / ContextMenu**：Medium Optical Liquid Glass；不再套旧 Base UI DOM。
+- **LiquidGlassSurface**：是公开的低层材质 primitive，只有需要自定义浮动镜片或已知背景 `refract` 时直接使用；普通业务组件优先用上面的高层组件。
+- **Progressive Blur / Gradient**：属于 Effects，不是普通组件皮肤，也不参与 displacement。
 
 新业务只从 `@pzhown/ui/react` 使用新核心组件。缺少组件时按本 DESIGN.md 和仓库 Skills 新建，不从旧目录恢复。
 
 ## Do's and Don'ts
 
 - Do：以 `ios27-design-system` token 和组件规格为视觉事实来源。
+- Do：只把 `@samasante/liquid-glass` 当光学引擎，不允许它反过来决定 Button / Sheet / Toolbar 的 iOS 27 几何。
 - Do：可以研究 `react-cupertino-ui` 的结构，但必须映射回本项目自己的语义、状态与样式。
 - Do：优先系统语义色、Grouped Surface、清晰 spacing 和状态反馈。
 - Do：为 keyboard、pointer、touch、Reduced Motion、Reduced Transparency 提供完整路径。
 - Don't：恢复旧 `components.css / ios-theme.css / form-controls.css / liquid-glass*.css` 覆盖链。
+- Don't：用单纯 `backdrop-filter: blur()` 冒充已经启用的 Optical Liquid Glass；需要玻璃折射的核心浮层必须走统一材质 primitive。
 - Don't：为了兼容旧 import 而保留旧组件壳；业务代码应迁移到新 API。
 - Don't：把每个 Card、正文容器、表单组都做成玻璃。
 - Don't：用 viewport 宽度推断鼠标或触控能力。

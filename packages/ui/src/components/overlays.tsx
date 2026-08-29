@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { LiquidGlassBackdrop } from './materials'
 import { Portal, composeHandlers, cx, useControllableState, useEscape } from './shared'
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -61,8 +62,18 @@ export function DialogContent({ className, children, closeOnOverlay = true, ...p
       <div className="ios27-overlay" data-slot="dialog-overlay" onMouseDown={(event) => {
         if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
       }}>
-        <div {...props} ref={contentRef} role="dialog" aria-modal="true" tabIndex={-1} data-slot="dialog-content" className={cx('ios27-dialog', className)}>
-          {children}
+        <div
+          {...props}
+          ref={contentRef}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
+          data-slot="dialog-content"
+          data-glass="large"
+          className={cx('ios27-dialog', 'ios27-optical-host', className)}
+        >
+          <LiquidGlassBackdrop material="large" />
+          <div className="ios27-dialog__body ios27-optical-content">{children}</div>
         </div>
       </div>
     </Portal>
@@ -102,9 +113,20 @@ export function SheetContent({ side = 'bottom', className, children, ...props }:
   return (
     <Portal>
       <div className="ios27-overlay ios27-sheet-overlay" data-slot="sheet-overlay" onMouseDown={(event) => event.target === event.currentTarget && context.setOpen(false)}>
-        <div {...props} role="dialog" aria-modal="true" data-side={side} data-slot="sheet-content" className={cx('ios27-sheet', className)}>
-          {side === 'bottom' ? <div className="ios27-sheet__grabber" aria-hidden="true" /> : null}
-          {children}
+        <div
+          {...props}
+          role="dialog"
+          aria-modal="true"
+          data-side={side}
+          data-slot="sheet-content"
+          data-glass="large"
+          className={cx('ios27-sheet', 'ios27-optical-host', className)}
+        >
+          <LiquidGlassBackdrop material="large" />
+          <div className="ios27-sheet__body ios27-optical-content">
+            {side === 'bottom' ? <div className="ios27-sheet__grabber" aria-hidden="true" /> : null}
+            {children}
+          </div>
         </div>
       </div>
     </Portal>
@@ -151,7 +173,12 @@ export function PopoverContent({ className, children, ...props }: React.HTMLAttr
     document.addEventListener('pointerdown', handle)
     return () => document.removeEventListener('pointerdown', handle)
   }, [context])
-  return context.open ? <div {...props} role="dialog" data-slot="popover-content" className={cx('ios27-popover', className)}>{children}</div> : null
+  return context.open ? (
+    <div {...props} role="dialog" data-slot="popover-content" data-glass="medium" className={cx('ios27-popover', 'ios27-optical-host', className)}>
+      <LiquidGlassBackdrop material="medium" />
+      <div className="ios27-popover__body ios27-optical-content">{children}</div>
+    </div>
+  ) : null
 }
 
 type ContextMenuItem = { label: React.ReactNode; onSelect?: () => void; disabled?: boolean; destructive?: boolean; shortcut?: React.ReactNode }
@@ -176,8 +203,17 @@ export function ContextMenu({ items, children, className, onContextMenu, ...prop
       }}>{children}</div>
       {point ? (
         <Portal>
-          <div className="ios27-context-menu" role="menu" style={{ left: point.x, top: point.y }} onPointerDown={(event) => event.stopPropagation()}>
-            {items.map((item, index) => <button key={index} type="button" role="menuitem" disabled={item.disabled} data-destructive={item.destructive || undefined} onClick={() => { item.onSelect?.(); setPoint(null) }}><span>{item.label}</span>{item.shortcut ? <span className="ios27-context-menu__shortcut">{item.shortcut}</span> : null}</button>)}
+          <div
+            className="ios27-context-menu ios27-optical-host"
+            data-glass="medium"
+            role="menu"
+            style={{ left: point.x, top: point.y }}
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            <LiquidGlassBackdrop material="medium" />
+            <div className="ios27-context-menu__content ios27-optical-content">
+              {items.map((item, index) => <button key={index} type="button" role="menuitem" disabled={item.disabled} data-destructive={item.destructive || undefined} onClick={() => { item.onSelect?.(); setPoint(null) }}><span>{item.label}</span>{item.shortcut ? <span className="ios27-context-menu__shortcut">{item.shortcut}</span> : null}</button>)}
+            </div>
           </div>
         </Portal>
       ) : null}
