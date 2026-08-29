@@ -11,7 +11,7 @@
 /* The optical engine owns refraction/frost. Remove the former blur-only layer
    from components that now host a real displacement lens. */
 :is(.ios27-btn--glass,.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu){background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
-:is(.ios27-btn--glass,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu){overflow:hidden}
+:is(.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu){overflow:hidden}
 
 .ios27-btn--glass{border:.5px solid color-mix(in srgb,var(--glass-small-border) 75%,transparent)}
 .ios27-btn__content{display:inline-flex;align-items:center;justify-content:center;gap:inherit;min-width:0}
