@@ -1,0 +1,147 @@
+name: Verify component visuals
+
+on:
+  push:
+    branches:
+      - refactor/skill-component-visuals
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
+
+      - name: Install Chromium
+        run: pnpm dlx playwright@1.55.0 install chromium
+
+      - name: Start preview
+        run: |
+          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
+          echo $! > /tmp/astro-preview.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4321/components/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/astro-preview.log
+          exit 1
+
+      - name: Browser visual and runtime audit
+        run: |
+          cat > component-visuals.spec.js <<'TEST'
+          const { test, expect } = require('@playwright/test')
+
+          test('light and dark component document stays complete and coherent', async ({ page }) => {
+            const errors = []
+            const failedResponses = []
+            page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`))
+            page.on('console', (message) => {
+              if (message.type() === 'error' || message.type() === 'warning') {
+                errors.push(`${message.type()}: ${message.text()}`)
+              }
+            })
+            page.on('response', (response) => {
+              if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`)
+            })
+
+            await page.goto('http://127.0.0.1:4321/components/', { waitUntil: 'networkidle' })
+            await expect(page.locator('[data-component]')).toHaveCount(58)
+            await expect(page.locator('[data-demo-error]')).toHaveCount(0)
+
+            const light = await page.evaluate(() => {
+              const pick = (slot) => {
+                const element = document.querySelector(`[data-slot="${slot}"]`)
+                if (!element) return null
+                const s = getComputedStyle(element)
+                return {
+                  slot,
+                  background: s.backgroundColor,
+                  color: s.color,
+                  border: s.borderColor,
+                  radius: s.borderRadius,
+                  shadow: s.boxShadow,
+                  backdrop: s.backdropFilter,
+                }
+              }
+              return [
+                'button', 'input', 'card', 'alert', 'badge', 'tabs-list', 'tabs-trigger',
+                'switch', 'table-row', 'skeleton', 'breadcrumb-separator'
+              ].map(pick)
+            })
+            console.log('LIGHT_STYLES', JSON.stringify(light))
+
+            const breadcrumb = light.find((item) => item?.slot === 'breadcrumb-separator')
+            expect(breadcrumb?.background).toBe('rgba(0, 0, 0, 0)')
+
+            const card = light.find((item) => item?.slot === 'card')
+            expect(card?.shadow).toBe('none')
+
+            const input = light.find((item) => item?.slot === 'input')
+            expect(input?.backdrop === 'none' || input?.backdrop === '').toBeTruthy()
+
+            const alert = light.find((item) => item?.slot === 'alert')
+            expect(alert?.radius).not.toBe('0px')
+
+            await page.locator('button', { hasText: '切到深色' }).click()
+            await expect(page.locator('.component-document')).toHaveAttribute('data-theme', 'dark')
+
+            const dark = await page.evaluate(() => {
+              const card = document.querySelector('[data-slot="card"]')
+              const input = document.querySelector('[data-slot="input"]')
+              return {
+                card: card ? getComputedStyle(card).backgroundColor : null,
+                input: input ? getComputedStyle(input).backgroundColor : null,
+              }
+            })
+            console.log('DARK_STYLES', JSON.stringify(dark))
+            expect(dark.card).not.toBe(card?.background)
+
+            await page.screenshot({ path: 'components-dark.png', fullPage: true })
+            await page.locator('button', { hasText: '切到浅色' }).click()
+            await page.screenshot({ path: 'components-light.png', fullPage: true })
+
+            const alertDialog = page.locator('[data-component="alert-dialog"]')
+            await alertDialog.getByRole('button', { name: '打开确认对话框' }).click()
+            const overlay = page.locator('[data-slot="alert-dialog-content"]')
+            await expect(overlay).toBeVisible()
+            const overlayStyle = await overlay.evaluate((element) => {
+              const s = getComputedStyle(element)
+              return { background: s.backgroundColor, shadow: s.boxShadow, backdrop: s.backdropFilter, radius: s.borderRadius }
+            })
+            console.log('OVERLAY_STYLE', JSON.stringify(overlayStyle))
+            expect(overlayStyle.shadow).not.toBe('none')
+            expect(overlayStyle.radius).not.toBe('0px')
+
+            console.log('BROWSER_ERRORS', JSON.stringify(errors))
+            console.log('FAILED_RESPONSES', JSON.stringify(failedResponses))
+            expect(errors).toEqual([])
+            expect(failedResponses).toEqual([])
+          })
+          TEST
+
+          pnpm dlx @playwright/test@1.55.0 test component-visuals.spec.js --reporter=line --workers=1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: component-visual-screenshots
+          path: |
+            components-light.png
+            components-dark.png
+          if-no-files-found: ignore
