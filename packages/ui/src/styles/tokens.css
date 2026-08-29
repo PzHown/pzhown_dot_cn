@@ -1,0 +1,49 @@
+/* iOS 27 design tokens. Visual source of truth: seunghan91/ios27-design-system. */
+:root {
+  color-scheme: light;
+  --color-red:#ff383c;--color-orange:#ff8d28;--color-yellow:#ffcc00;--color-green:#34c759;--color-mint:#00c8b3;--color-teal:#00c3d0;--color-cyan:#00c0e8;--color-blue:#0088ff;--color-indigo:#6155f5;--color-purple:#cb30e0;--color-pink:#ff2d55;--color-brown:#ac7f5e;
+  --label-primary:#000;--label-secondary:rgba(60,60,67,.6);--label-tertiary:rgba(60,60,67,.3);--label-quaternary:rgba(60,60,67,.18);
+  --bg-primary:#fff;--bg-secondary:#f2f2f7;--bg-tertiary:#fff;--bg-grouped-primary:#f2f2f7;--bg-grouped-secondary:#fff;--bg-grouped-tertiary:#f2f2f7;
+  --fill-primary:rgba(120,120,128,.2);--fill-secondary:rgba(120,120,128,.16);--fill-tertiary:rgba(118,118,128,.12);--fill-quaternary:rgba(116,116,128,.08);
+  --black:#000;--gray:#8e8e93;--gray-2:#aeaeb2;--gray-3:#c7c7cc;--gray-4:#d1d1d6;--gray-5:#e5e5ea;--gray-6:#f2f2f7;--white:#fff;
+  --separator-opaque:#c6c6c8;--separator:rgba(0,0,0,.12);
+  --font-family:'SF Pro Text','SF Pro Display',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --text-large-title:34px;--text-title1:28px;--text-title2:22px;--text-title3:20px;--text-headline:17px;--text-body:17px;--text-callout:16px;--text-subheadline:15px;--text-footnote:13px;--text-caption1:12px;--text-caption2:11px;
+  --lh-large-title:41px;--lh-title1:34px;--lh-title2:28px;--lh-title3:25px;--lh-headline:22px;--lh-body:22px;--lh-callout:21px;--lh-subheadline:20px;--lh-footnote:18px;--lh-caption1:16px;--lh-caption2:13px;
+  --ls-large-title:.4px;--ls-title1:.38px;--ls-title2:-.26px;--ls-title3:-.45px;--ls-headline:-.43px;--ls-body:-.43px;--ls-callout:-.31px;--ls-subheadline:-.23px;--ls-footnote:-.08px;--ls-caption1:0;--ls-caption2:.06px;
+  --weight-regular:400;--weight-medium:500;--weight-semibold:600;--weight-bold:700;
+  --space-0:0;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-7:28px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
+  --blur-chrome:50px;--blur-thick:100px;--blur-regular:100px;--blur-thin:100px;--blur-ultrathin:100px;
+  --material-chrome-opacity:.75;--material-thick-opacity:.84;--material-regular-opacity:.60;--material-thin-opacity:.40;--material-ultrathin-opacity:.03;
+  --glass-large-bg:rgba(250,250,250,.7);--glass-large-radius:14px;--glass-large-shadow-blur:40px;
+  --glass-medium-bg:rgba(245,245,245,.6);--glass-medium-radius:12px;--glass-medium-shadow-blur:40px;
+  --glass-small-bg:#f7f7f7;--glass-small-border:#ddd;--glass-small-shadow-blur:40px;
+  --glass-primary-bg:#fff;--glass-primary-icon-color:#0091ff;--glass-primary-shadow-blur:40px;
+  --glass-clear-bg:rgba(255,255,255,.07);--glass-clear-radius:5px;--glass-clear-shadow-blur:40px;
+  --safe-area-top:59px;--safe-area-bottom:34px;--content-inset:16px;
+  --list-row-height:52px;--list-row-height-tall:68px;--toolbar-height:54px;--toolbar-height-bottom:84px;--navbar-height:54px;--navbar-height-large:125px;--tabbar-height:54px;--tabbar-height-total:95px;--tabbar-height-minimized:88px;--separator-height:.5px;
+  --duration-instant:0s;--duration-micro:.1s;--duration-fast:.2s;--duration-normal:.3s;--duration-slow:.4s;--duration-xslow:.5s;--duration-tab-transition:.3s;--duration-sheet-present:.5s;--duration-sheet-dismiss:.3s;--duration-alert-present:.2s;--duration-alert-dismiss:.15s;--duration-context-menu-open:.25s;--duration-context-menu-close:.15s;--duration-liquid-glass-morph:.35s;--duration-liquid-glass-tab-indicator:.45s;
+  --easing-linear:linear;--easing-ease-in:cubic-bezier(.42,0,1,1);--easing-ease-out:cubic-bezier(0,0,.58,1);--easing-ease-in-out:cubic-bezier(.42,0,.58,1);--easing-apple-default:cubic-bezier(.25,.46,.45,.94);--easing-apple-ease-out:cubic-bezier(0,0,.6,1);--easing-spring-snappy:cubic-bezier(.34,1.56,.64,1);--easing-spring-gentle:cubic-bezier(.25,.46,.45,.94);--easing-spring-stiff:cubic-bezier(.5,0,.75,0);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme:dark;
+    --color-red:#ff453a;--color-orange:#ff9f0a;--color-yellow:#ffd60a;--color-green:#30d158;--color-mint:#63e6e2;--color-teal:#40c8e0;--color-cyan:#64d2ff;--color-blue:#0a84ff;--color-indigo:#5e5ce6;--color-purple:#bf5af2;--color-pink:#ff375f;--color-brown:#ac8e68;
+    --label-primary:#fff;--label-secondary:rgba(235,235,245,.6);--label-tertiary:rgba(235,235,245,.3);--label-quaternary:rgba(235,235,245,.18);
+    --bg-primary:#000;--bg-secondary:#1c1c1e;--bg-tertiary:#2c2c2e;--bg-grouped-primary:#000;--bg-grouped-secondary:#1c1c1e;--bg-grouped-tertiary:#2c2c2e;
+    --fill-primary:rgba(120,120,128,.36);--fill-secondary:rgba(120,120,128,.32);--fill-tertiary:rgba(118,118,128,.24);--fill-quaternary:rgba(118,118,128,.18);
+    --gray-2:#636366;--gray-3:#48484a;--gray-4:#3a3a3c;--gray-5:#2c2c2e;--gray-6:#1c1c1e;--separator-opaque:#38383a;--separator:rgba(84,84,88,.65);
+    --glass-large-bg:rgba(0,0,0,.8);--glass-medium-bg:rgba(0,0,0,.6);--glass-small-bg:rgba(0,0,0,.6);--glass-small-border:rgba(255,255,255,.06);--glass-clear-bg:rgba(255,255,255,.07);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme:dark;
+  --color-red:#ff453a;--color-orange:#ff9f0a;--color-yellow:#ffd60a;--color-green:#30d158;--color-mint:#63e6e2;--color-teal:#40c8e0;--color-cyan:#64d2ff;--color-blue:#0a84ff;--color-indigo:#5e5ce6;--color-purple:#bf5af2;--color-pink:#ff375f;--color-brown:#ac8e68;
+  --label-primary:#fff;--label-secondary:rgba(235,235,245,.6);--label-tertiary:rgba(235,235,245,.3);--label-quaternary:rgba(235,235,245,.18);
+  --bg-primary:#000;--bg-secondary:#1c1c1e;--bg-tertiary:#2c2c2e;--bg-grouped-primary:#000;--bg-grouped-secondary:#1c1c1e;--bg-grouped-tertiary:#2c2c2e;
+  --fill-primary:rgba(120,120,128,.36);--fill-secondary:rgba(120,120,128,.32);--fill-tertiary:rgba(118,118,128,.24);--fill-quaternary:rgba(118,118,128,.18);
+  --gray-2:#636366;--gray-3:#48484a;--gray-4:#3a3a3c;--gray-5:#2c2c2e;--gray-6:#1c1c1e;--separator-opaque:#38383a;--separator:rgba(84,84,88,.65);
+  --glass-large-bg:rgba(0,0,0,.8);--glass-medium-bg:rgba(0,0,0,.6);--glass-small-bg:rgba(0,0,0,.6);--glass-small-border:rgba(255,255,255,.06);--glass-clear-bg:rgba(255,255,255,.07);
+}

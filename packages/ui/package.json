@@ -1,25 +1,16 @@
 {
   "name": "@pzhown/ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
-  "sideEffects": [
-    "./src/*.css"
-  ],
+  "sideEffects": ["./src/*.css", "./src/styles/*.css"],
   "exports": {
     ".": "./src/core.ts",
     "./astro": "./src/ProgressiveBlur.astro",
     "./react": "./src/react.ts",
     "./core": "./src/core.ts",
     "./components": "./src/components/index.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts",
-    "./lib/*": "./src/lib/*.ts",
-    "./components.css": "./src/components.css",
-    "./ios-theme.css": "./src/ios-theme.css",
-    "./form-controls.css": "./src/form-controls.css",
-    "./liquid-glass.css": "./src/liquid-glass.css",
-    "./liquid-glass-components.css": "./src/liquid-glass-components.css",
+    "./styles.css": "./src/styles.css",
     "./effects.css": "./src/effects.css",
     "./progressive-blur.css": "./src/progressive-blur.css"
   },
@@ -41,12 +32,8 @@
     "react-dom": ">=18 <20"
   },
   "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
+    "react": {"optional": true},
+    "react-dom": {"optional": true}
   },
   "devDependencies": {
     "@types/react": "19.2.14",

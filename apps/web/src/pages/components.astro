@@ -1,5 +1,5 @@
 ---
-import ComponentsDocument from '../components/component-document/ThemedComponentsDocument'
+import ComponentShowcase from '../components/ComponentShowcase'
 import '../styles/global.css'
 ---
 
@@ -8,39 +8,17 @@ import '../styles/global.css'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="PzHown UI 本地组件、组合关系、变体与状态的完整调试文档" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%2312171f'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-size='22' font-family='sans-serif' fill='white'%3EPH%3C/text%3E%3C/svg%3E" />
-    <title>PzHown UI · 本地组件文档</title>
+    <meta name="description" content="PzHown iOS 27 核心组件文档" />
+    <title>PzHown UI · iOS 27 Components</title>
   </head>
   <body>
-    <ComponentsDocument client:load />
+    <main class="components-page">
+      <header class="components-page__header">
+        <p class="hero-kicker">PZHOWN / CORE COMPONENTS</p>
+        <h1>iOS 27 Components</h1>
+        <p>这是新组件系统的唯一展示面。旧 aria-nova / shadcn 组件目录、旧状态矩阵和旧主题覆盖层不再参与渲染。</p>
+      </header>
+      <ComponentShowcase client:load />
+    </main>
   </body>
 </html>
-
-<style>
-  :global(*) {
-    box-sizing: border-box;
-  }
-
-  :global(html) {
-    background: #f2f2f7;
-    color: #1c1c1e;
-    font-family:
-      -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-    text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
-  }
-
-  :global(body) {
-    margin: 0;
-    min-width: 320px;
-    background: #f2f2f7;
-  }
-
-  :global(button),
-  :global(input),
-  :global(textarea),
-  :global(select) {
-    font: inherit;
-  }
-</style>

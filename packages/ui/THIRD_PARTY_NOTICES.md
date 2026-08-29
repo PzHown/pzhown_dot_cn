@@ -1,25 +1,17 @@
-# Third-party notices
+# Third-Party Design References
 
-## Progressive Blur
+## seunghan91/ios27-design-system
 
-The Progressive Blur implementation in this package is adapted from ideas and implementation patterns in `AndrewPrifer/progressive-blur`, licensed under the MIT License.
+- Repository: https://github.com/seunghan91/ios27-design-system
+- License: MIT
+- Role in this repository: canonical visual reference for iOS 27 Web tokens, typography, system colors, material values, component geometry and motion timings.
+- Integration policy: values and behavior are adapted into PzHown-owned source files; the upstream package is not required at runtime.
 
-Copyright (c) 2024 Andrew Prifer
+## Andersonlimahw/react-cupertino-ui
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+- Repository: https://github.com/Andersonlimahw/react-cupertino-ui
+- License: MIT
+- Role in this repository: structural/anatomy reference for component composition and state ownership.
+- Integration policy: its visual theme is not used. PzHown components are independently implemented and styled exclusively against the iOS 27 reference above.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## shadcn/ui
-
-The React component wrappers in this package follow and adapt the open-code component patterns from `shadcn-ui/ui`, licensed under the MIT License.
-
-Copyright (c) 2023 shadcn
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+The existing Progressive Blur and perceptual gradient effects remain PzHown-owned code and are intentionally separate from the iOS 27 component layer.
