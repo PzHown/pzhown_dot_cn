@@ -1,32 +1,26 @@
-/* Real optical refraction layer powered by @samasante/liquid-glass (MIT).
-   Component geometry and semantic colours remain owned by @pzhown/ui. */
+/* iOS 27 material fidelity + optional PallavAg optical lens.
+   Standard components render their own upstream-style material directly.
+   PallavAg is opt-in through LiquidGlassSurface only. */
 
 .ios27-optical-host{position:relative;isolation:isolate}
-.ios27-optical-glass__backdrop{position:absolute!important;inset:0!important;z-index:0;width:100%!important;height:100%!important;overflow:hidden;border-radius:inherit!important;pointer-events:none!important}
 .ios27-optical-content{position:relative;z-index:1}
+.ios27-optical-glass__backdrop{display:none!important}
 
-/* GlassMaterial uses the wrapper background as the tint over the refracted
-   backdrop. It MUST stay translucent: an opaque surface hides displacement. */
-.ios27-optical-glass{background:transparent}
-.ios27-optical-glass--small{background:color-mix(in srgb,var(--glass-small-bg) 42%,transparent)}
-.ios27-optical-glass--medium{background:color-mix(in srgb,var(--glass-medium-bg) 58%,transparent)}
-.ios27-optical-glass--large{background:color-mix(in srgb,var(--glass-large-bg) 68%,transparent)}
-
-/* The optical engine owns refraction/frost. Remove the former blur-only layer
-   from components that now host a real displacement lens. */
-:is(.ios27-btn--glass,.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu){background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
-:is(.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu){overflow:hidden}
-
-.ios27-btn--glass{border:.5px solid color-mix(in srgb,var(--glass-small-border) 75%,transparent)}
+/* Keep the wrapper adaptations introduced by the component anatomy, but let the
+   component itself own the material. */
 .ios27-btn__content{display:inline-flex;align-items:center;justify-content:center;gap:inherit;min-width:0}
 
-.ios27-toolbar{padding-inline:0;overflow:hidden}
+.ios27-toolbar{padding-inline:0;overflow:hidden;background:var(--glass-large-bg);backdrop-filter:blur(var(--glass-large-shadow-blur));-webkit-backdrop-filter:blur(var(--glass-large-shadow-blur))}
 .ios27-toolbar__content{display:flex;width:100%;min-height:inherit;align-items:center;justify-content:space-between;gap:12px;padding-inline:16px}
 .ios27-toolbar--bottom{padding-bottom:0}
 .ios27-toolbar--bottom .ios27-toolbar__content{min-height:var(--toolbar-height-bottom);padding-bottom:max(16px,env(safe-area-inset-bottom))}
 
-.ios27-tabbar__platter{display:block;padding:0}
+.ios27-tabbar__platter{display:block;padding:0;background:var(--glass-large-bg);backdrop-filter:blur(var(--glass-large-shadow-blur));-webkit-backdrop-filter:blur(var(--glass-large-shadow-blur))}
 .ios27-tabbar__platter-content{display:flex;min-height:var(--tabbar-height);align-items:center;justify-content:space-around;padding:4px 8px}
+
+/* iOS 27 modal/menu surfaces map to Thick Material rather than a generic
+   displacement lens. */
+:is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:rgb(255 255 255 / var(--material-thick-opacity));backdrop-filter:blur(var(--blur-thick));-webkit-backdrop-filter:blur(var(--blur-thick))}
 
 .ios27-dialog{padding:0;overflow:hidden}
 .ios27-dialog__body{max-height:inherit;overflow:auto;padding:20px}
@@ -36,17 +30,24 @@
 .ios27-sheet[data-side='bottom'] .ios27-sheet__body{padding:12px 20px calc(20px + env(safe-area-inset-bottom))}
 .ios27-sheet[data-side='left'] .ios27-sheet__body,.ios27-sheet[data-side='right'] .ios27-sheet__body{height:100%;padding:20px}
 
-.ios27-popover{padding:0}
+.ios27-popover{padding:0;background:var(--glass-medium-bg);backdrop-filter:blur(var(--glass-medium-shadow-blur));-webkit-backdrop-filter:blur(var(--glass-medium-shadow-blur))}
 .ios27-popover__body{padding:12px}
 
 .ios27-context-menu{display:block;padding:0}
 .ios27-context-menu__content{display:grid;padding:6px}
 
-/* Accessibility wins over optics. The semantic surface stays usable even when
-   the user requests opaque materials. */
+.ios27-tooltip{background:var(--glass-small-bg);backdrop-filter:blur(var(--glass-small-shadow-blur));-webkit-backdrop-filter:blur(var(--glass-small-shadow-blur))}
+
+/* PallavAg live-DOM lens. Its source is the content inside the component, not an
+   arbitrary backdrop behind a Button/Toolbar. */
+.ios27-optical-lens{position:relative;isolation:isolate}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme='light']) :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:rgb(0 0 0 / var(--material-thick-opacity))}
+}
+[data-theme='dark'] :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:rgb(0 0 0 / var(--material-thick-opacity))}
+
 @media(prefers-reduced-transparency:reduce){
-  .ios27-optical-glass__backdrop{display:none!important}
-  .ios27-btn--glass{background:var(--fill-secondary)!important}
-  :is(.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet){background:var(--bg-secondary)!important}
-  :is(.ios27-popover,.ios27-context-menu){background:var(--bg-secondary)!important}
+  .ios27-btn--glass{background:var(--fill-secondary)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  :is(.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu,.ios27-tooltip,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:var(--bg-secondary)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 }

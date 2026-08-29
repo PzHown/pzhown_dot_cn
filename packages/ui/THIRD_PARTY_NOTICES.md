@@ -14,13 +14,13 @@
 - Role in this repository: structural/anatomy reference for component composition and state ownership.
 - Integration policy: its visual theme is not used. PzHown components are independently implemented and styled exclusively against the iOS 27 reference above.
 
-## samasante/liquid-glass
+## PallavAg/liquid-glass-web-react
 
-- Repository: https://github.com/samasante/liquid-glass
-- Package: `@samasante/liquid-glass` (`^0.1.1`)
+- Repository: https://github.com/PallavAg/liquid-glass-web-react
+- Package: `liquid-glass-web-react` (`^0.1.1`)
 - License: MIT
-- Role in this repository: headless optical engine for SDF displacement, live-DOM refraction, chromatic dispersion, specular edge light and frost on iOS 27 floating materials.
-- Integration policy: it never defines PzHown component geometry, color semantics or interaction APIs. `@pzhown/ui` wraps it through `LiquidGlassSurface` / `LiquidGlassBackdrop` so the optical engine can be replaced without changing product component APIs.
-- Browser policy: Chrome/Edge can bend the arbitrary live backdrop. Safari/Firefox retain frost, tint and edge light in generic floating-component mode; visible displacement there requires the explicit `refract` copy mode for a known background.
+- Role in this repository: optional live-DOM optical lens engine using generated displacement maps, SVG `feDisplacementMap`, chromatic aberration and specular edge treatment.
+- Integration policy: PallavAg does **not** define the default appearance of iOS 27 controls. Standard Button / Toolbar / TabBar / modal surfaces continue to follow `ios27-design-system` material recipes (tint + backdrop blur + shadow). PallavAg is exposed only through `LiquidGlassSurface` for places where real displacement is intentionally requested.
+- Browser policy: the upstream engine is designed for Chrome, Safari and Firefox. It contains iOS-specific filter-region handling and works on live DOM content; Safari video remains an upstream WebKit limitation.
 
 The existing Progressive Blur and perceptual gradient effects remain PzHown-owned code and are intentionally separate from the iOS 27 component layer.
