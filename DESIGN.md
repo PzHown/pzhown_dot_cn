@@ -1,417 +1,384 @@
-# PzHown Blog Design System
-
-## 目标
-
-本项目要构建一套现代、跨设备、内容优先的个人博客体验。
-
-设计不以“像某个平台”为目标，而以以下结果为目标：
-
-1. **内容最先被理解**：用户先看到文章、作品和观点，而不是 UI 框架。
-2. **视觉与认知都舒适**：降低视觉搜索、记忆、判断、模式切换和精确操作负担。
-3. **跨设备连续**：手机、平板、桌面和可变窗口保持同一信息优先级，但允许结构和交互自适应。
-4. **先进但克制**：现代 CSS、React Aria、Motion、View Transitions、Progressive Blur 必须服务于内容、状态与空间关系。
-5. **变化自然可预测**：动画、颜色、材质和布局变化保留对象身份、空间关系与操作因果。
-6. **状态可理解、错误可恢复**：用户始终知道系统正在做什么，失败后能继续。
-7. **渐进增强与包容性**：没有高级 CSS、动画或 JS 时核心内容和导航仍成立；可访问性从设计开始。
-
-## 设计决策链
-
-```text
-内容与语义
-    ↓
-阅读舒适
-    ↓
-跨设备结构
-    ↓
-空间关系与视觉重心
-    ↓
-导航与定向
-    ↓
-认知负荷与任务连续性
-    ↓
-交互可供性
-    ↓
-系统反馈与恢复
-    ↓
-视觉语言
-    ↓
-交互与动效
-    ↓
-装饰与氛围
-```
-
-低层级目标不得破坏高层级目标。
-
-`inclusive-accessibility` 与 `perceptual-naturalness` 是两条横向基线，贯穿全部步骤：前者保证不同能力用户都能完成任务，后者保证感知、空间、时间、因果与材质连续性。性能与渐进增强同样横向生效。
-
-## Skill 分工
-
-### `perceptual-reading`
-
-负责阅读舒适、正文排版、行长、字号、行高、段落节奏、深色阅读和长文视觉负荷。
-
-### `content-presentation`
-
-负责内容语义与版式：正文、引用、代码、图片、表格、脚注、目录、元数据等如何呈现。
-
-### `adaptive-layout`
-
-负责跨设备与可变窗口的**结构变化**：Container Queries、Grid/Subgrid、pane、侧栏、目录、媒体与导航呈现何时重排。
-
-### `spatial-composition`
-
-负责结构确定后的**空间关系与视觉重心**：page/section/component/control 的 gap 与 padding、gutter、negative space、视觉重量、视觉平衡、光学校正和 attention flow。
-
-核心区别：`adaptive-layout = WHERE`，`spatial-composition = RELATION + WEIGHT`。
-
-### `navigation-wayfinding`
-
-负责**信息空间与路径**：Information Architecture、Global/Local/Contextual Navigation、Current Location、Back、Breadcrumb、Deep Link、Search vs Browse 和信息 scent。
-
-它决定“去哪里、路径如何组织”；`adaptive-layout` 只决定这些导航在不同空间中如何呈现。
-
-### `cognitive-ergonomics`
-
-负责**用户需要想多少、记多少、判断多少**：Recognition vs Recall、决策数量、默认值、一致性、渐进披露、上下文保持、模式切换和中断恢复。
-
-### `interaction-affordance`
-
-负责**控件可发现性和局部状态**：Inline Link、Navigation Link、Text Action、Button、Icon Button、Clickable Surface，以及 Rest / Hover / Focus / Pressed / Selected / Disabled / 控件级 Pending。
-
-### `system-feedback`
-
-负责**操作、区域和任务级状态**：Loading、Progress、Skeleton、Empty、Success、Error、Partial Failure、Retry、Undo、Optimistic UI 和长任务反馈。
-
-### `apple-design`
-
-负责最终视觉语言：材质、色彩、Neutral、圆角、阴影、透明度和 Apple-inspired 的克制感。它不重新定义空间、导航、认知、交互或系统状态语义。
-
-### `interaction-motion`
-
-负责高级动态表达：空间连续性、Presence、共享元素、手势和 View Transitions。先由其他 Skill 决定状态和因果，再决定是否需要动画。
-
-### `perceptual-naturalness`
-
-作为横向质量层，负责**变化是否自然、连续、可预测**：Perceptual / Spatial / Temporal / Causal / Material Continuity，自然 Motion、自然 Color、直接操控、材质/光照/深度一致性。它不决定具体 Motion 参数或视觉风格。
-
-### `inclusive-accessibility`
-
-作为横向约束，负责 Semantic HTML、Keyboard、Focus、Screen Reader、Contrast、非颜色线索、Zoom/Reflow、Touch Target、替代输入、Reduced Motion 和动态状态公告。
-
-## 技术设计约束
-
-- 公共前台保持 Astro-first；静态内容不要因为样式或动效无意义 React 化。
-- 导航使用 `<a>` / Link；动作使用 `<button>` / React Aria 对应控件；禁止 `div onClick` 代替语义控件。
-- 需要复杂交互状态时优先 React Aria Components。
-- Motion 用于 spring、presence、layout、gesture；简单状态优先 CSS。
-- 自然性不等于“慢 + Spring + 低饱和 + 大圆角”；直接操控优先即时、增量、可逆和可中断，颜色/渐变需要感知连续时优先 Oklab/OKLCH。
-- `@pzhown/ui` 是共享组件、Token 与基础视觉规则的优先入口。
-- 圆角使用组件既有 `border-radius` 与 radius token，不叠加额外的全局角形状规则。
-- 自定义色彩优先使用 OKLCH/Oklab 和语义 token。
-- Progressive Blur 只用于建立上下文和空间层级，不能成为大面积阅读背景。
-- Payload 原生 Admin 不做全局重皮；自定义业务界面才使用共享设计系统。
-
-## 内容优先
-
-- 博客不是 Dashboard，不把所有内容做成 Card。
-- 去掉背景、边框和阴影后，信息层级仍应成立。
-- 首屏优先回答“这是什么、为什么值得看、从哪里开始”。
-- 宽屏多余空间用于留白、目录、注释和媒体，不无限拉宽正文。
-- 正文周围减少持续动画、高对比装饰和大面积透明材质。
-- 图片、代码、表格、引用等由内容类型决定版式，不由统一组件外观决定。
-
-## 跨设备布局
-
-- Breakpoint 由内容崩坏点产生，不机械按设备型号分类。
-- 组件优先使用 Container Queries 对自身容器负责。
-- 手机、平板、桌面保持相同信息优先级，但允许不同空间结构和导航呈现。
-- Touch、hover、fine pointer、coarse pointer 分别判断，不把屏幕宽度等同于输入能力。
-- 浏览器任意宽度、200% 文本缩放和系统字体变化下仍保持可用。
-- 跨设备保持关系语义，不要求保持完全相同的几何构图。
-
-## 空间构图
-
-空间本身是信息层。
-
-```text
-Spatial Rhythm  → 距离表达关系
-Visual Weight   → 强弱表达重要性
-Visual Balance  → 重心组织整体构图
-Attention Flow  → 视线组织阅读顺序
-```
-
-### 空间节奏
-
-受控 primitive scale：
-
-```text
-2 / 4 / 6 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64 / 80 / 96 / 128
-```
-
-业务 UI 按语义消费空间：
-
-```text
-inline
-inset
-stack
-group
-section
-gutter
-page-edge
-```
-
-- 组件负责 internal inset / padding。
-- 父布局负责 siblings gap。
-- 页面/布局系统负责 section、gutter、page-edge。
-- 基础组件不要通过外部 margin 决定自己在所有上下文中的位置。
-- 流体 spacing 可使用 `clamp()` / Container Query，但上下限优先来自受控 scale。
-
-### 视觉重量与平衡
-
-视觉重量不是物理质量，不使用伪精确公式。综合判断：
-
-```text
-contrast
-+ typography mass
-+ area
-+ position
-+ density
-+ chroma
-+ image complexity
-+ shape / direction
-+ depth
-+ motion
-+ isolation / negative space
-```
-
-- 大不一定更重；高对比标题可能比大面积低对比图片更强。
-- 如果视觉重量与内容优先级冲突，优先降低错误对象，而不是继续增强正确对象。
-- 平衡不等于左右对称；允许 asymmetric / editorial balance。
-- Negative space 可以作为 counterweight，不因为一侧为空就机械填满。
-- 几何中心是起点，不建立全局固定 optical-center 偏移公式。
-
-### 注意力与光学校正
-
-主要 viewport / section 通常应有清楚主锚点：
-
-```text
-Primary anchor
-→ Supporting context
-→ Main content / Next action
-→ Secondary information
-```
-
-- 不强制 F/Z pattern。
-- 手机上优先把桌面的多个并行重心转为清楚的滚动顺序。
-- 几何一致性是起点，光学一致性是最终目标。
-- icon、中文/英文大标题、圆形/三角形在确实视觉错位时允许最小校正。
-- Optical adjustment 不能破坏 DOM、Focus、Hit Target 和缩放可用性。
-
-## 导航与定向
-
-导航首先是信息结构，不是 Header 样式。
-
-用户应能持续回答：
-
-```text
-我在哪里？
-这里有什么？
-我从哪里来？
-下一步能去哪？
-怎么回去？
-```
-
-- Global、Local、Contextual、Utility Navigation 职责分开。
-- Current Location 必须可感知，不要求用户从 URL 或记忆推断。
-- 标签提供 Information Scent，使用用户能预测目的地的词。
-- 同一层级保持相似抽象程度，避免无意义深层嵌套。
-- Search 与 Browse 互补；搜索不能替代 coherent navigation。
-- Deep Link、刷新、新窗口直接进入时仍能理解页面身份和返回路径。
-- 返回时尽量保留滚动、筛选和上下文。
-
-## 认知工效
-
-目标是减少与任务本身无关的认知工作。
-
-- Recognition 优先于 Recall：能看见、能比较、能识别，就不要求记忆。
-- 减少没有实际决策价值的选项。
-- 同类对象保持稳定名称、位置、图标和结果。
-- 使用合理默认值，但不替用户做不可逆决定。
-- 复杂能力按“当前必须 → 可能需要 → 高级 → 专家”渐进披露。
-- 风险、成本、权限和不可逆结果不能藏进高级区域。
-- 切换、返回或中断后尽量保留当前状态和未完成意图。
-- 不把“简洁”误解为隐藏关键入口或状态。
-
-## 交互可供性
-
-统一的是交互语法，不是所有可点击元素的外观。
-
-- 导航与动作分离：进入位置使用 Link；改变状态、提交、打开控件使用 Button 或对应组件。
-- Rest 状态先成立；Hover 只增强确认。
-- 正文链接不能只靠颜色表达。
-- Text Action 是 Button 的视觉变体，语义仍是 Button。
-- Pressed 提供即时反馈；Focus-visible 独立且清楚。
-- Selected 使用位置、indicator、surface、形状或字重等多线索，不只变色。
-- Disabled 不保留正常 Hover/Pressed 暗示。
-- Clickable Surface 避免与内部 Menu、Bookmark 等次级操作形成嵌套冲突。
-- 独立触控控件保持舒适 Hit Area；视觉尺寸与命中区可以分离。
-
-## 系统反馈与恢复
-
-区分：
-
-```text
-Control state   → interaction-affordance
-Operation state → system-feedback
-View state      → system-feedback
-Task state      → system-feedback
-```
-
-- 用户操作后尽快确认系统已接收。
-- 等待期间保持原上下文，不用全屏 Loading 取代局部状态。
-- 极短操作不闪烁 Spinner；短等待使用局部 Pending；区域加载可用稳定 Skeleton；长任务说明进度和取消/离开策略。
-- 成功结果已经明显时，不重复弹“成功”。
-- 错误说明“发生什么 + 影响什么 + 能做什么”，保留可恢复输入。
-- Partial Failure 不伪装成全部失败。
-- 可逆低风险操作优先 Undo；不可逆高风险操作再使用确认。
-- Optimistic UI 只用于结果高度可预测且失败可安全恢复的操作。
-
-## 视觉语言
-
-- 采用 Apple-inspired，而不是 Apple clone。
-- 在空间、导航、认知和交互关系成立后，再用灰度、材质、形状和色彩完成表达。
-- **先用 Neutral 与明度建立层级，再用色相承载品牌、状态和重点。**
-- Smooth Gradient、Progressive Blur 是工具，不是必须装饰。
-- Glass/Blur 只在需要保留上下文或表达前后层级时使用。
-- 深色模式重新验证亮度、对比和眩光，不简单反色。
-
-## 灰度与色彩
-
-Neutral 主要负责：信息层级、阅读节奏、Surface 深度、Foreground 权重、Separator 和 Disabled。
-
-彩色主要负责：品牌强调、主要交互重点、Success/Warning/Destructive 和少量视觉聚焦。
-
-业务组件消费语义 token，而不是直接依赖 `gray-500` / `zinc-700`：
-
-```text
-Canvas
-Surface 1
-Surface 2
-Elevated Surface
-Foreground
-Secondary Foreground
-Tertiary Foreground
-Separator
-Disabled
-Accent
-Success
-Warning
-Destructive
-```
-
-底层可使用 OKLCH Neutral scale；浅色、深色和高对比分别映射，不做简单 RGB 反转。
-
-重要页面临时去色后，标题、正文、导航、主要操作、状态和 Surface 层级仍应清楚。若结构坍塌，先修字号、字重、空间、形状、位置和明度，再恢复色相。
-
-## 动效
-
-```text
-空间连续性
-> 状态反馈
-> 操作反馈
-> 注意力引导
-> 氛围装饰
-```
-
-- 动画解释变化，不给所有 Card、Section 和 Button 无差别加动画。
-- 允许中断，不能让用户等待动画结束才能继续。
-- Reduced Motion 下移除大位移、视差和 overshoot，但保留必要因果和状态反馈。
-- Motion 是高注意力重量信号；静态构图已有多个强焦点时不再增加运动竞争。
-- `system-feedback` 先决定 Loading/Success/Error/Progress 的语义，本 Skill 只决定动态表达。
-
-## 感知自然性
-
-自然不是一种视觉风格，而是变化符合人的感知与因果预期。
-
-```text
-Perceptual Continuity  → 同一对象仍被看作同一对象
-Spatial Continuity     → 看得出从哪里来、到哪里去
-Temporal Continuity    → 速度与阶段没有无原因断裂
-Causal Continuity      → 用户动作与系统结果像同一事件链
-Material Continuity    → 光、深度、透明和表面属于同一视觉世界
-```
-
-- 不模拟自然的外观，维护自然的连续性。
-- 自然 Motion 先建立来源、去向和因果，再选择 easing / spring；Linear 在恒定速率场景可以正确。
-- 直接操控优先跟手、快速、增量、可逆、可中断；自动吸附或预测不得突然夺走控制。
-- 需要感知均匀的 Color / Gradient 变化优先 Oklab / OKLCH，先检查 Lightness 路径，再检查 Hue / Chroma。
-- 深色模式重新建立亮度和色度关系，不做机械反色。
-- Shadow、Highlight、Blur、Translucency 和 Surface 应共同说明同一深度/光照逻辑。
-- Shared element 只有语义上确实是同一对象延续时使用；不要为了过渡漂亮制造虚假的对象身份。
-- `perceptual-naturalness` 判断“变化是否自然”，`interaction-motion` 决定具体动画技术，`apple-design` 决定最终颜色/材质，`spatial-composition` 决定静态关系与重心。
-
-## 包容性与可访问性基线
-
-可访问性不是最后的独立步骤。
-
-- 优先原生 Semantic HTML；能用原生元素就不要用 ARIA 模拟。
-- 所有核心操作支持 Keyboard，并考虑 Touch / coarse pointer 等非精确输入。
-- Focus-visible 必须清楚，不被 overflow、mask 或 transform 裁切。
-- 关键状态、错误、选择和交互性不能只依赖颜色。
-- 普通文本、非文本 UI 与状态对比满足项目 WCAG AA 基线。
-- 200% 文本缩放、常见 Reflow 和系统字体变化下核心任务不失效。
-- icon-only 控件提供可访问名称；有意义图片提供等价文本信息。
-- 动态状态只在有意义时向辅助技术公告，避免 live region 噪声。
-- Reduced Motion 不应导致 Pressed/Focus/Selected/Loading 等必要反馈消失。
-- 不通过 `outline: none`、滥用 `tabindex=-1` 或冲突 ARIA 换取视觉效果。
-
-## 设计审查顺序
-
-重要 UI 任务按以下顺序审查：
-
-1. 内容和语义是否正确？
-2. 阅读是否舒适？
-3. 跨设备结构是否自然？
-4. gap / padding / gutter、视觉重心和 attention flow 是否合理？
-5. 用户能否理解当前位置与返回路径？
-6. 是否存在不必要的记忆、决策、隐藏规则或模式切换？
-7. 可交互项在 Rest 状态是否有合理 signifier？
-8. 用户操作后是否理解 Loading / Success / Error / Recovery？
-9. 动画、颜色、材质和布局变化是否保持对象身份、空间、时间、因果与材质连续性？
-10. Semantic HTML、Keyboard、Focus、Touch、Zoom/Reflow 与 Reduced Motion 是否成立？
-11. 视觉语言是否统一且克制？
-12. 灰度下主要层级是否仍清楚？
-13. 动效是否解释变化？
-14. Astro hydration、图片、Blur、动画是否带来不必要性能成本？
-15. 是否优先复用了 `@pzhown/ui` 和现有 token？
-
-## 参考理念来源
-
-项目 Skill 的规则参考并转译公开资料，不复制其受版权保护内容：
-
-- Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
-- Microsoft Fluent 2: https://fluent2.microsoft.design/
-- Apple Motion: https://developer.apple.com/design/human-interface-guidelines/motion
-- Apple Color: https://developer.apple.com/design/human-interface-guidelines/color
-- Apple Materials: https://developer.apple.com/design/human-interface-guidelines/materials
-- Fluent 2 Motion: https://fluent2.microsoft.design/motion
-- W3C CSS Color 4: https://www.w3.org/TR/css-color-4/
-- Gestalt perceptual grouping review: https://pmc.ncbi.nlm.nih.gov/articles/PMC3482144/
-- Direct Manipulation (Shneiderman): https://doi.org/10.1109/MC.1983.1654471
-- Causal perception: https://pmc.ncbi.nlm.nih.gov/articles/PMC7484022/
-- Material Perception review: https://pubmed.ncbi.nlm.nih.gov/28697677/
-- Atlassian Design System: https://atlassian.design/
-- Carbon Design System: https://carbondesignsystem.com/
-- Adobe Spectrum: https://spectrum.adobe.com/
-- Material adaptive layout: https://developer.android.com/design/ui/mobile/guides/layout-and-content/adapt-layout
-- W3C WCAG 2.2: https://www.w3.org/TR/WCAG22/
-- W3C Cognitive Accessibility Guidance: https://www.w3.org/TR/coga-usable/
-- React Aria Components: https://react-aria.adobe.com/
-- Vercel Web Interface Guidelines: https://github.com/vercel-labs/web-interface-guidelines
-- Visual balance research: https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2016.00335/full
-- Web visual hierarchy: https://www.sciencedirect.com/science/article/pii/S0747563218301195
-- UEyes: https://userinterfaces.aalto.fi/ueyeschi23/
-- Navigation complexity research: https://pubmed.ncbi.nlm.nih.gov/25802803/
-- Cognitive load systematic review: https://pubmed.ncbi.nlm.nih.gov/41849193/
-- Visual comfort review: https://pmc.ncbi.nlm.nih.gov/articles/PMC10512131/
-- Typography and eye movements in web reading: https://pubmed.ncbi.nlm.nih.gov/31481744/
+---
+version: "alpha"
+name: "PzHown iOS 26 Liquid Glass"
+description: "以 iOS 26 Liquid Glass 为视觉基准、以内容优先和跨输入密度为约束的 PzHown Web 设计系统。"
+colors:
+  canvas-light: "#F2F2F7"
+  canvas-dark: "#000000"
+  surface-primary-light: "#FFFFFF"
+  surface-primary-dark: "#1C1C1E"
+  surface-secondary-light: "#F2F2F7"
+  surface-secondary-dark: "#2C2C2E"
+  surface-tertiary-light: "#FFFFFF"
+  surface-tertiary-dark: "#3A3A3C"
+  label-primary-light: "#000000"
+  label-primary-dark: "#FFFFFF"
+  label-secondary-light: "rgb(60 60 67 / 0.60)"
+  label-secondary-dark: "rgb(235 235 245 / 0.70)"
+  label-tertiary-light: "rgb(60 60 67 / 0.30)"
+  label-tertiary-dark: "rgb(235 235 245 / 0.30)"
+  separator-light: "rgb(0 0 0 / 0.12)"
+  separator-dark: "rgb(255 255 255 / 0.17)"
+  blue-light: "#0088FF"
+  blue-dark: "#0091FF"
+  green-light: "#34C759"
+  green-dark: "#30D158"
+  red-light: "#FF383C"
+  red-dark: "#FF4245"
+  orange-light: "#FF8D28"
+  orange-dark: "#FF9230"
+  pink-light: "#FF2D55"
+  pink-dark: "#FF375F"
+  purple-light: "#CB30E0"
+  purple-dark: "#DB34F2"
+  glass-small-light: "rgb(247 247 247 / 0.86)"
+  glass-small-dark: "rgb(0 0 0 / 0.60)"
+  glass-medium-light: "rgb(245 245 245 / 0.60)"
+  glass-medium-dark: "rgb(0 0 0 / 0.60)"
+  glass-large-light: "rgb(250 250 250 / 0.70)"
+  glass-large-dark: "rgb(0 0 0 / 0.80)"
+  glass-clear-light: "rgb(255 255 255 / 0.07)"
+  glass-clear-dark: "rgb(0 0 0 / 0.18)"
+  fill-primary-light: "rgb(120 120 120 / 0.20)"
+  fill-primary-dark: "rgb(120 120 128 / 0.36)"
+  fill-secondary-light: "rgb(120 120 128 / 0.16)"
+  fill-secondary-dark: "rgb(120 120 128 / 0.32)"
+  fill-tertiary-light: "rgb(118 118 128 / 0.12)"
+  fill-tertiary-dark: "rgb(118 118 128 / 0.24)"
+typography:
+  large-title:
+    fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 34px
+    fontWeight: 400
+    lineHeight: 41px
+    letterSpacing: 0.4px
+  title-1:
+    fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 28px
+    fontWeight: 400
+    lineHeight: 34px
+    letterSpacing: 0.38px
+  title-2:
+    fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 22px
+    fontWeight: 400
+    lineHeight: 28px
+    letterSpacing: -0.26px
+  title-3:
+    fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 20px
+    fontWeight: 600
+    lineHeight: 25px
+    letterSpacing: -0.45px
+  headline:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 17px
+    fontWeight: 600
+    lineHeight: 22px
+    letterSpacing: -0.43px
+  body:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 17px
+    fontWeight: 400
+    lineHeight: 22px
+    letterSpacing: -0.43px
+  callout:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 16px
+    fontWeight: 400
+    lineHeight: 21px
+    letterSpacing: -0.31px
+  subheadline:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 15px
+    fontWeight: 400
+    lineHeight: 20px
+    letterSpacing: -0.23px
+  footnote:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 13px
+    fontWeight: 400
+    lineHeight: 18px
+    letterSpacing: -0.08px
+  caption-1:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 12px
+    fontWeight: 400
+    lineHeight: 16px
+    letterSpacing: 0px
+  caption-2:
+    fontFamily: "SF Pro Text, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    fontSize: 11px
+    fontWeight: 400
+    lineHeight: 13px
+    letterSpacing: 0.06px
+rounded:
+  none: 0px
+  xs: 4px
+  sm: 8px
+  field: 10px
+  button: 12px
+  overlay: 14px
+  xl: 16px
+  notification: 20px
+  glass-large: 24px
+  sheet: 34px
+  pill: 9999px
+spacing:
+  s0: 0px
+  s1: 4px
+  s2: 8px
+  s3: 12px
+  s4: 16px
+  s5: 20px
+  s6: 24px
+  s8: 32px
+  s10: 40px
+  s12: 48px
+  s16: 64px
+  s20: 80px
+  s24: 96px
+components:
+  button-regular:
+    backgroundColor: "{colors.blue-light}"
+    textColor: "#FFFFFF"
+    typography: "{typography.headline}"
+    rounded: "{rounded.button}"
+    height: 44px
+    padding: 20px
+  button-small:
+    backgroundColor: "{colors.blue-light}"
+    textColor: "#FFFFFF"
+    typography: "{typography.subheadline}"
+    rounded: "10px"
+    height: 34px
+    padding: 12px
+  button-mini:
+    backgroundColor: "{colors.blue-light}"
+    textColor: "#FFFFFF"
+    typography: "{typography.footnote}"
+    rounded: "{rounded.sm}"
+    height: 28px
+    padding: 8px
+  button-secondary-glass:
+    backgroundColor: "{colors.glass-small-light}"
+    textColor: "{colors.label-primary-light}"
+    typography: "{typography.headline}"
+    rounded: "{rounded.button}"
+    height: 44px
+    padding: 20px
+  text-field:
+    backgroundColor: "{colors.fill-tertiary-light}"
+    textColor: "{colors.label-primary-light}"
+    typography: "{typography.body}"
+    rounded: "{rounded.field}"
+    height: 44px
+    padding: 12px
+  segmented-control:
+    backgroundColor: "{colors.fill-secondary-light}"
+    textColor: "{colors.label-primary-light}"
+    typography: "{typography.footnote}"
+    rounded: "9px"
+    height: 32px
+    padding: 2px
+  switch:
+    backgroundColor: "{colors.fill-tertiary-light}"
+    rounded: "{rounded.pill}"
+    width: 51px
+    height: 31px
+  switch-selected:
+    backgroundColor: "{colors.green-light}"
+    rounded: "{rounded.pill}"
+    width: 51px
+    height: 31px
+  menu-glass:
+    backgroundColor: "{colors.glass-medium-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.overlay}"
+  popover-glass:
+    backgroundColor: "{colors.glass-medium-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.overlay}"
+  dialog-glass:
+    backgroundColor: "{colors.glass-large-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.overlay}"
+  alert-dialog:
+    backgroundColor: "{colors.glass-large-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.overlay}"
+    width: 270px
+    padding: 20px
+  sheet:
+    backgroundColor: "{colors.glass-large-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.sheet}"
+  tooltip-glass:
+    backgroundColor: "{colors.glass-small-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.field}"
+  card:
+    backgroundColor: "{colors.surface-primary-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.button}"
+  list-row:
+    backgroundColor: "{colors.surface-primary-light}"
+    textColor: "{colors.label-primary-light}"
+    height: 44px
+    padding: 16px
+  sidebar-glass:
+    backgroundColor: "{colors.glass-large-light}"
+    textColor: "{colors.label-primary-light}"
+    rounded: "{rounded.overlay}"
+  progress-linear:
+    backgroundColor: "{colors.fill-secondary-light}"
+    rounded: "{rounded.pill}"
+    height: 4px
+  slider-thumb:
+    backgroundColor: "#FFFFFF"
+    rounded: "{rounded.pill}"
+    width: 28px
+    height: 28px
+---
+
+## Overview
+
+PzHown 的主视觉语言采用 **iOS 26 Liquid Glass**：清晰的系统语义色、受控的圆角尺度、轻量的弹性反馈，以及位于内容上方的半透明玻璃导航/控制层。
+
+这不是把整个页面做成毛玻璃。设计优先级仍然是：**内容与语义 → 阅读舒适 → 跨设备结构 → 空间关系 → 交互状态 → 材质与动效**。玻璃只能增强层级和上下文，不能替代层级本身。
+
+视觉实现参考 `seunghan91/ios26-design-system`，该项目将 Apple iOS & iPadOS 26 Figma Community Kit 的设计令牌和组件规格转为 Web 可用数据。Apple 没有公开 Liquid Glass 的完整 Web 数值模型，因此 blur、tint、shadow 属于参考项目给出的 Web 近似；本项目以这些数值为统一基线，不再由页面自行发明材质参数。
+
+## Colors
+
+颜色使用 iOS 26 语义体系，而不是页面级任意灰度。
+
+- 浅色画布使用 `#F2F2F7`，主要 Grouped Surface 使用 `#FFFFFF`。
+- 深色画布使用 `#000000`，主要 Surface 使用 `#1C1C1E / #2C2C2E / #3A3A3C` 建立层级。
+- 主交互 Tint 为浅色 `#0088FF`、深色 `#0091FF`。
+- Switch 独立使用系统绿色：浅色 `#34C759`、深色 `#30D158`。
+- 危险状态使用系统红，警告使用系统橙；不得把品牌蓝用作错误或警告语义。
+- Secondary / Tertiary Label 必须保持语义透明度，不用随机 `gray-500` 替代。
+- Separator 是低权重结构线；能通过留白和 Surface 区分层级时，不增加额外边框。
+
+Liquid Glass 分三档：
+
+- **Small / 7px frost**：次级按钮、圆形图标按钮、Tooltip、小型浮控件。
+- **Medium / 12px frost**：Menu、Popover、Select、Combobox、Context Menu。
+- **Large / 14px frost**：Dialog、Sheet、Drawer、Sidebar 等主要浮动层。
+
+深色模式不能机械反色；必须使用独立的玻璃 tint、边缘高光和阴影强度。
+
+## Typography
+
+字体优先使用 SF Pro 系统栈：`SF Pro Text / SF Pro Display / -apple-system / system-ui`。
+
+- 20px 以下优先 Text 观感，20px 及以上优先 Display 观感。
+- Large Title 34/41，Title 1 28/34，Title 2 22/28，Title 3 20/25。
+- Headline 与 Body 均以 17/22 为核心，Headline 使用 600 权重。
+- 中文环境不强制依赖 SF Pro 字体文件；由系统中文字体回退，但保持相同字号、行高和视觉层级。
+- 正文宽度、长文行长与段落节奏继续服从 `perceptual-reading`，不能为了“像 iOS”把博客正文全部放大到 17px 或限制成手机式布局。
+- 禁止用大量粗体、全大写或低对比灰字制造“高级感”。层级主要依赖字号、字重、留白和位置共同建立。
+
+## Layout
+
+基础 spacing 继承 iOS 26 的 8pt 体系，并允许 4pt 半步：`4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64 / 80 / 96`。
+
+- 手机内容边距默认 16px；宽容器可增加，但不能机械放大正文宽度。
+- List Row 标准高度 44px；紧凑场景可以 36px，大型信息行可以 58px。
+- Text Field 标准高度 44px。
+- Touch 环境独立交互目标保持约 44×44px。
+- Fine pointer 桌面按钮采用 iOS 26 Small 档 34px，避免桌面控件显得过大；触控端 Regular 档保持 44px。
+- `adaptive-layout` 决定不同容器下组件放在哪里；本文件只规定视觉尺寸和关系基线。
+- 父容器负责 sibling gap，组件只负责自己的 inset。禁止基础组件携带上下文外 margin。
+
+## Elevation & Depth
+
+Liquid Glass 的深度由 **背景透明度 + backdrop blur + 边缘高光 + 阴影 + 上下文** 联合表达。
+
+参考参数：
+
+- Small frost radius：7px。
+- Medium frost radius：12px。
+- Large frost radius：14px。
+- Layer shadow blur 参考 40px；大型背景材质可到 80px。
+- 玻璃高光方向保持左上到右下的统一光照关系，不允许同一页面不同组件出现相反高光方向。
+
+材质职责：
+
+- Button primary / destructive 采用高对比实色，不强制玻璃化。
+- Secondary / Outline / Icon controls 可以使用 Small Glass。
+- Menu / Popover / Select / Combobox 使用 Medium Glass。
+- Dialog / Sheet / Drawer / Sidebar 使用 Large Glass。
+- Card、文章正文、表格主体等内容 Surface 默认保持 Grouped Surface，不进行 glass-on-glass 堆叠。
+
+任何 `backdrop-filter` 不可用、`prefers-reduced-transparency: reduce` 或高对比环境下，必须自然降级为不透明 Surface，语义和操作不受影响。
+
+## Shapes
+
+圆角不是统一“大圆角”，而是按组件语义分级：
+
+- 4px：微型几何和局部装饰。
+- 8px：Mini 控件。
+- 10px：Text Field、Small Button、Tooltip。
+- 12px：Regular Button、Card、普通 Surface。
+- 14px：Alert、Menu、Popover、Dialog。
+- 20px：Notification、Medium Liquid Glass。
+- 24px：Large Liquid Glass。
+- 34px：iPhone Bottom Sheet 顶部。
+- Pill：Switch、Icon Glass Button、部分 Liquid Glass 浮动控件。
+
+嵌套圆角优先保持同心关系：内层 radius ≈ 外层 radius − padding。不要给所有容器统一套 24px/30px 大圆角。
+
+## Components
+
+`@pzhown/ui` 是唯一共享视觉入口。所有现有组件必须使用语义 token 和统一材质层，不允许业务页面自行复制一份 iOS CSS。
+
+关键组件规范：
+
+- **Button**：Mini 28、Small 34、Regular 44、Large 50。Primary 为系统蓝实色；Secondary/Outline 可为 Small Glass；Icon Button 为圆形 Liquid Glass。
+- **Input / Textarea / Select / Combobox**：44px 单行基线，10px radius，12px 水平 inset。Focus 使用系统蓝且不得被玻璃材质覆盖。
+- **Tabs / Toggle Group**：Segmented Control 32px 高，2px track inset，选中项使用浅色实体层和轻阴影。
+- **Switch**：51×31，Thumb 27px，On 使用系统绿。
+- **Slider**：Track 4px，Thumb 28px。
+- **Menu / Context Menu**：14px radius，行高约 44px，Medium Glass；组间 separator 保持低权重。
+- **Alert Dialog**：270px 参考宽度，14px radius，Large Glass；动作按钮保持 44px 触控高度。
+- **Sheet / Drawer**：底部 Sheet 顶部 radius 34px；Large Glass；遮罩使用独立 scrim，不通过加深玻璃自身解决背景干扰。
+- **Popover**：14px radius，Medium Glass；定位和箭头语义由具体组件负责。
+- **Tooltip**：Small Glass，10px radius；不得成为承载长文的容器。
+- **Sidebar**：允许 Large Glass，因为它属于持续导航层；正文内容不得叠加第二层 glass。
+- **Card / Attachment / Table / Message**：按 Grouped Surface 处理；它们仍属于 iOS 26 体系，但不是 Liquid Glass 导航层。
+- **Progress / Skeleton / Calendar / Chart**：采用系统 Tint、Fill 和 Separator，不为展示“玻璃感”加入无意义 blur。
+
+状态优先级统一为：`default < hover < focus-visible < invalid/selected < disabled`。Hover 不是触屏必需状态；Focus 必须独立可见。
+
+## Do's and Don'ts
+
+### Do
+
+- 先用结构、排版、留白建立层级，再使用玻璃。
+- 让玻璃说明“这是浮在内容上方的导航或控制层”。
+- 保持单一光照方向、单一 blur 档位体系和统一阴影逻辑。
+- 浅色、深色分别校准 tint 和对比，不机械反色。
+- 支持 `prefers-reduced-motion`、`prefers-reduced-transparency`、`prefers-contrast`。
+- 使用 `interaction-affordance` 处理 Rest/Hover/Focus/Pressed/Selected/Disabled。
+- 使用 `spatial-composition` 处理 gap、padding、视觉重量和 optical alignment。
+- 使用 `perceptual-naturalness` 检查玻璃、阴影、形状和运动是否属于同一视觉世界。
+- 使用 `refined-aesthetics` 做最终“高级感 / 完成度 / 模板感”审查。
+
+### Don't
+
+- 不把所有 Card、Section、文章段落都做成毛玻璃。
+- 不允许 Glass 嵌 Glass；同一区域最多一个 backdrop-filter 材质层。
+- 不用 Blur、Gradient、Shadow 掩盖错误的信息架构和空间关系。
+- 不在组件内部散落任意 `#hex`、blur、shadow、radius magic number。
+- 不为了“Apple 感”牺牲键盘 Focus、文字对比、缩放和 Reduced Motion。
+- 不把手机 44px 控件无条件复制到桌面 fine-pointer 密度；桌面按钮优先映射 iOS Small 34px 档。
+- 不把 `DESIGN.md` 当普通说明文档：YAML token 是规范值，正文解释这些值为什么存在以及如何应用。
+
+### 来源与维护
+
+- iOS 26 Web 参考：`https://github.com/seunghan91/ios26-design-system`
+- Google DESIGN.md 格式：`https://github.com/google-labs-code/design.md`
+- 项目视觉实现：`packages/ui/src/components.css`、`ios-theme.css`、`form-controls.css`、`liquid-glass.css`
+- 更新视觉 token 时必须同步本文件；组件改动不得与 YAML token 长期漂移。

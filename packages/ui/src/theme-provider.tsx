@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-export type ThemeName = 'ios27'
+export type ThemeName = 'ios26' | 'ios27'
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type ResolvedThemeMode = Exclude<ThemeMode, 'system'>
 
@@ -39,7 +39,7 @@ function getSystemTheme(): ResolvedThemeMode {
 
 export function ThemeProvider({
   children,
-  theme = 'ios27',
+  theme = 'ios26',
   mode: controlledMode,
   defaultMode = 'system',
   onModeChange,

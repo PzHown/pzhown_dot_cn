@@ -1,0 +1,142 @@
+/* Final iOS 26 coverage for smaller @pzhown/ui primitives. */
+
+/* Avatar */
+:where(.pzhown-ui) [data-slot='avatar'] {
+  box-shadow: 0 0 0 0.5px var(--pzhown-ui-separator), 0 1px 3px rgb(0 0 0 / 0.08);
+}
+:where(.pzhown-ui) [data-slot='avatar-fallback'],
+:where(.pzhown-ui) [data-slot='avatar-group-count'] {
+  background: var(--pzhown-ui-surface-2);
+  color: var(--pzhown-ui-foreground-secondary);
+}
+:where(.pzhown-ui) [data-slot='avatar-badge'] {
+  background: var(--pzhown-ui-primary);
+  color: #fff;
+}
+
+/* Breadcrumb */
+:where(.pzhown-ui) [data-slot='breadcrumb-list'] {
+  color: var(--pzhown-ui-foreground-secondary);
+}
+:where(.pzhown-ui) [data-slot='breadcrumb-link'] {
+  color: inherit;
+  text-decoration: none;
+}
+:where(.pzhown-ui) [data-slot='breadcrumb-link']:is(:hover, [data-hovered]) {
+  color: var(--pzhown-ui-primary);
+}
+:where(.pzhown-ui) [data-slot='breadcrumb-page'] { color: var(--pzhown-ui-foreground); }
+:where(.pzhown-ui) [data-slot='breadcrumb-separator'] { color: var(--pzhown-ui-foreground-tertiary); }
+
+/* Button groups inherit the small-glass control language as one unit. */
+:where(.pzhown-ui) [data-slot='button-group-text'] {
+  border-color: var(--pzhown-glass-edge);
+  background: var(--pzhown-glass-small-bg);
+  color: var(--pzhown-ui-foreground);
+  box-shadow: inset 0 1px 0 var(--pzhown-glass-highlight-soft);
+  backdrop-filter: var(--pzhown-glass-filter-small);
+  -webkit-backdrop-filter: var(--pzhown-glass-filter-small);
+}
+:where(.pzhown-ui) [data-slot='button-group-separator'] { background: var(--pzhown-ui-separator); }
+
+/* Field metadata */
+:where(.pzhown-ui) :is([data-slot='field-label'], [data-slot='label']) {
+  color: var(--pzhown-ui-foreground);
+  font-weight: 600;
+}
+:where(.pzhown-ui) :is([data-slot='field-description'], [data-slot='field-error']) {
+  font-size: 13px;
+  line-height: 18px;
+}
+:where(.pzhown-ui) [data-slot='field-description'] { color: var(--pzhown-ui-foreground-secondary); }
+:where(.pzhown-ui) [data-slot='field-error'] { color: var(--pzhown-ui-destructive); }
+
+/* Pagination */
+:where(.pzhown-ui) [data-slot='pagination-link'] {
+  min-width: 34px;
+  min-height: 34px;
+  border: 0;
+  border-radius: var(--pzhown-ui-radius-pill);
+  color: var(--pzhown-ui-foreground);
+}
+:where(.pzhown-ui) [data-slot='pagination-link']:is([data-active], [aria-current='page']) {
+  background: var(--pzhown-ui-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(0 136 255 / 0.18);
+}
+
+/* Marker / status dots */
+:where(.pzhown-ui) [data-slot='marker'] {
+  border-color: var(--pzhown-glass-edge);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12), inset 0 1px 0 var(--pzhown-glass-highlight-soft);
+}
+
+/* Resizable panes */
+:where(.pzhown-ui) [data-slot='resizable-handle'] {
+  background: var(--pzhown-ui-separator);
+}
+:where(.pzhown-ui) [data-slot='resizable-handle']:is(:focus-visible, [data-resize-handle-active]) {
+  background: var(--pzhown-ui-primary);
+  box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
+}
+
+/* Scroll area */
+:where(.pzhown-ui) [data-slot='scroll-area-scrollbar'] {
+  background: transparent;
+}
+:where(.pzhown-ui) [data-slot='scroll-area-thumb'] {
+  border-radius: var(--pzhown-ui-radius-pill);
+  background: rgb(120 120 128 / 0.38);
+}
+
+/* Spinner */
+:where(.pzhown-ui) [data-slot='spinner'] {
+  color: var(--pzhown-ui-foreground-secondary);
+}
+
+/* Radio / checkbox checked glyphs stay high contrast. */
+:where(.pzhown-ui) :is([data-slot='checkbox-indicator'], [data-slot='radio-group-indicator']) {
+  color: #fff;
+}
+
+/* Table cells use iOS separator rhythm rather than boxed-grid borders. */
+:where(.pzhown-ui) :is([data-slot='table-head'], [data-slot='table-cell']) {
+  border-color: var(--pzhown-ui-separator);
+}
+:where(.pzhown-ui) [data-slot='table-head'] {
+  color: var(--pzhown-ui-foreground-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Empty states and muted helper copy. */
+:where(.pzhown-ui) :is([data-slot='empty-description'], [data-slot='item-description']) {
+  color: var(--pzhown-ui-foreground-secondary);
+}
+
+/* Carousel navigation is a circular small-glass control. */
+:where(.pzhown-ui) :is([data-slot='carousel-previous'], [data-slot='carousel-next']) {
+  border-color: var(--pzhown-glass-edge);
+  background: var(--pzhown-glass-small-bg);
+  box-shadow: var(--pzhown-glass-shadow-control);
+  backdrop-filter: var(--pzhown-glass-filter-small);
+  -webkit-backdrop-filter: var(--pzhown-glass-filter-small);
+}
+
+/* Standalone dark theme scopes (without an ancestor .dark) keep dark field values. */
+.pzhown-ui:where(.dark, [data-theme='dark']) :is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips'],
+  [data-slot='questionnaire-input']
+) {
+  --pzhown-field-background: rgb(118 118 128 / 0.24);
+  --pzhown-field-border: rgb(235 235 245 / 0.22);
+  --pzhown-field-hover-background: rgb(118 118 128 / 0.30);
+  --pzhown-field-hover-border: rgb(235 235 245 / 0.28);
+  --pzhown-field-focus-background: rgb(44 44 46 / 0.72);
+  --pzhown-field-focus-border: rgb(0 145 255 / 0.72);
+}
