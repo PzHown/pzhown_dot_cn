@@ -1,0 +1,555 @@
+name: Apply and verify iOS ThemeProvider refactor
+
+on:
+  push:
+    branches:
+      - refactor/ios-theme-provider
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build ThemeProvider and iOS visual theme
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = require('path')
+
+          const themeProvider = `'use client'
+
+          import * as React from 'react'
+
+          export type ThemeName = 'ios'
+          export type ThemeMode = 'light' | 'dark' | 'system'
+          export type ResolvedThemeMode = Exclude<ThemeMode, 'system'>
+
+          type ThemeContextValue = {
+            theme: ThemeName
+            mode: ThemeMode
+            resolvedMode: ResolvedThemeMode
+            setMode: (mode: ThemeMode) => void
+          }
+
+          type ThemeProviderProps = {
+            children: React.ReactNode
+            theme?: ThemeName
+            mode?: ThemeMode
+            defaultMode?: ThemeMode
+            onModeChange?: (mode: ThemeMode) => void
+            syncDocument?: boolean
+          }
+
+          const ThemeContext = React.createContext<ThemeContextValue | null>(null)
+          const darkQuery = '(prefers-color-scheme: dark)'
+
+          function subscribeToSystemTheme(callback: () => void) {
+            if (typeof window === 'undefined') return () => undefined
+            const media = window.matchMedia(darkQuery)
+            media.addEventListener('change', callback)
+            return () => media.removeEventListener('change', callback)
+          }
+
+          function getSystemTheme(): ResolvedThemeMode {
+            if (typeof window === 'undefined') return 'light'
+            return window.matchMedia(darkQuery).matches ? 'dark' : 'light'
+          }
+
+          export function ThemeProvider({
+            children,
+            theme = 'ios',
+            mode: controlledMode,
+            defaultMode = 'system',
+            onModeChange,
+            syncDocument = true,
+          }: ThemeProviderProps) {
+            const [uncontrolledMode, setUncontrolledMode] = React.useState<ThemeMode>(defaultMode)
+            const systemMode = React.useSyncExternalStore(
+              subscribeToSystemTheme,
+              getSystemTheme,
+              () => 'light' as ResolvedThemeMode,
+            )
+
+            const mode = controlledMode ?? uncontrolledMode
+            const resolvedMode: ResolvedThemeMode = mode === 'system' ? systemMode : mode
+
+            const setMode = React.useCallback(
+              (nextMode: ThemeMode) => {
+                if (controlledMode === undefined) setUncontrolledMode(nextMode)
+                onModeChange?.(nextMode)
+              },
+              [controlledMode, onModeChange],
+            )
+
+            React.useEffect(() => {
+              if (!syncDocument) return
+
+              const root = document.documentElement
+              const previous = {
+                ui: root.getAttribute('data-pzhown-ui'),
+                theme: root.getAttribute('data-pzhown-theme'),
+                mode: root.getAttribute('data-theme'),
+                colorScheme: root.style.colorScheme,
+                dark: root.classList.contains('dark'),
+              }
+
+              root.setAttribute('data-pzhown-ui', '')
+              root.setAttribute('data-pzhown-theme', theme)
+              root.setAttribute('data-theme', resolvedMode)
+              root.classList.toggle('dark', resolvedMode === 'dark')
+              root.style.colorScheme = resolvedMode
+
+              return () => {
+                if (previous.ui === null) root.removeAttribute('data-pzhown-ui')
+                else root.setAttribute('data-pzhown-ui', previous.ui)
+
+                if (previous.theme === null) root.removeAttribute('data-pzhown-theme')
+                else root.setAttribute('data-pzhown-theme', previous.theme)
+
+                if (previous.mode === null) root.removeAttribute('data-theme')
+                else root.setAttribute('data-theme', previous.mode)
+
+                root.classList.toggle('dark', previous.dark)
+                root.style.colorScheme = previous.colorScheme
+              }
+            }, [resolvedMode, syncDocument, theme])
+
+            const value = React.useMemo<ThemeContextValue>(
+              () => ({ theme, mode, resolvedMode, setMode }),
+              [mode, resolvedMode, setMode, theme],
+            )
+
+            return (
+              <ThemeContext.Provider value={value}>
+                <div
+                  data-pzhown-ui=""
+                  data-pzhown-theme={theme}
+                  data-theme={resolvedMode}
+                  style={{ display: 'contents' }}
+                  suppressHydrationWarning
+                >
+                  {children}
+                </div>
+              </ThemeContext.Provider>
+            )
+          }
+
+          export function useTheme() {
+            const context = React.useContext(ThemeContext)
+            if (!context) throw new Error('useTheme must be used within ThemeProvider.')
+            return context
+          }
+          `
+
+          fs.writeFileSync('packages/ui/src/theme-provider.tsx', themeProvider)
+
+          const reactPath = 'packages/ui/src/react.ts'
+          let reactSource = fs.readFileSync(reactPath, 'utf8')
+          if (!reactSource.includes("./theme-provider")) {
+            reactSource = reactSource.replace(
+              "export { ProgressiveBlur }\n",
+              "export { ProgressiveBlur }\nexport { ThemeProvider, useTheme, type ThemeMode, type ThemeName, type ResolvedThemeMode } from './theme-provider'\n",
+            )
+          }
+          fs.writeFileSync(reactPath, reactSource)
+
+          const themeCss = `/*
+           * PzHown shared component visual system.
+           *
+           * ThemeProvider is the single theme entry point. It places
+           * data-pzhown-ui + data-pzhown-theme + data-theme on the provider
+           * boundary and mirrors them to documentElement so portaled React Aria
+           * surfaces inherit the same semantic token set.
+           */
+
+          [data-pzhown-ui][data-pzhown-theme='ios'] {
+            color-scheme: light;
+
+            /* iOS-inspired system / grouped surface hierarchy. */
+            --pzhown-ui-canvas: oklch(0.965 0.004 260);
+            --pzhown-ui-surface-1: oklch(1 0 0);
+            --pzhown-ui-surface-2: oklch(0.945 0.005 260);
+            --pzhown-ui-surface-3: oklch(0.905 0.007 260);
+            --pzhown-ui-surface-elevated: oklch(0.995 0.003 260 / 0.84);
+            --pzhown-ui-foreground: oklch(0.19 0.008 260);
+            --pzhown-ui-foreground-secondary: oklch(0.46 0.012 260);
+            --pzhown-ui-foreground-tertiary: oklch(0.61 0.01 260);
+            --pzhown-ui-separator: oklch(0.28 0.01 260 / 0.12);
+            --pzhown-ui-separator-strong: oklch(0.28 0.01 260 / 0.2);
+
+            /* Apple system tint semantics: blue for actions, green for Switch. */
+            --pzhown-ui-primary: oklch(0.62 0.215 255);
+            --pzhown-ui-primary-hover: oklch(0.59 0.22 255);
+            --pzhown-ui-primary-pressed: oklch(0.555 0.21 255);
+            --pzhown-ui-primary-foreground: oklch(1 0 0);
+            --pzhown-ui-accent: oklch(0.925 0.006 260);
+            --pzhown-ui-accent-hover: oklch(0.89 0.008 260);
+            --pzhown-ui-accent-foreground: var(--pzhown-ui-foreground);
+            --pzhown-ui-tint-soft: oklch(0.94 0.05 255);
+            --pzhown-ui-switch-on: oklch(0.71 0.18 145);
+            --pzhown-ui-destructive: oklch(0.62 0.235 28);
+            --pzhown-ui-destructive-soft: oklch(0.955 0.04 28);
+            --pzhown-ui-success: oklch(0.66 0.16 145);
+            --pzhown-ui-success-soft: oklch(0.955 0.035 145);
+            --pzhown-ui-warning: oklch(0.73 0.16 70);
+            --pzhown-ui-warning-soft: oklch(0.965 0.045 70);
+            --pzhown-ui-focus: oklch(0.62 0.215 255);
+            --pzhown-ui-focus-soft: oklch(0.62 0.215 255 / 0.24);
+            --pzhown-ui-control-knob: oklch(1 0 0);
+            --pzhown-ui-tooltip-background: oklch(0.2 0.008 260 / 0.94);
+            --pzhown-ui-tooltip-foreground: oklch(0.985 0.002 260);
+            --pzhown-ui-overlay-scrim: oklch(0.08 0.006 260 / 0.24);
+
+            /* iOS-like radius hierarchy without superellipse/corner-shape. */
+            --pzhown-ui-radius-micro: 6px;
+            --pzhown-ui-radius-compact: 10px;
+            --pzhown-ui-radius-control: 12px;
+            --pzhown-ui-radius-surface: 20px;
+            --pzhown-ui-radius-overlay: 24px;
+            --pzhown-ui-radius-large: 28px;
+            --pzhown-ui-radius-pill: 999px;
+
+            /* Ordinary grouped surfaces stay flat; temporary layers carry depth. */
+            --pzhown-ui-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.055), 0 0 0 0.5px rgb(0 0 0 / 0.035);
+            --pzhown-ui-shadow-raised: 0 8px 28px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.06);
+            --pzhown-ui-shadow-overlay: 0 30px 80px rgb(0 0 0 / 0.18), 0 4px 18px rgb(0 0 0 / 0.08);
+
+            /* Fast direct feedback, slightly longer spatial overlay transitions. */
+            --pzhown-ui-duration-instant: 100ms;
+            --pzhown-ui-duration-fast: 160ms;
+            --pzhown-ui-duration-normal: 220ms;
+            --pzhown-ui-duration-overlay: 300ms;
+            --pzhown-ui-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --pzhown-ui-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+            --pzhown-ui-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+
+            /* Backward-compatible aliases used by owned components. */
+            --pzhown-ui-background: var(--pzhown-ui-canvas);
+            --pzhown-ui-surface: var(--pzhown-ui-surface-1);
+            --pzhown-ui-surface-strong: var(--pzhown-ui-surface-elevated);
+            --pzhown-ui-surface-solid: var(--pzhown-ui-surface-1);
+            --pzhown-ui-muted: var(--pzhown-ui-surface-2);
+            --pzhown-ui-muted-foreground: var(--pzhown-ui-foreground-secondary);
+            --pzhown-ui-border: var(--pzhown-ui-separator);
+            --pzhown-ui-border-strong: var(--pzhown-ui-separator-strong);
+            --pzhown-ui-ring: var(--pzhown-ui-focus-soft);
+            --pzhown-ui-shadow-float: var(--pzhown-ui-shadow-overlay);
+
+            /* shadcn / aria-nova semantic variables. */
+            --background: var(--pzhown-ui-canvas);
+            --foreground: var(--pzhown-ui-foreground);
+            --card: var(--pzhown-ui-surface-1);
+            --card-foreground: var(--pzhown-ui-foreground);
+            --popover: var(--pzhown-ui-surface-elevated);
+            --popover-foreground: var(--pzhown-ui-foreground);
+            --primary: var(--pzhown-ui-primary);
+            --primary-foreground: var(--pzhown-ui-primary-foreground);
+            --secondary: var(--pzhown-ui-surface-2);
+            --secondary-foreground: var(--pzhown-ui-foreground);
+            --muted: var(--pzhown-ui-surface-2);
+            --muted-foreground: var(--pzhown-ui-foreground-secondary);
+            --accent: var(--pzhown-ui-accent);
+            --accent-foreground: var(--pzhown-ui-accent-foreground);
+            --destructive: var(--pzhown-ui-destructive);
+            --border: var(--pzhown-ui-separator);
+            --input: var(--pzhown-ui-separator-strong);
+            --ring: var(--pzhown-ui-focus);
+
+            --chart-1: oklch(0.62 0.215 255);
+            --chart-2: oklch(0.66 0.16 145);
+            --chart-3: oklch(0.73 0.16 70);
+            --chart-4: oklch(0.64 0.19 315);
+            --chart-5: oklch(0.62 0.235 28);
+
+            --sidebar: var(--pzhown-ui-surface-1);
+            --sidebar-foreground: var(--pzhown-ui-foreground);
+            --sidebar-primary: var(--pzhown-ui-primary);
+            --sidebar-primary-foreground: var(--pzhown-ui-primary-foreground);
+            --sidebar-accent: var(--pzhown-ui-accent);
+            --sidebar-accent-foreground: var(--pzhown-ui-accent-foreground);
+            --sidebar-border: var(--pzhown-ui-separator);
+            --sidebar-ring: var(--pzhown-ui-focus);
+
+            --radius: var(--pzhown-ui-radius-control);
+            --radius-sm: var(--pzhown-ui-radius-compact);
+            --radius-md: var(--pzhown-ui-radius-control);
+            --radius-lg: var(--pzhown-ui-radius-surface);
+            --radius-xl: var(--pzhown-ui-radius-overlay);
+
+            color: var(--pzhown-ui-foreground);
+            font-family: var(--pzhown-ui-font-sans);
+          }
+
+          [data-pzhown-ui][data-pzhown-theme='ios'][data-theme='dark'] {
+            color-scheme: dark;
+            --pzhown-ui-canvas: oklch(0.11 0.004 260);
+            --pzhown-ui-surface-1: oklch(0.18 0.006 260);
+            --pzhown-ui-surface-2: oklch(0.23 0.007 260);
+            --pzhown-ui-surface-3: oklch(0.285 0.008 260);
+            --pzhown-ui-surface-elevated: oklch(0.205 0.008 260 / 0.86);
+            --pzhown-ui-foreground: oklch(0.97 0.003 260);
+            --pzhown-ui-foreground-secondary: oklch(0.72 0.01 260);
+            --pzhown-ui-foreground-tertiary: oklch(0.57 0.01 260);
+            --pzhown-ui-separator: oklch(0.97 0.003 260 / 0.11);
+            --pzhown-ui-separator-strong: oklch(0.97 0.003 260 / 0.2);
+
+            --pzhown-ui-primary: oklch(0.69 0.19 250);
+            --pzhown-ui-primary-hover: oklch(0.72 0.18 250);
+            --pzhown-ui-primary-pressed: oklch(0.64 0.19 250);
+            --pzhown-ui-primary-foreground: oklch(0.99 0.001 260);
+            --pzhown-ui-accent: oklch(0.265 0.008 260);
+            --pzhown-ui-accent-hover: oklch(0.31 0.01 260);
+            --pzhown-ui-accent-foreground: var(--pzhown-ui-foreground);
+            --pzhown-ui-tint-soft: oklch(0.29 0.075 250);
+            --pzhown-ui-switch-on: oklch(0.74 0.17 145);
+            --pzhown-ui-destructive: oklch(0.7 0.2 28);
+            --pzhown-ui-destructive-soft: oklch(0.27 0.065 28);
+            --pzhown-ui-success: oklch(0.72 0.14 145);
+            --pzhown-ui-success-soft: oklch(0.25 0.045 145);
+            --pzhown-ui-warning: oklch(0.8 0.13 70);
+            --pzhown-ui-warning-soft: oklch(0.27 0.05 70);
+            --pzhown-ui-focus: oklch(0.69 0.19 250);
+            --pzhown-ui-focus-soft: oklch(0.69 0.19 250 / 0.3);
+            --pzhown-ui-control-knob: oklch(0.985 0.001 260);
+            --pzhown-ui-tooltip-background: oklch(0.93 0.004 260 / 0.94);
+            --pzhown-ui-tooltip-foreground: oklch(0.18 0.006 260);
+            --pzhown-ui-overlay-scrim: oklch(0.015 0.003 260 / 0.58);
+
+            --pzhown-ui-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.24), 0 0 0 0.5px rgb(255 255 255 / 0.035);
+            --pzhown-ui-shadow-raised: 0 10px 32px rgb(0 0 0 / 0.34), 0 1px 3px rgb(0 0 0 / 0.26);
+            --pzhown-ui-shadow-overlay: 0 34px 96px rgb(0 0 0 / 0.58), 0 5px 22px rgb(0 0 0 / 0.3);
+
+            --chart-1: oklch(0.69 0.19 250);
+            --chart-2: oklch(0.74 0.14 145);
+            --chart-3: oklch(0.8 0.13 70);
+            --chart-4: oklch(0.72 0.16 315);
+            --chart-5: oklch(0.7 0.2 28);
+          }
+          `
+
+          const cssPath = 'packages/ui/src/components.css'
+          let css = fs.readFileSync(cssPath, 'utf8')
+          const marker = '/* -------------------------------------------------------------------------- */\n/* State grammar'
+          const markerIndex = css.indexOf(marker)
+          if (markerIndex < 0) throw new Error('components.css state marker not found')
+          css = themeCss + '\n\n' + css.slice(markerIndex)
+          css = css.replaceAll(':where(.pzhown-ui, .pzhown-ui *)', ':where([data-pzhown-ui], [data-pzhown-ui] *)')
+          css = css.replaceAll('.pzhown-ui', '[data-pzhown-ui]')
+          css = css.replace(
+            ".pzhown-switch[data-selected] {\n  border-color: transparent;\n  background: var(--pzhown-ui-primary);\n}",
+            ".pzhown-switch[data-selected] {\n  border-color: transparent;\n  background: var(--pzhown-ui-switch-on);\n}",
+          )
+          css = css.replace(
+            "background: var(--pzhown-ui-accent);\n}\n\n/* -------------------------------------------------------------------------- */\n/* Progress, loading and data surfaces",
+            "background: var(--pzhown-ui-tint-soft);\n}\n\n/* -------------------------------------------------------------------------- */\n/* Progress, loading and data surfaces",
+          )
+          css = css.replace(
+            "backdrop-filter: blur(4px) saturate(0.95);\n  -webkit-backdrop-filter: blur(4px) saturate(0.95);",
+            "backdrop-filter: blur(8px) saturate(1.05);\n  -webkit-backdrop-filter: blur(8px) saturate(1.05);",
+          )
+          css = css.replace(
+            "backdrop-filter: blur(20px) saturate(1.06);\n  -webkit-backdrop-filter: blur(20px) saturate(1.06);",
+            "backdrop-filter: blur(28px) saturate(1.35);\n  -webkit-backdrop-filter: blur(28px) saturate(1.35);",
+          )
+          css = css.replace(
+            "background: var(--pzhown-ui-primary);\n  color: var(--pzhown-ui-primary-foreground);\n  box-shadow: var(--pzhown-ui-shadow-raised);\n  backdrop-filter: none;",
+            "background: var(--pzhown-ui-tooltip-background);\n  color: var(--pzhown-ui-tooltip-foreground);\n  box-shadow: var(--pzhown-ui-shadow-raised);\n  backdrop-filter: blur(14px) saturate(1.2);",
+          )
+          css = css.replace(
+            "-webkit-backdrop-filter: none;\n}\n\n.pzhown-tooltip-content {",
+            "-webkit-backdrop-filter: blur(14px) saturate(1.2);\n}\n\n.pzhown-tooltip-content {",
+          )
+          css = css.replaceAll('fill: var(--pzhown-ui-primary);', 'fill: var(--pzhown-ui-tooltip-background);')
+          fs.writeFileSync(cssPath, css)
+
+          // ThemeProvider owns portal scope. Remove one-off theme classes from component sources.
+          const componentDir = 'packages/ui/src/components'
+          for (const file of fs.readdirSync(componentDir)) {
+            if (!file.endsWith('.tsx')) continue
+            const filePath = path.join(componentDir, file)
+            let source = fs.readFileSync(filePath, 'utf8')
+            source = source.replace(/\bpzhown-ui\s+/g, '')
+            fs.writeFileSync(filePath, source)
+          }
+
+          const documentPath = 'apps/web/src/components/component-document/ComponentsDocument.tsx'
+          let documentSource = fs.readFileSync(documentPath, 'utf8')
+          documentSource = documentSource.replace(
+            "import * as React from 'react'\n",
+            "import * as React from 'react'\nimport { ThemeProvider, useTheme } from '@pzhown/ui/react'\n",
+          )
+          documentSource = documentSource.replace(
+            'export default function ComponentsDocument() {',
+            'function ComponentsDocumentContent() {',
+          )
+          documentSource = documentSource.replace(
+            "  const [query, setQuery] = React.useState('')\n  const [dark, setDark] = React.useState(false)",
+            "  const [query, setQuery] = React.useState('')\n  const { resolvedMode, setMode } = useTheme()\n  const dark = resolvedMode === 'dark'",
+          )
+          documentSource = documentSource.replace(
+            '<div className="component-document pzhown-ui tw:min-h-screen tw:bg-background tw:text-foreground" data-theme={dark ? \'dark\' : \'light\'}>',
+            '<div className="component-document tw:min-h-screen tw:bg-background tw:text-foreground">',
+          )
+          documentSource = documentSource.replace(
+            'onClick={() => setDark((value) => !value)}',
+            "onClick={() => setMode(dark ? 'light' : 'dark')}",
+          )
+          documentSource += `\n\nexport default function ComponentsDocument() {\n  return (\n    <ThemeProvider theme="ios" defaultMode="light">\n      <ComponentsDocumentContent />\n    </ThemeProvider>\n  )\n}\n`
+          fs.writeFileSync(documentPath, documentSource)
+
+          const showcasePath = 'apps/web/src/components/ComponentShowcase.tsx'
+          let showcase = fs.readFileSync(showcasePath, 'utf8')
+          showcase = showcase.replace(
+            '  TooltipTrigger,\n} from \'@pzhown/ui/react\'',
+            '  TooltipTrigger,\n  ThemeProvider,\n} from \'@pzhown/ui/react\'',
+          )
+          showcase = showcase.replace(
+            '  return (\n    <TooltipProvider delay={180}>\n      <div className="pzhown-ui tw:grid tw:gap-5 tw:lg:grid-cols-2">',
+            '  return (\n    <ThemeProvider theme="ios" defaultMode="light">\n      <TooltipProvider delay={180}>\n        <div className="tw:grid tw:gap-5 tw:lg:grid-cols-2">',
+          )
+          showcase = showcase.replace(
+            '      </div>\n    </TooltipProvider>\n  )',
+            '        </div>\n      </TooltipProvider>\n    </ThemeProvider>\n  )',
+          )
+          fs.writeFileSync(showcasePath, showcase)
+
+          const componentPage = 'apps/web/src/pages/components.astro'
+          let componentPageSource = fs.readFileSync(componentPage, 'utf8')
+          componentPageSource = componentPageSource.replace(
+            'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;',
+            '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;',
+          )
+          fs.writeFileSync(componentPage, componentPageSource)
+
+          const readmePath = 'README.md'
+          let readme = fs.readFileSync(readmePath, 'utf8')
+          if (!readme.includes('ThemeProvider')) {
+            readme += `\n\n## UI ThemeProvider\n\n共享 React 组件的视觉主题由 \`@pzhown/ui/react\` 的 \`ThemeProvider\` 统一提供。当前默认视觉主题为 \`ios\`，支持 \`light / dark / system\`。组件本身只消费语义 token；Dialog、Popover、Select、Menu 等 Portal 组件通过 Provider 同步到 document root，禁止再在单个组件上手工添加主题 class。\n\n\`\`\`tsx\nimport { ThemeProvider } from '@pzhown/ui/react'\n\n<ThemeProvider theme="ios" defaultMode="system">\n  <App />\n</ThemeProvider>\n\`\`\`\n`
+          }
+          fs.writeFileSync(readmePath, readme)
+          NODE
+
+      - name: Check ThemeProvider ownership
+        run: |
+          grep -q "export function ThemeProvider" packages/ui/src/theme-provider.tsx
+          grep -q "data-pzhown-theme='ios'" packages/ui/src/components.css
+          ! grep -R "className=.*pzhown-ui" packages/ui/src/components apps/web/src/components --include='*.tsx'
+
+      - name: Check shared UI
+        run: pnpm --filter @pzhown/ui exec tsc -p tsconfig.json --noEmit
+
+      - name: Check Astro
+        run: pnpm --filter @pzhown/web check
+
+      - name: Build Astro
+        run: pnpm --filter @pzhown/web build
+
+      - name: Check CMS
+        run: pnpm --filter @pzhown/cms exec tsc --noEmit --incremental false
+
+      - name: Install Chromium
+        run: pnpm dlx playwright@1.55.0 install chromium
+
+      - name: Start preview
+        run: |
+          pnpm --filter @pzhown/web preview --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4321/components/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/astro-preview.log
+          exit 1
+
+      - name: Browser audit ThemeProvider, iOS visuals and portals
+        run: |
+          cat > ios-theme.spec.js <<'TEST'
+          const { test, expect } = require('@playwright/test')
+
+          test('ThemeProvider owns the iOS component theme', async ({ page }) => {
+            const errors = []
+            const failed = []
+            page.on('pageerror', (error) => errors.push(error.message))
+            page.on('console', (message) => {
+              if (message.type() === 'error' || message.type() === 'warning') errors.push(message.text())
+            })
+            page.on('response', (response) => {
+              if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`)
+            })
+
+            await page.goto('http://127.0.0.1:4321/components/', { waitUntil: 'networkidle' })
+            await expect(page.locator('[data-component]')).toHaveCount(58)
+            await expect(page.locator('[data-demo-error]')).toHaveCount(0)
+
+            const root = page.locator('html')
+            await expect(root).toHaveAttribute('data-pzhown-ui', '')
+            await expect(root).toHaveAttribute('data-pzhown-theme', 'ios')
+            await expect(root).toHaveAttribute('data-theme', 'light')
+
+            const light = await page.evaluate(() => {
+              const root = getComputedStyle(document.documentElement)
+              const button = document.querySelector('[data-slot="button"]')
+              const card = document.querySelector('[data-slot="card"]')
+              const selectedSwitch = document.querySelector('[data-component="switch"] [data-slot="switch"][data-selected]')
+              return {
+                primary: root.getPropertyValue('--pzhown-ui-primary').trim(),
+                switchOn: root.getPropertyValue('--pzhown-ui-switch-on').trim(),
+                buttonBg: button ? getComputedStyle(button).backgroundColor : null,
+                cardShadow: card ? getComputedStyle(card).boxShadow : null,
+                switchBg: selectedSwitch ? getComputedStyle(selectedSwitch).backgroundColor : null,
+              }
+            })
+            console.log('IOS_LIGHT', JSON.stringify(light))
+            expect(light.primary).toContain('oklch')
+            expect(light.switchOn).toContain('oklch')
+            expect(light.cardShadow).toBe('none')
+
+            await page.getByRole('button', { name: '切到深色' }).click()
+            await expect(root).toHaveAttribute('data-theme', 'dark')
+            await expect(root).toHaveClass(/dark/)
+
+            await page.getByRole('button', { name: '切到浅色' }).click()
+            const alertDialog = page.locator('[data-component="alert-dialog"]')
+            await alertDialog.getByRole('button', { name: '打开确认对话框' }).click()
+            const dialog = page.locator('[data-slot="alert-dialog-content"]')
+            await expect(dialog).toBeVisible()
+            const portal = await dialog.evaluate((element) => {
+              const s = getComputedStyle(element)
+              return { background: s.backgroundColor, backdrop: s.backdropFilter, radius: s.borderRadius, shadow: s.boxShadow }
+            })
+            console.log('IOS_PORTAL', JSON.stringify(portal))
+            expect(portal.background).not.toBe('rgba(0, 0, 0, 0)')
+            expect(portal.backdrop).not.toBe('none')
+            expect(portal.radius).not.toBe('0px')
+            expect(portal.shadow).not.toBe('none')
+
+            expect(errors).toEqual([])
+            expect(failed).toEqual([])
+          })
+          TEST
+          pnpm dlx @playwright/test@1.55.0 test ios-theme.spec.js --reporter=line --workers=1
+
+      - name: Commit clean implementation
+        run: |
+          rm -f .github/workflows/ios-theme-provider.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'refactor(ui): add iOS ThemeProvider visual system'
+          git push origin HEAD:refactor/ios-theme-provider
