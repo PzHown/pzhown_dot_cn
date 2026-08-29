@@ -6,3 +6,7 @@
 @import './styles/navigation.css';
 @import './styles/overlays.css';
 @import './styles/optical-glass.css';
+@import './styles/foundation-overlays.css';
+@import './styles/navigation-extra.css';
+@import './styles/data-entry.css';
+@import './styles/data-display.css';

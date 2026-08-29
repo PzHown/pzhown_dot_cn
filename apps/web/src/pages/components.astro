@@ -1,5 +1,6 @@
 ---
 import ComponentShowcase from '../components/ComponentShowcase'
+import FoundationShowcase from '../components/FoundationShowcase'
 import '../styles/global.css'
 ---
 
@@ -16,9 +17,19 @@ import '../styles/global.css'
       <header class="components-page__header">
         <p class="hero-kicker">PZHOWN / CORE COMPONENTS</p>
         <h1>iOS 27 Components</h1>
-        <p>这是新组件系统的唯一展示面。旧 aria-nova / shadcn 组件目录、旧状态矩阵和旧主题覆盖层不再参与渲染。</p>
+        <p>这是新组件系统的唯一展示面。视觉以 ios27-design-system 为准，react-cupertino-ui 只用于 anatomy / 状态组织，Liquid Glass 只作为光学材质层。</p>
       </header>
       <ComponentShowcase client:load />
+      <section class="lab-section">
+        <div class="section-heading">
+          <div>
+            <p class="hero-kicker">FOUNDATION / PRODUCT-READY</p>
+            <h2>P0 Foundation Components</h2>
+          </div>
+          <p>补齐高频后台与公开站能力：导航、菜单、系统反馈、组合输入、日期、表格、分页与空状态。普通内容面保持 Grouped Surface，不为了展示效果滥用玻璃。</p>
+        </div>
+        <FoundationShowcase client:load />
+      </section>
     </main>
   </body>
 </html>

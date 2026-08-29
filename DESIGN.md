@@ -250,6 +250,12 @@ Liquid Glass 是内容上方的功能层，而不是背景装饰。
 - **Toolbar / TabBar**：Large Optical Liquid Glass；TabBar selected item 可以形成局部玻璃 indicator，但禁止叠加第二层大面积玻璃。
 - **Dialog / Sheet**：Large Optical Liquid Glass；各自拥有 Portal、Escape、遮罩/外部点击行为。
 - **Popover / ContextMenu**：Medium Optical Liquid Glass；不再套旧 Base UI DOM。
+- **Tooltip / DropdownMenu / Toast**：只承担补充说明、上下文命令与操作结果反馈；Tooltip 使用 Small Optical Glass，DropdownMenu / Toast 使用 Medium Optical Glass。Tooltip 不承载完成任务必需的信息。
+- **AlertDialog**：用于不可逆或高风险确认，使用 Large Optical Glass；低风险可逆操作优先直接执行并提供 Undo，而不是滥用确认框。
+- **Tabs / Breadcrumb / Sidebar**：属于导航与定向层，默认依靠 System Surface、当前位置和 selected/current state，不启用 displacement。Sidebar 使用 Regular Material，不做强折射。
+- **CommandPalette**：属于全局快捷导航/命令浮层，使用 Large Optical Glass；搜索、Arrow Keys、Enter 与 Escape 必须可用。
+- **FormField / Combobox / DatePicker / DateRangePicker**：原生语义和表单关联优先。Combobox 选项层允许使用稳定 Medium Material，但不为了视觉效果在频繁输入过程中强制启用高成本 displacement。
+- **DataTable / Pagination / EmptyState**：属于数据与 View State 层，使用 Grouped Surface。DataTable API 保持可承接 TanStack Table 产出的行/列状态，但基础组件本身不绑定第二套视觉或行为系统。
 - **LiquidGlassSurface**：是公开的低层材质 primitive，只有需要自定义浮动镜片或已知背景 `refract` 时直接使用；普通业务组件优先用上面的高层组件。
 - **Progressive Blur / Gradient**：属于 Effects，不是普通组件皮肤，也不参与 displacement。
 
