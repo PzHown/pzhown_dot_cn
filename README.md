@@ -34,15 +34,17 @@ pnpm dev
 
 `@pzhown/ui` no longer uses the old shadcn / aria-nova / Base UI component implementation or the former global theme-correction chain.
 
-The component system is intentionally small and owned by this repository. The current core is:
+The component system is intentionally owned by this repository. The current core is:
 
 - Button
-- TextField / SearchBar
+- TextField / Textarea / SearchBar / Select
 - Toggle / Switch
 - Checkbox
 - RadioGroup / Radio
 - Slider
 - SegmentedControl
+- Badge / Avatar
+- Progress / Spinner / Skeleton
 - Page
 - Toolbar
 - ListSection / ListRow
@@ -69,6 +71,7 @@ import {
   DialogTrigger,
   ListRow,
   ListSection,
+  Select,
   TextField,
 } from '@pzhown/ui/react'
 ```
@@ -89,6 +92,7 @@ Internally it is split by responsibility:
 - `styles/typography.css`: semantic type utilities
 - `styles/materials.css`: Liquid Glass and transparency fallbacks
 - `styles/controls.css`: controls and form states
+- `styles/content.css`: textarea/select, identity, progress and loading primitives
 - `styles/navigation.css`: page, list, toolbar and tab-bar chrome
 - `styles/overlays.css`: dialog, sheet, popover, context menu and alerts
 

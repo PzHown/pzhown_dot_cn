@@ -3,6 +3,8 @@
 import * as React from 'react'
 import {
   Alert,
+  Avatar,
+  Badge,
   Button,
   Checkbox,
   ContextMenu,
@@ -19,11 +21,13 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Progress,
   Radio,
   RadioGroup,
   SearchBar,
   SegmentedControl,
   SegmentedControlItem,
+  Select,
   Sheet,
   SheetClose,
   SheetContent,
@@ -32,10 +36,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Skeleton,
   Slider,
+  Spinner,
   Switch,
   TabBar,
   TabBarItem,
+  Textarea,
   TextField,
   Toggle,
   Toolbar,
@@ -75,10 +82,16 @@ export default function ComponentShowcase() {
         </div>
       </Card>
 
-      <Card title="Text & Search">
+      <Card title="Fields">
         <div className="demo-stack">
           <TextField label="姓名" placeholder="输入姓名" description="标准 iOS 27 TextField 结构" />
           <TextField label="邮箱" defaultValue="hello@example.com" error="示例错误状态" />
+          <Textarea label="备注" placeholder="输入更多内容" description="Textarea 与字段状态使用同一套系统语法" />
+          <Select label="送达方式" defaultValue="express">
+            <option value="express">快速送达</option>
+            <option value="standard">标准送达</option>
+            <option value="pickup">到店自取</option>
+          </Select>
           <SearchBar value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索" onCancel={() => setSearch('')} />
         </div>
       </Card>
@@ -98,6 +111,23 @@ export default function ComponentShowcase() {
             <SegmentedControlItem value="files">文件</SegmentedControlItem>
           </SegmentedControl>
           <Slider min={0} max={100} value={slider} onValueChange={setSlider} label="透明度" valueLabel={`${slider}%`} />
+        </div>
+      </Card>
+
+      <Card title="Identity & Status">
+        <div className="demo-stack">
+          <div className="demo-row">
+            <Avatar fallback="P" />
+            <Avatar size="large" fallback="HZ" />
+            <Badge variant="blue">新功能</Badge>
+            <Badge variant="green">已完成</Badge>
+            <Badge variant="orange">待处理</Badge>
+            <Badge variant="red">错误</Badge>
+          </div>
+          <Progress value={72} label="同步进度" valueLabel="72%" />
+          <div className="demo-row"><Spinner size="small" /><Spinner /><Spinner size="large" /></div>
+          <Skeleton shape="text" style={{ width: '74%' }} />
+          <Skeleton style={{ height: 64 }} />
         </div>
       </Card>
 

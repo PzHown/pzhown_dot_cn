@@ -1,3 +1,4 @@
 export * from './controls'
+export * from './content'
 export * from './navigation'
 export * from './overlays'
