@@ -27,3 +27,7 @@ apps/cms/payload.db-wal
 
 # TypeScript incremental build metadata
 *.tsbuildinfo
+
+# browser test artifacts
+test-results/
+playwright-report/
