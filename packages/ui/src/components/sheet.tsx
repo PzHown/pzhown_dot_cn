@@ -92,11 +92,11 @@ function Sheet({
           {showCloseButton && (
             <SheetClose
               variant="ghost"
-              className="tw:absolute tw:top-3 tw:right-3"
+              className="tw:absolute tw:top-2.5 tw:right-2.5 tw:size-10 tw:rounded-full tw:text-muted-foreground hover:tw:text-foreground"
               size="icon-sm"
+              aria-label="Close"
             >
-              <XIcon
-              />
+              <XIcon className="tw:size-[18px]" />
               <span className="tw:sr-only">Close</span>
             </SheetClose>
           )}
@@ -132,7 +132,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("tw:flex tw:flex-col tw:gap-0.5 tw:p-4", className)}
+      className={cn("tw:flex tw:flex-col tw:gap-0.5 tw:p-4 tw:pr-14", className)}
       {...props}
     />
   )
@@ -157,7 +157,7 @@ function SheetTitle({
       slot="title"
       data-slot="sheet-title"
       className={cn(
-        "tw: tw:text-base tw:font-medium tw:text-foreground",
+        "tw:text-base tw:font-medium tw:text-foreground",
         className
       )}
       {...props}
