@@ -1,110 +1,121 @@
 'use client'
 
 import * as React from 'react'
-import { Glass, type GlassOptics, type GlassProps } from '@samasante/liquid-glass'
+import {
+  LiquidGlass,
+  type LiquidGlassHandle,
+  type LiquidGlassProps,
+} from 'liquid-glass-web-react'
 import { cx } from './shared'
 
 export type LiquidGlassMaterial = 'small' | 'medium' | 'large'
 
 /**
- * Material-mode optics stay intentionally close to the upstream GlassMaterial
- * defaults. These are floating surfaces, not magnifying lenses: the bend should
- * be readable at the rim without visibly warping the whole control.
+ * PallavAg is used only for explicit optical lenses. These presets keep the
+ * lens restrained so the iOS 27 visual system still owns geometry, colour,
+ * blur, shadow and component state.
  */
-const materialOptics: Record<LiquidGlassMaterial, Partial<GlassOptics>> = {
+const opticalPresets: Record<
+  LiquidGlassMaterial,
+  Pick<
+    LiquidGlassProps,
+    | 'strength'
+    | 'chromaticAberration'
+    | 'blur'
+    | 'depth'
+    | 'curvature'
+    | 'glow'
+    | 'edgeHighlight'
+    | 'specular'
+  >
+> = {
   small: {
-    strength: 0.035,
-    depth: 0.42,
-    curvature: 0.28,
-    dispersion: 0.22,
-    bend: 0.42,
-    bendWidth: 0.18,
-    sheen: 0.28,
-    sheenWidth: 2.4,
-    specular: 0.9,
-    glow: 0.07,
-    frost: 5,
-    saturate: 1.12,
-    brightness: 0,
+    strength: 0.045,
+    chromaticAberration: 0.08,
+    blur: 0,
+    depth: 8,
+    curvature: 0.58,
+    glow: 0.08,
+    edgeHighlight: 0.22,
+    specular: 0.8,
   },
   medium: {
-    strength: 0.045,
-    depth: 0.48,
-    curvature: 0.3,
-    dispersion: 0.26,
-    bend: 0.45,
-    bendWidth: 0.17,
-    sheen: 0.32,
-    sheenWidth: 3,
-    specular: 1,
-    glow: 0.09,
-    frost: 7,
-    saturate: 1.15,
-    brightness: 0,
+    strength: 0.065,
+    chromaticAberration: 0.12,
+    blur: 0,
+    depth: 10,
+    curvature: 0.65,
+    glow: 0.1,
+    edgeHighlight: 0.26,
+    specular: 0.9,
   },
   large: {
-    strength: 0.05,
-    depth: 0.52,
-    curvature: 0.32,
-    dispersion: 0.28,
-    bend: 0.46,
-    bendWidth: 0.16,
-    sheen: 0.34,
-    sheenWidth: 3.2,
-    specular: 1.05,
-    glow: 0.1,
-    frost: 9,
-    saturate: 1.15,
-    brightness: 0,
+    strength: 0.08,
+    chromaticAberration: 0.15,
+    blur: 0,
+    depth: 12,
+    curvature: 0.7,
+    glow: 0.12,
+    edgeHighlight: 0.3,
+    specular: 1,
   },
 }
 
-export interface LiquidGlassSurfaceProps extends Omit<GlassProps, 'optics'> {
+export interface LiquidGlassSurfaceProps extends LiquidGlassProps {
   material?: LiquidGlassMaterial
-  optics?: Partial<GlassOptics>
 }
 
 /**
- * Optical material primitive for iOS 27 floating chrome.
+ * Explicit live-DOM refraction lens powered by PallavAg/liquid-glass-web-react.
  *
- * `@samasante/liquid-glass` owns refraction/displacement only; component
- * geometry, colour semantics and interaction remain owned by @pzhown/ui.
+ * Important: this is not the default material implementation for iOS 27
+ * controls. The iOS 27 component library uses its native tint + backdrop blur +
+ * shadow recipe. Use this primitive only where real displacement is intentional.
  */
-export function LiquidGlassSurface({
-  material = 'medium',
-  optics,
-  className,
-  ...props
-}: LiquidGlassSurfaceProps) {
-  const resolvedOptics = React.useMemo(
-    () => ({ ...materialOptics[material], ...optics }),
-    [material, optics],
-  )
-
+export const LiquidGlassSurface = React.forwardRef<
+  LiquidGlassHandle,
+  LiquidGlassSurfaceProps
+>(function LiquidGlassSurface(
+  { material = 'medium', className, children, ...props },
+  ref,
+) {
   return (
-    <Glass
+    <LiquidGlass
+      ref={ref}
+      {...opticalPresets[material]}
       {...props}
-      optics={resolvedOptics}
-      className={cx('ios27-optical-glass', `ios27-optical-glass--${material}`, className)}
-    />
+      className={cx('ios27-optical-lens', `ios27-optical-lens--${material}`, className)}
+    >
+      {children}
+    </LiquidGlass>
   )
+})
+
+export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivElement> {
+  material?: LiquidGlassMaterial
 }
 
-export type LiquidGlassBackdropProps = Omit<LiquidGlassSurfaceProps, 'children'>
-
-/** Decorative, non-interactive optical layer placed behind crisp component UI. */
+/**
+ * Standard iOS 27 material backdrop.
+ *
+ * This deliberately does not invoke the displacement engine. It mirrors
+ * ios27-design-system's Liquid Glass material recipe; PallavAg remains opt-in.
+ */
 export function LiquidGlassBackdrop({
   material = 'medium',
   className,
-  style,
   ...props
 }: LiquidGlassBackdropProps) {
   return (
-    <LiquidGlassSurface
+    <div
       {...props}
-      material={material}
-      className={cx('ios27-optical-glass__backdrop', className)}
-      style={{ pointerEvents: 'none', ...style }}
+      aria-hidden="true"
+      data-material={material}
+      className={cx(
+        'ios27-optical-glass__backdrop',
+        `ios27-optical-glass--${material}`,
+        className,
+      )}
     />
   )
 }
