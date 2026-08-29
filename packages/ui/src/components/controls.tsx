@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { LiquidGlassBackdrop } from './materials'
 import { cx, useControllableState } from './shared'
 
 export type ButtonVariant = 'filled' | 'gray' | 'tinted' | 'plain' | 'glass' | 'destructive'
@@ -13,9 +14,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className, variant = 'filled', size = 'medium', iconOnly = false, type = 'button', ...props },
+  { className, variant = 'filled', size = 'medium', iconOnly = false, type = 'button', children, ...props },
   ref,
 ) {
+  const isGlass = variant === 'glass'
   return (
     <button
       ref={ref}
@@ -23,15 +25,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      data-glass={isGlass ? 'small' : undefined}
       className={cx(
         'ios27-btn',
         `ios27-btn--${variant}`,
         `ios27-btn--${size}`,
         iconOnly && 'ios27-btn--icon-only',
+        isGlass && 'ios27-optical-host',
         className,
       )}
       {...props}
-    />
+    >
+      {isGlass ? <LiquidGlassBackdrop material="small" /> : null}
+      {isGlass ? <span className="ios27-btn__content ios27-optical-content">{children}</span> : children}
+    </button>
   )
 })
 
