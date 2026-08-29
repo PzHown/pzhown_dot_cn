@@ -1,0 +1,207 @@
+/*
+ * Form control state system.
+ *
+ * Structure and geometry stay in component source. This layer owns the visual
+ * state grammar and intentionally loads after the theme so interaction states
+ * cannot be erased by theme-level base styling.
+ */
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips'],
+  [data-slot='questionnaire-input']
+) {
+  border: 1px solid var(--pzhown-ui-separator-strong);
+  border-radius: var(--pzhown-ui-radius-control);
+  background: var(--pzhown-ui-surface-1);
+  color: var(--pzhown-ui-foreground);
+  box-shadow: none;
+  outline: none;
+  transition:
+    border-color var(--pzhown-ui-duration-fast) ease,
+    background-color var(--pzhown-ui-duration-fast) ease,
+    box-shadow var(--pzhown-ui-duration-fast) ease,
+    opacity var(--pzhown-ui-duration-fast) ease;
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+)::placeholder,
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='combobox-chip-input']::placeholder {
+  color: var(--pzhown-ui-foreground-tertiary);
+  opacity: 1;
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):hover:not(:disabled):not([readonly]):not([aria-invalid='true']),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger'][data-hovered]:not([aria-invalid='true']),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):hover:not(:has(:disabled, [data-disabled], [readonly], [aria-invalid='true'])) {
+  border-color: color-mix(in oklab, var(--pzhown-ui-separator-strong), var(--pzhown-ui-foreground) 18%);
+  background: color-mix(in oklab, var(--pzhown-ui-surface-1), var(--pzhown-ui-surface-2) 24%);
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):focus-visible,
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within {
+  border-color: color-mix(in oklab, var(--pzhown-ui-focus), transparent 28%);
+  background: var(--pzhown-ui-surface-1);
+  box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='questionnaire-input']
+):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+  border-color: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 22%);
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):focus-visible:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within:has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+  border-color: var(--pzhown-ui-destructive);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='questionnaire-input']
+):is(:disabled, [data-disabled]),
+:is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has(:disabled, [data-disabled]) {
+  border-color: var(--pzhown-ui-separator);
+  background: var(--pzhown-ui-surface-2);
+  color: var(--pzhown-ui-foreground-tertiary);
+  box-shadow: none;
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+
+:is(.pzhown-ui, .pzhown-ui *):is(.pzhown-input, [data-slot='textarea'], [data-slot='questionnaire-input'])[readonly],
+:is(.pzhown-ui, .pzhown-ui *)[data-slot='input-group']:has([readonly]) {
+  border-color: var(--pzhown-ui-separator);
+  background: var(--pzhown-ui-surface-2);
+  color: var(--pzhown-ui-foreground-secondary);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* iOS theme keeps a filled base field while preserving the same state order. */
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips'],
+  [data-slot='questionnaire-input']
+),
+.pzhown-ui[data-pzhown-theme='ios27']:is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips'],
+  [data-slot='questionnaire-input']
+),
+.pzhown-ui[data-pzhown-theme='ios27'] :is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='input-group'],
+  [data-slot='combobox-chips'],
+  [data-slot='questionnaire-input']
+) {
+  border-color: transparent;
+  background: var(--pzhown-ui-surface-2);
+}
+
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):hover:not(:disabled):not([readonly]):not([aria-invalid='true']),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger'][data-hovered]:not([aria-invalid='true']),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):hover:not(:has(:disabled, [data-disabled], [readonly], [aria-invalid='true'])) {
+  border-color: transparent;
+  background: color-mix(in oklab, var(--pzhown-ui-surface-2), var(--pzhown-ui-surface-3) 36%);
+}
+
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):focus-visible,
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within {
+  border-color: color-mix(in oklab, var(--pzhown-ui-focus), transparent 48%);
+  background: var(--pzhown-ui-surface-2);
+  box-shadow: 0 0 0 3px var(--pzhown-ui-focus-soft);
+}
+
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='questionnaire-input']
+):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+  border-color: color-mix(in oklab, var(--pzhown-ui-destructive), transparent 18%);
+}
+
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='questionnaire-input']
+):focus-visible:is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *)[data-slot='select-trigger']:is(:focus-visible, [data-focus-visible]):is([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):focus-within:has([aria-invalid='true'], [data-invalid='true'], [data-invalid]:not([data-invalid='false'])) {
+  border-color: var(--pzhown-ui-destructive);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pzhown-ui-destructive), transparent 76%);
+}
+
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is(
+  .pzhown-input,
+  [data-slot='textarea'],
+  [data-slot='native-select'],
+  [data-slot='select-trigger'],
+  [data-slot='questionnaire-input']
+):is(:disabled, [data-disabled]),
+html[data-pzhown-theme='ios27'] :is(.pzhown-ui, .pzhown-ui *):is([data-slot='input-group'], [data-slot='combobox-chips']):has(:disabled, [data-disabled]) {
+  border-color: transparent;
+  background: var(--pzhown-ui-surface-2);
+  box-shadow: none;
+  opacity: 0.5;
+}
