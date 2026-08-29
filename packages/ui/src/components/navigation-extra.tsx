@@ -25,8 +25,25 @@ export function Tabs({ value, defaultValue = '', onValueChange, className, child
   )
 }
 
-export function TabsList({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} role="tablist" className={cx('ios27-tabs__list', className)} />
+export function TabsList({ className, onKeyDown, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      role="tablist"
+      className={cx('ios27-tabs__list', className)}
+      onKeyDown={(event) => {
+        onKeyDown?.(event)
+        if (event.defaultPrevented || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+        const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]:not([disabled])'))
+        if (!tabs.length) return
+        event.preventDefault()
+        const current = tabs.indexOf(document.activeElement as HTMLButtonElement)
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : event.key === 'ArrowRight' ? (current + 1 + tabs.length) % tabs.length : (current - 1 + tabs.length) % tabs.length
+        tabs[next]?.focus()
+        tabs[next]?.click()
+      }}
+    />
+  )
 }
 
 export interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> { value: string }
@@ -162,7 +179,13 @@ export function SidebarItem({ href, icon, trailing, current, disabled, className
         aria-current={current ? 'page' : undefined}
         aria-disabled={disabled || undefined}
         className={classes}
-        onClick={disabled ? (event) => event.preventDefault() : undefined}
+        onClick={(event) => {
+          if (disabled) {
+            event.preventDefault()
+            return
+          }
+          ;(onClick as React.MouseEventHandler<HTMLAnchorElement> | undefined)?.(event)
+        }}
       >{content}</a>
     )
   }
