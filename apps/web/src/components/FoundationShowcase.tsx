@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
   EmptyState,
   FormField,
+  IconButton,
   Pagination,
   Sidebar,
   SidebarContent,
@@ -49,6 +50,7 @@ import {
   useToast,
   type DataTableColumn,
 } from '@pzhown/ui/react'
+import { FileText, House, Images, LayoutDashboard, MoreHorizontal, Plus, Search, Settings } from '@pzhown/ui/icons'
 
 type DemoRow = { id: number; name: string; status: string; owner: string }
 
@@ -89,7 +91,7 @@ function FoundationDemoInner() {
           </Breadcrumb>
           <div className="demo-row">
             <Tooltip>
-              <TooltipTrigger><Button variant="glass" iconOnly aria-label="更多操作">•••</Button></TooltipTrigger>
+              <TooltipTrigger><IconButton icon={MoreHorizontal} label="更多操作" variant="glass" /></TooltipTrigger>
               <TooltipContent>更多操作</TooltipContent>
             </Tooltip>
             <DropdownMenu>
@@ -138,9 +140,9 @@ function FoundationDemoInner() {
           open={commandOpen}
           onOpenChange={setCommandOpen}
           items={[
-            { id: 'home', label: '前往首页', description: '打开公开站首页', shortcut: 'G H', icon: '⌂', onSelect: () => toast({ title: '命令已执行', description: '前往首页' }) },
-            { id: 'content', label: '新建内容', description: '创建新的 CMS 条目', shortcut: 'N', icon: '＋', onSelect: () => toast({ title: '准备新建内容' }) },
-            { id: 'media', label: '打开媒体库', description: '浏览图片和附件', icon: '▧' },
+            { id: 'home', label: '前往首页', description: '打开公开站首页', shortcut: 'G H', icon: <House size={18} />, onSelect: () => toast({ title: '命令已执行', description: '前往首页' }) },
+            { id: 'content', label: '新建内容', description: '创建新的 CMS 条目', shortcut: 'N', icon: <Plus size={18} />, onSelect: () => toast({ title: '准备新建内容' }) },
+            { id: 'media', label: '打开媒体库', description: '浏览图片和附件', icon: <Images size={18} /> },
           ]}
         />
       </Card>
@@ -185,12 +187,12 @@ function FoundationDemoInner() {
             <SidebarHeader><strong>PzHown Admin</strong></SidebarHeader>
             <SidebarContent>
               <SidebarSection title="工作区">
-                <SidebarItem icon="⌂" current>概览</SidebarItem>
-                <SidebarItem icon="▤" trailing="12">内容</SidebarItem>
-                <SidebarItem icon="▧">媒体</SidebarItem>
+                <SidebarItem icon={<LayoutDashboard size={18} />} current>概览</SidebarItem>
+                <SidebarItem icon={<FileText size={18} />} trailing="12">内容</SidebarItem>
+                <SidebarItem icon={<Images size={18} />}>媒体</SidebarItem>
               </SidebarSection>
               <SidebarSection title="系统">
-                <SidebarItem icon="⚙">设置</SidebarItem>
+                <SidebarItem icon={<Settings size={18} />}>设置</SidebarItem>
               </SidebarSection>
             </SidebarContent>
             <SidebarFooter><Button size="small" variant="plain" onClick={() => setCompact((value) => !value)}>{compact ? '展开' : '收起'}</Button></SidebarFooter>
@@ -201,7 +203,7 @@ function FoundationDemoInner() {
 
       <Card title="Empty State">
         <EmptyState
-          icon="⌕"
+          icon={<Search size={28} />}
           title="没有匹配的内容"
           description="调整筛选条件，或创建新的内容条目。"
           action={<Button>新建内容</Button>}
