@@ -1,6 +1,6 @@
-.ios27-icon-button{flex:0 0 auto;padding:0!important;border-radius:50%!important}
-.ios27-icon-button.ios27-btn--small{width:28px;height:28px;min-width:28px;min-height:28px}
-.ios27-icon-button.ios27-btn--medium{width:36px;height:36px;min-width:36px;min-height:36px}
-.ios27-icon-button.ios27-btn--large{width:50px;height:50px;min-width:50px;min-height:50px}
+.ios27-btn--icon-only,.ios27-icon-button{flex:0 0 auto;padding:0!important;border-radius:50%!important}
+.ios27-btn--icon-only.ios27-btn--small,.ios27-icon-button.ios27-btn--small{width:28px;height:28px;min-width:28px;min-height:28px}
+.ios27-btn--icon-only.ios27-btn--medium,.ios27-icon-button.ios27-btn--medium{width:36px;height:36px;min-width:36px;min-height:36px}
+.ios27-btn--icon-only.ios27-btn--large,.ios27-icon-button.ios27-btn--large{width:50px;height:50px;min-width:50px;min-height:50px}
 .ios27-icon-button__icon{display:block;flex:0 0 auto}
-.ios27-icon-button.ios27-btn--glass{border-radius:50%!important}
+.ios27-btn--icon-only.ios27-btn--glass,.ios27-icon-button.ios27-btn--glass{border-radius:50%!important}
