@@ -11,11 +11,6 @@ import { cx } from './shared'
 
 export type LiquidGlassMaterial = 'small' | 'medium' | 'large'
 
-/**
- * PallavAg is used only for explicit optical lenses. These presets keep the
- * lens restrained so the iOS 27 visual system still owns geometry, colour,
- * blur, shadow and component state.
- */
 const opticalPresets: Record<
   LiquidGlassMaterial,
   Pick<
@@ -67,15 +62,12 @@ export interface LiquidGlassSurfaceProps extends LiquidGlassProps {
   enabled?: boolean
 }
 
-/**
- * Explicit live-DOM refraction lens powered by PallavAg/liquid-glass-web-react.
- * It follows the global LiquidGlassProvider and can also be disabled locally.
- */
+/** Explicit PallavAg live-DOM refraction lens; globally and locally switchable. */
 export const LiquidGlassSurface = React.forwardRef<
   LiquidGlassHandle,
   LiquidGlassSurfaceProps
 >(function LiquidGlassSurface(
-  { material = 'medium', enabled = true, className, children, ...props },
+  { material = 'medium', enabled = true, className, children, style, ...props },
   ref,
 ) {
   const active = useLiquidGlassEnabled(enabled)
@@ -85,6 +77,7 @@ export const LiquidGlassSurface = React.forwardRef<
       <div
         className={cx('ios27-optical-lens', 'is-disabled', className)}
         data-liquid-glass-lens="off"
+        style={style}
       >
         {children}
       </div>
@@ -96,6 +89,7 @@ export const LiquidGlassSurface = React.forwardRef<
       ref={ref}
       {...opticalPresets[material]}
       {...props}
+      style={style}
       data-liquid-glass-lens="on"
       className={cx('ios27-optical-lens', `ios27-optical-lens--${material}`, className)}
     >
@@ -108,12 +102,7 @@ export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivEl
   material?: LiquidGlassMaterial
 }
 
-/**
- * Compatibility shim for components created while the old optical engine was
- * embedded as a backdrop child. Standard iOS 27 components now draw their
- * material directly in CSS, matching ios27-design-system, so no extra layer is
- * rendered here. New components should not add this shim.
- */
+/** Legacy no-render shim; standard iOS 27 components draw material in CSS. */
 export function LiquidGlassBackdrop(_props: LiquidGlassBackdropProps) {
   return null
 }
