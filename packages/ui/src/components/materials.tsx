@@ -6,6 +6,7 @@ import {
   type LiquidGlassHandle,
   type LiquidGlassProps,
 } from 'liquid-glass-web-react'
+import { useLiquidGlassEnabled } from '../liquid-glass-provider'
 import { cx } from './shared'
 
 export type LiquidGlassMaterial = 'small' | 'medium' | 'large'
@@ -63,27 +64,39 @@ const opticalPresets: Record<
 
 export interface LiquidGlassSurfaceProps extends LiquidGlassProps {
   material?: LiquidGlassMaterial
+  enabled?: boolean
 }
 
 /**
  * Explicit live-DOM refraction lens powered by PallavAg/liquid-glass-web-react.
- *
- * Important: this is not the default material implementation for iOS 27
- * controls. The iOS 27 component library uses its native tint + backdrop blur +
- * shadow recipe. Use this primitive only where real displacement is intentional.
+ * It follows the global LiquidGlassProvider and can also be disabled locally.
  */
 export const LiquidGlassSurface = React.forwardRef<
   LiquidGlassHandle,
   LiquidGlassSurfaceProps
 >(function LiquidGlassSurface(
-  { material = 'medium', className, children, ...props },
+  { material = 'medium', enabled = true, className, children, ...props },
   ref,
 ) {
+  const active = useLiquidGlassEnabled(enabled)
+
+  if (!active) {
+    return (
+      <div
+        className={cx('ios27-optical-lens', 'is-disabled', className)}
+        data-liquid-glass-lens="off"
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
     <LiquidGlass
       ref={ref}
       {...opticalPresets[material]}
       {...props}
+      data-liquid-glass-lens="on"
       className={cx('ios27-optical-lens', `ios27-optical-lens--${material}`, className)}
     >
       {children}
