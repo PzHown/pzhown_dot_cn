@@ -30,14 +30,15 @@ export function Page({ title, subtitle, actions, largeTitle = true, className, c
 
 export interface ToolbarProps extends React.HTMLAttributes<HTMLElement> {
   placement?: 'top' | 'bottom'
+  glass?: boolean
 }
 
-export function Toolbar({ placement = 'top', className, children, ...props }: ToolbarProps) {
+export function Toolbar({ placement = 'top', glass = true, className, children, ...props }: ToolbarProps) {
   return (
     <nav
       {...props}
       data-placement={placement}
-      data-glass="large"
+      data-glass={glass ? 'large' : 'off'}
       className={cx('ios27-toolbar', `ios27-toolbar--${placement}`, 'ios27-optical-host', className)}
     >
       <LiquidGlassBackdrop material="large" />
@@ -106,14 +107,15 @@ export interface TabBarProps extends React.HTMLAttributes<HTMLElement> {
   onValueChange?: (value: string) => void
   minimized?: boolean
   ariaLabel?: string
+  glass?: boolean
 }
 
-export function TabBar({ value, defaultValue = '', onValueChange, minimized = false, ariaLabel = '标签栏', className, children, ...props }: TabBarProps) {
+export function TabBar({ value, defaultValue = '', onValueChange, minimized = false, ariaLabel = '标签栏', glass = true, className, children, ...props }: TabBarProps) {
   const [selected, setSelected] = useControllableState({ value, defaultValue, onChange: onValueChange })
   return (
     <TabBarContext.Provider value={{ value: selected, setValue: setSelected }}>
       <nav {...props} aria-label={ariaLabel} data-minimized={minimized || undefined} className={cx('ios27-tabbar', className)}>
-        <div className="ios27-tabbar__platter ios27-optical-host" data-glass="large">
+        <div className="ios27-tabbar__platter ios27-optical-host" data-glass={glass ? 'large' : 'off'}>
           <LiquidGlassBackdrop material="large" />
           <div className="ios27-tabbar__platter-content ios27-optical-content">{children}</div>
         </div>
