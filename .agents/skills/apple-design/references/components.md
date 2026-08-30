@@ -12,6 +12,9 @@
 ## Button
 
 - iOS 27 视觉高度按 `DESIGN.md` 使用 Small 28、Medium 36、Large 50；视觉尺寸与触控命中区分离。
+- **文字 Action Button 默认必须是 Capsule**。`filled / gray / tinted / plain / glass / destructive` 只改变视觉层级，不改变 full-pill 几何；禁止再使用 10/12/14px 的普通 Web rounded-rect 作为默认 Button。
+- **IconButton 必须是正圆**，使用 28×28 / 36×36 / 50×50，图标优先使用项目 Lucide 入口。
+- Toggle / SegmentedControl 这类按钮型选择控件也使用 capsule 外形与 pill selected indicator。
 - 同一任务区只保留一个最强 filled action。
 - pressed 必须立即可感知；不要依赖 Hover 才看得出可点击。
 - icon-only 必须有可访问名称；桌面端必要时可以 Tooltip 补充，但 Tooltip 不能承担完成任务必需的信息。
@@ -35,6 +38,7 @@
 ## SegmentedControl / TabBar
 
 - 少量互斥视图使用 SegmentedControl；页面主导航使用 TabBar / Navigation，不把所有链接都做成 segmented。
+- SegmentedControl 外框与 selected item 使用胶囊语义，不退化成小圆角矩形。
 - selected 必须通过 surface/indicator/位置等持续线索表达，不只变文字颜色。
 - iOS 27 Tab Bar 使用 Large Liquid Glass system chrome；selected item 可以有局部 glass indicator，但禁止继续套第二层大面积玻璃。
 
