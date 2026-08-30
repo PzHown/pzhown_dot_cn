@@ -98,21 +98,21 @@ components:
     backgroundColor: "{colors.primary}"
     textColor: "#FFFFFF"
     typography: "{typography.subheadline}"
-    rounded: 10px
+    rounded: "{rounded.pill}"
     height: 28px
     padding: 12px
   button-medium:
     backgroundColor: "{colors.primary}"
     textColor: "#FFFFFF"
     typography: "{typography.body}"
-    rounded: "{rounded.control}"
+    rounded: "{rounded.pill}"
     height: 36px
     padding: 16px
   button-large:
     backgroundColor: "{colors.primary}"
     textColor: "#FFFFFF"
     typography: "{typography.body}"
-    rounded: "{rounded.overlay}"
+    rounded: "{rounded.pill}"
     height: 50px
     padding: 20px
   text-field:
@@ -243,23 +243,25 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 圆角与组件角色绑定：
 
-- Small glass / compact：8px。
-- Text Field：10px。
-- 常规 Button：12px。
+- **文字 Action Button 默认是 Capsule**：所有 `filled / gray / tinted / plain / glass / destructive` Button 都使用 full pill；28 / 36 / 50px 高度分别形成 14 / 18 / 25px 的视觉半径关系，但实现统一使用 `rounded.pill`，避免尺寸变化时退化成普通 rounded-rect。
+- **IconButton 是正圆**：28×28 / 36×36 / 50×50，不使用“圆角方块”替代。
+- Toggle、SegmentedControl 这类按钮型选择控件使用 pill 外形；selected indicator 也保持胶囊语义。
+- Text Field：10px；字段属于输入 Surface，不因为 Action Button 胶囊化而强制改成 pill。
 - Overlay：14px。
 - Bottom Sheet 顶部：34px。
-- Switch / Slider Thumb / Badge：full pill。
+- Switch / Slider Thumb / Badge：full pill / circle。
 
-嵌套圆角优先保持同心关系，不机械把所有对象做成同一“大圆角卡片”。
+嵌套圆角优先保持同心关系。**Action 使用 Capsule，Content Surface 使用连续圆角容器**，不要把两者混成同一种 12px 圆角矩形。
 
 ## Components
 
 组件源码必须自己拥有 anatomy 与状态，不再依赖跨组件修补 CSS。
 
-- **Button**：视觉高度 28 / 36 / 50px；`variant="glass"` 使用标准 Small iOS 27 Liquid Glass，不默认启用 PallavAg displacement。
+- **Button**：视觉高度 28 / 36 / 50px，默认全部是 Capsule；`variant` 只改变颜色/材质层级，不改变胶囊几何。`variant="glass"` 使用标准 Small iOS 27 Liquid Glass，不默认启用 PallavAg displacement。
+- **IconButton**：28 / 36 / 50px 正圆，Lucide 图标居中，必须有可访问名称。
 - **TextField / SearchBar**：36px 基础字段几何，Focus 使用系统 Blue ring；普通输入面不启用 displacement。
 - **Switch**：51×31px，开启使用系统 Green。
-- **Checkbox / Radio / Slider / SegmentedControl**：原生表单语义优先，状态视觉按系统 Tint。
+- **Checkbox / Radio / Slider / SegmentedControl**：原生表单语义优先，状态视觉按系统 Tint；SegmentedControl 的可点击项使用 capsule indicator。
 - **ListSection / ListRow**：52px 常规行，0.5px inset separator；内容列表保持 Grouped Surface。
 - **Toolbar / TabBar**：标准 Large iOS 27 Liquid Glass。TabBar selected item 可形成局部 indicator，但不叠加第二套大面积 glass。
 - **Dialog / Sheet**：高可读性浮层；Sheet/确认类浮层优先 Thick Material，保留 Portal、Escape、遮罩和 focus restore。
@@ -281,6 +283,7 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 - Do：以 `ios27-design-system` token、materials 和组件规格为视觉事实来源。
 - Do：把 PallavAg 当**可选光学引擎**，而不是 iOS 27 视觉主题。
+- Do：标准 Action Button 默认使用 capsule，IconButton 使用 circle；不要再回到 10/12/14px 的通用 Web 圆角矩形。
 - Do：标准组件先匹配 iOS 27 tint / blur / shadow / radius，再讨论是否额外需要真实 lens。
 - Do：可以研究 `react-cupertino-ui` 的结构，但必须映射回本项目自己的语义、状态与样式。
 - Do：优先系统语义色、Grouped Surface、清晰 spacing 和状态反馈。
