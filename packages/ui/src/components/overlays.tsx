@@ -43,9 +43,10 @@ export function DialogTrigger({ children }: { children: React.ReactElement }) {
 
 export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   closeOnOverlay?: boolean
+  glass?: boolean
 }
 
-export function DialogContent({ className, children, closeOnOverlay = true, ...props }: DialogContentProps) {
+export function DialogContent({ className, children, closeOnOverlay = true, glass = true, ...props }: DialogContentProps) {
   const context = React.useContext(DialogContext)
   if (!context) throw new Error('DialogContent must be used inside Dialog')
   useEscape(context.open, () => context.setOpen(false))
@@ -69,7 +70,7 @@ export function DialogContent({ className, children, closeOnOverlay = true, ...p
           aria-modal="true"
           tabIndex={-1}
           data-slot="dialog-content"
-          data-glass="large"
+          data-glass={glass ? 'large' : 'off'}
           className={cx('ios27-dialog', 'ios27-optical-host', className)}
         >
           <LiquidGlassBackdrop material="large" />
@@ -104,8 +105,8 @@ export function SheetTrigger({ children }: { children: React.ReactElement }) {
   const child = React.Children.only(children) as React.ReactElement<{ onClick?: React.MouseEventHandler }>
   return React.cloneElement(child, { onClick: composeHandlers(child.props.onClick, () => context.setOpen(true)) })
 }
-export interface SheetContentProps extends React.HTMLAttributes<HTMLDivElement> { side?: 'bottom' | 'left' | 'right' }
-export function SheetContent({ side = 'bottom', className, children, ...props }: SheetContentProps) {
+export interface SheetContentProps extends React.HTMLAttributes<HTMLDivElement> { side?: 'bottom' | 'left' | 'right'; glass?: boolean }
+export function SheetContent({ side = 'bottom', glass = true, className, children, ...props }: SheetContentProps) {
   const context = React.useContext(SheetContext)
   if (!context) throw new Error('SheetContent must be used inside Sheet')
   useEscape(context.open, () => context.setOpen(false))
@@ -119,7 +120,7 @@ export function SheetContent({ side = 'bottom', className, children, ...props }:
           aria-modal="true"
           data-side={side}
           data-slot="sheet-content"
-          data-glass="large"
+          data-glass={glass ? 'large' : 'off'}
           className={cx('ios27-sheet', 'ios27-optical-host', className)}
         >
           <LiquidGlassBackdrop material="large" />
@@ -161,7 +162,8 @@ export function PopoverTrigger({ children }: { children: React.ReactElement }) {
   const child = React.Children.only(children) as React.ReactElement<{ onClick?: React.MouseEventHandler; 'aria-expanded'?: boolean }>
   return React.cloneElement(child, { 'aria-expanded': context.open, onClick: composeHandlers(child.props.onClick, () => context.setOpen(!context.open)) })
 }
-export function PopoverContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> { glass?: boolean }
+export function PopoverContent({ className, children, glass = true, ...props }: PopoverContentProps) {
   const context = React.useContext(PopoverContext)
   if (!context) throw new Error('PopoverContent must be used inside Popover')
   useEscape(context.open, () => context.setOpen(false))
@@ -174,7 +176,7 @@ export function PopoverContent({ className, children, ...props }: React.HTMLAttr
     return () => document.removeEventListener('pointerdown', handle)
   }, [context])
   return context.open ? (
-    <div {...props} role="dialog" data-slot="popover-content" data-glass="medium" className={cx('ios27-popover', 'ios27-optical-host', className)}>
+    <div {...props} role="dialog" data-slot="popover-content" data-glass={glass ? 'medium' : 'off'} className={cx('ios27-popover', 'ios27-optical-host', className)}>
       <LiquidGlassBackdrop material="medium" />
       <div className="ios27-popover__body ios27-optical-content">{children}</div>
     </div>
@@ -182,8 +184,8 @@ export function PopoverContent({ className, children, ...props }: React.HTMLAttr
 }
 
 type ContextMenuItem = { label: React.ReactNode; onSelect?: () => void; disabled?: boolean; destructive?: boolean; shortcut?: React.ReactNode }
-export interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> { items: ContextMenuItem[] }
-export function ContextMenu({ items, children, className, onContextMenu, ...props }: ContextMenuProps) {
+export interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> { items: ContextMenuItem[]; glass?: boolean }
+export function ContextMenu({ items, children, glass = true, className, onContextMenu, ...props }: ContextMenuProps) {
   const [point, setPoint] = React.useState<{ x: number; y: number } | null>(null)
   useEscape(Boolean(point), () => setPoint(null))
   React.useEffect(() => {
@@ -205,7 +207,7 @@ export function ContextMenu({ items, children, className, onContextMenu, ...prop
         <Portal>
           <div
             className="ios27-context-menu ios27-optical-host"
-            data-glass="medium"
+            data-glass={glass ? 'medium' : 'off'}
             role="menu"
             style={{ left: point.x, top: point.y }}
             onPointerDown={(event) => event.stopPropagation()}

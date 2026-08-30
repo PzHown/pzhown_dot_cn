@@ -8,6 +8,7 @@
     ".": "./src/core.ts",
     "./astro": "./src/ProgressiveBlur.astro",
     "./react": "./src/react.ts",
+    "./icons": "./src/icons.ts",
     "./core": "./src/core.ts",
     "./components": "./src/components/index.ts",
     "./styles.css": "./src/styles.css",

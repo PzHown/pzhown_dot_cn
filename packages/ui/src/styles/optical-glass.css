@@ -41,13 +41,45 @@
 /* PallavAg live-DOM lens. Its source is the content inside the component, not an
    arbitrary backdrop behind a Button/Toolbar. */
 .ios27-optical-lens{position:relative;isolation:isolate}
+.ios27-optical-lens.is-disabled{filter:none!important}
+
+/* Local opt-out. Only components whose APIs expose `glass` use data-glass=off. */
+:is(.ios27-toolbar,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu)[data-glass='off'],
+.ios27-tabbar__platter[data-glass='off']{
+  background:var(--bg-secondary)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Global opt-out. LiquidGlassProvider sets this on both the document and its
+   subtree so portals and in-tree components follow the same switch. */
+[data-liquid-glass='off'] .ios27-btn--glass{
+  background:var(--fill-secondary)!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+[data-liquid-glass='off'] :is(.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu,.ios27-tooltip,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){
+  background:var(--bg-secondary)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+[data-liquid-glass='off'] .ios27-tabbar__item[data-selected]{
+  background:var(--fill-secondary)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
 
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme='light']) :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:rgb(0 0 0 / var(--material-thick-opacity))}
+  :root:not([data-theme='light']) :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command):not([data-glass='off']){background:rgb(0 0 0 / var(--material-thick-opacity))}
 }
-[data-theme='dark'] :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:rgb(0 0 0 / var(--material-thick-opacity))}
+[data-theme='dark'] :is(.ios27-dialog,.ios27-sheet,.ios27-context-menu,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command):not([data-glass='off']){background:rgb(0 0 0 / var(--material-thick-opacity))}
 
 @media(prefers-reduced-transparency:reduce){
   .ios27-btn--glass{background:var(--fill-secondary)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-  :is(.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu,.ios27-tooltip,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:var(--bg-secondary)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  :is(.ios27-toolbar,.ios27-tabbar__platter,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu,.ios27-tooltip,.ios27-dropdown,.ios27-toast,.ios27-alert-dialog,.ios27-command){background:var(--bg-secondary)!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 }
