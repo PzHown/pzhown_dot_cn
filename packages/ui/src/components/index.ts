@@ -1,5 +1,6 @@
 export * from './materials'
 export * from './controls'
+export * from './icon-button'
 export * from './content'
 export * from './navigation'
 export * from './overlays'
