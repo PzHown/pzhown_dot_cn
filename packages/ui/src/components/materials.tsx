@@ -15,98 +15,86 @@ import { cx } from './shared'
 
 export type LiquidGlassMaterial = 'small' | 'medium' | 'large'
 
-const opticalPresets: Record<
-  LiquidGlassMaterial,
-  Pick<
-    LiquidGlassProps,
-    | 'strength'
-    | 'chromaticAberration'
-    | 'blur'
-    | 'depth'
-    | 'curvature'
-    | 'glow'
-    | 'edgeHighlight'
-    | 'specular'
-  >
-> = {
-  small: {
-    strength: 0.045,
-    chromaticAberration: 0.08,
-    blur: 4,
-    depth: 8,
-    curvature: 0.58,
-    glow: 0.08,
-    edgeHighlight: 0.22,
-    specular: 0.8,
-  },
-  medium: {
-    strength: 0.035,
-    chromaticAberration: 0.05,
-    blur: 3,
-    depth: 7,
-    curvature: 0.38,
-    glow: 0.06,
-    edgeHighlight: 0.2,
-    specular: 0.55,
-  },
-  large: {
-    strength: 0.018,
-    chromaticAberration: 0.02,
-    blur: 2,
-    depth: 5,
-    curvature: 0.2,
-    glow: 0.035,
-    edgeHighlight: 0.14,
-    specular: 0.35,
-  },
+type PallavOptics = Pick<
+  LiquidGlassProps,
+  | 'strength'
+  | 'chromaticAberration'
+  | 'blur'
+  | 'depth'
+  | 'curvature'
+  | 'splay'
+  | 'glow'
+  | 'glowSpread'
+  | 'glowExponent'
+  | 'edgeHighlight'
+  | 'edgeWidth'
+  | 'edgeExponent'
+  | 'specular'
+  | 'specularAngle'
+  | 'quality'
+>
+
+/**
+ * PallavAg upstream DEFAULT_OPTIONS. Keep these values in sync with
+ * liquid-glass-web-react instead of inventing a second optical model here.
+ */
+const PALLAV_DEFAULT: PallavOptics = {
+  strength: 0.1,
+  chromaticAberration: 0.2,
+  blur: 0,
+  depth: 10,
+  curvature: 0.65,
+  splay: 1,
+  glow: 0.1,
+  glowSpread: 1,
+  glowExponent: 1.5,
+  edgeHighlight: 0.25,
+  edgeWidth: 3,
+  edgeExponent: 1.5,
+  specular: 1,
+  specularAngle: 45,
+  quality: 512,
 }
 
-/* External optics are intentionally role-sensitive. Small controls may show a
-   visible liquid edge; medium/large surfaces are restrained. PallavAg's map has
-   a flat centre and ramps displacement across `depth`, so large overlays use a
-   narrow edge band, very low displacement and no full-surface Gaussian blur.
-   This prevents page gutters, card shadows and separators from being smeared
-   into dark bands across Dialog/Sheet while keeping a real refractive rim. */
+/**
+ * PallavAg demo's resting selection/pill profile. The demo raises only
+ * strength/chromaticAberration while actively dragging; ordinary hover/focus
+ * must not mutate the optical profile in @pzhown/ui.
+ */
+const PALLAV_SELECTION_REST: PallavOptics = {
+  ...PALLAV_DEFAULT,
+  strength: 0.02,
+  chromaticAberration: 0.25,
+  curvature: 0.85,
+  depth: 8,
+  glow: 0.15,
+  edgeHighlight: 0.35,
+}
+
+/** Local explicit lenses follow PallavAg's own recommended profiles. */
+const opticalPresets: Record<LiquidGlassMaterial, PallavOptics> = {
+  small: PALLAV_SELECTION_REST,
+  medium: PALLAV_DEFAULT,
+  large: PALLAV_DEFAULT,
+}
+
+/**
+ * External component glass uses the same upstream optical model. Small
+ * controls map directly to PallavAg's selection/pill demo. Readable floating
+ * surfaces start from DEFAULT_OPTIONS but use the demo's resting strength
+ * (0.02) because the filtered source is a viewport-sized live DOM rather than
+ * a small self-contained lens container. No other optical personality values
+ * are customized by material size.
+ */
 const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
-  small: {
-    displacementPx: 8,
-    chromaticAberration: 0.08,
-    blur: 0,
-    depth: 7,
-    curvature: 0.62,
-    glow: 0.08,
-    edgeHighlight: 0.24,
-    specular: 0.78,
-  },
+  small: PALLAV_SELECTION_REST,
   medium: {
-    displacementPx: 5,
-    chromaticAberration: 0.035,
-    blur: 1,
-    depth: 6,
-    curvature: 0.3,
-    splay: 0.35,
-    glow: 0.05,
-    glowSpread: 0.45,
-    glowExponent: 1.7,
-    edgeHighlight: 0.18,
-    edgeWidth: 2,
-    edgeExponent: 1.9,
-    specular: 0.48,
+    ...PALLAV_DEFAULT,
+    strength: PALLAV_SELECTION_REST.strength,
   },
   large: {
-    displacementPx: 3,
-    chromaticAberration: 0.015,
-    blur: 0,
-    depth: 5,
-    curvature: 0.18,
-    splay: 0.2,
-    glow: 0.035,
-    glowSpread: 0.35,
-    glowExponent: 1.8,
-    edgeHighlight: 0.14,
-    edgeWidth: 1.5,
-    edgeExponent: 2.1,
-    specular: 0.32,
+    ...PALLAV_DEFAULT,
+    strength: PALLAV_SELECTION_REST.strength,
   },
 }
 
