@@ -386,4 +386,5 @@ export function useLiquidGlass() {
 
 export function useLiquidGlassEnabled(localEnabled = true) {
   const { opticalEnabled } = useLiquidGlass()
+  return opticalEnabled && localEnabled
 }
