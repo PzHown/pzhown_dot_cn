@@ -51,15 +51,63 @@ import {
   Toolbar,
   ToolbarGroup,
   ToolbarTitle,
+  type LiquidGlassOpticalOverrides,
 } from '@pzhown/ui/react'
 import { ArrowLeft, House, MoreHorizontal, Plus, Search, UserRound } from '@pzhown/ui/icons'
 
-const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="demo-card">
+const Card = ({ title, children, wide = false }: { title: string; children: React.ReactNode; wide?: boolean }) => (
+  <section className={`demo-card${wide ? ' demo-card--wide' : ''}`}>
     <h2>{title}</h2>
     {children}
   </section>
 )
+
+export const PALLAV_TUNER_DEFAULTS: LiquidGlassOpticalOverrides = {
+  strength: 0.02,
+  chromaticAberration: 0.2,
+  blur: 3.0,
+  depth: 10,
+  curvature: 0.65,
+  splay: 1,
+  glow: 0.1,
+  glowSpread: 1,
+  glowExponent: 1.5,
+  edgeHighlight: 0.25,
+  edgeWidth: 3,
+  edgeExponent: 1.5,
+  specular: 1,
+  specularAngle: 45,
+  quality: 512,
+}
+
+type PallavOptionKey = keyof LiquidGlassOpticalOverrides
+type PallavSliderKey = Exclude<PallavOptionKey, 'quality'>
+
+type PallavSliderConfig = {
+  key: PallavSliderKey
+  label: string
+  min: number
+  max: number
+  step: number
+  decimals: number
+}
+
+const PALLAV_SLIDERS: PallavSliderConfig[] = [
+  { key: 'strength', label: 'Strength', min: 0, max: 0.25, step: 0.005, decimals: 3 },
+  { key: 'chromaticAberration', label: 'Chromatic Aberration', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'blur', label: 'Blur', min: 0, max: 12, step: 0.25, decimals: 2 },
+  { key: 'depth', label: 'Depth', min: 0, max: 60, step: 1, decimals: 0 },
+  { key: 'curvature', label: 'Curvature', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'splay', label: 'Splay', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'glow', label: 'Glow', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'glowSpread', label: 'Glow Spread', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'glowExponent', label: 'Glow Exponent', min: 0.5, max: 4, step: 0.1, decimals: 1 },
+  { key: 'edgeHighlight', label: 'Edge Highlight', min: 0, max: 1, step: 0.01, decimals: 2 },
+  { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 12, step: 0.25, decimals: 2 },
+  { key: 'edgeExponent', label: 'Edge Exponent', min: 0.5, max: 4, step: 0.1, decimals: 1 },
+  { key: 'specular', label: 'Specular', min: 0, max: 2, step: 0.05, decimals: 2 },
+  { key: 'specularAngle', label: 'Specular Angle', min: 0, max: 360, step: 1, decimals: 0 },
+]
 
 const refractionBackdrop = (
   <div className="demo-refraction-source" aria-hidden="true">
@@ -69,10 +117,16 @@ const refractionBackdrop = (
   </div>
 )
 
-function ExternalGlassControlsDemo({ enabled }: { enabled: boolean }) {
+function ExternalGlassControlsDemo({
+  enabled,
+  opticalOverrides,
+}: {
+  enabled: boolean
+  opticalOverrides?: LiquidGlassOpticalOverrides
+}) {
   const sourceRef = React.useRef<HTMLDivElement>(null)
   return (
-    <LiquidGlassProvider enabled={enabled} sourceRef={sourceRef}>
+    <LiquidGlassProvider enabled={enabled} sourceRef={sourceRef} opticalOverrides={opticalOverrides}>
       <div className="demo-external-glass-controls">
         <div ref={sourceRef} className="demo-external-glass-controls__source" aria-hidden="true">
           <span>LIVE DOM</span>
@@ -88,12 +142,87 @@ function ExternalGlassControlsDemo({ enabled }: { enabled: boolean }) {
   )
 }
 
+function PallavAgTuner({
+  values,
+  onValuesChange,
+  globalOverride,
+  onGlobalOverrideChange,
+}: {
+  values: LiquidGlassOpticalOverrides
+  onValuesChange: (values: LiquidGlassOpticalOverrides) => void
+  globalOverride: boolean
+  onGlobalOverrideChange: (enabled: boolean) => void
+}) {
+  const mergedValues = { ...PALLAV_TUNER_DEFAULTS, ...values }
+  const setValue = (key: PallavOptionKey, value: number) => {
+    onValuesChange({ ...values, [key]: value })
+  }
+
+  return (
+    <div className="demo-pallav-tuner">
+      <div className="demo-pallav-tuner__header">
+        <div>
+          <strong>实时参数</strong>
+          <p className="demo-muted">拖动后立即更新 preview；打开全局 override 后，当前 active 的 Dialog / Sheet / external Glass Engine 也会同步更新。</p>
+        </div>
+        <div className="demo-pallav-tuner__actions">
+          <span className="demo-pallav-tuner__mode">{globalOverride ? 'GLOBAL OVERRIDE' : 'PREVIEW ONLY'}</span>
+          <Switch checked={globalOverride} onCheckedChange={onGlobalOverrideChange} label="应用到全部 Glass" />
+          <Button size="small" variant="gray" onClick={() => onValuesChange({ ...PALLAV_TUNER_DEFAULTS })}>恢复基准</Button>
+        </div>
+      </div>
+
+      <div className="demo-pallav-tuner__grid">
+        {PALLAV_SLIDERS.map((config) => {
+          const fallback = Number(PALLAV_TUNER_DEFAULTS[config.key] ?? 0)
+          const value = Number(mergedValues[config.key] ?? fallback)
+          return (
+            <Slider
+              key={config.key}
+              min={config.min}
+              max={config.max}
+              step={config.step}
+              value={value}
+              onValueChange={(next) => setValue(config.key, next)}
+              label={config.label}
+              valueLabel={value.toFixed(config.decimals)}
+            />
+          )
+        })}
+        <Select
+          label="Quality"
+          value={String(Number(mergedValues.quality ?? 512))}
+          onChange={(event) => setValue('quality', Number(event.currentTarget.value))}
+        >
+          <option value="128">128</option>
+          <option value="256">256</option>
+          <option value="512">512</option>
+          <option value="1024">1024</option>
+        </Select>
+      </div>
+
+      <pre className="demo-pallav-tuner__json">{JSON.stringify(mergedValues, null, 2)}</pre>
+    </div>
+  )
+}
+
 export interface ComponentShowcaseProps {
   glassEnabled: boolean
   onGlassEnabledChange: (enabled: boolean) => void
+  pallavOptions: LiquidGlassOpticalOverrides
+  onPallavOptionsChange: (values: LiquidGlassOpticalOverrides) => void
+  pallavGlobalOverride: boolean
+  onPallavGlobalOverrideChange: (enabled: boolean) => void
 }
 
-export default function ComponentShowcase({ glassEnabled, onGlassEnabledChange }: ComponentShowcaseProps) {
+export default function ComponentShowcase({
+  glassEnabled,
+  onGlassEnabledChange,
+  pallavOptions,
+  onPallavOptionsChange,
+  pallavGlobalOverride,
+  onPallavGlobalOverrideChange,
+}: ComponentShowcaseProps) {
   const [segment, setSegment] = React.useState('all')
   const [tab, setTab] = React.useState('home')
   const [slider, setSlider] = React.useState(64)
@@ -132,28 +261,42 @@ export default function ComponentShowcase({ glassEnabled, onGlassEnabledChange }
           <IconButton icon={MoreHorizontal} label="更多" variant="glass" />
           <IconButton icon={UserRound} label="账户" size="large" variant="tinted" />
         </div>
-        <ExternalGlassControlsDemo enabled={glassEnabled} />
+        <ExternalGlassControlsDemo
+          enabled={glassEnabled}
+          opticalOverrides={pallavGlobalOverride ? pallavOptions : undefined}
+        />
         <p className="demo-muted">真正的 external Glass Button 必须位于 filtered source 之外：背景 live DOM 是 source layer，胶囊/圆形按钮在独立 control layer。按钮如果属于 source 自己，只使用 Small Glass fallback，绝不自我折射。</p>
       </Card>
 
-      <Card title="PallavAg Optical Lens">
-        <div className="demo-glass-stage">
-          <LiquidGlassSurface
-            material="large"
-            x={0.5}
-            y={0.5}
-            width={230}
-            height={110}
-            radius={36}
-            draggable
-            style={{ minHeight: 250, overflow: 'hidden', borderRadius: 24 }}
-          >
-            <div style={{ position: 'relative', minHeight: 250 }}>
-              {refractionBackdrop}
+      <Card title="PallavAg Optical Lens · Live Tuner" wide>
+        <div className="demo-pallav-layout">
+          <div>
+            <div className="demo-glass-stage">
+              <LiquidGlassSurface
+                material="large"
+                {...pallavOptions}
+                x={0.5}
+                y={0.5}
+                width={230}
+                height={110}
+                radius={36}
+                draggable
+                style={{ minHeight: 250, overflow: 'hidden', borderRadius: 24 }}
+              >
+                <div style={{ position: 'relative', minHeight: 250 }}>
+                  {refractionBackdrop}
+                </div>
+              </LiquidGlassSurface>
             </div>
-          </LiquidGlassSurface>
+            <p className="demo-muted">Preview 直接使用当前参数。默认基准以 PallavAg upstream 参数为基础，并保留项目当前 blur 3.0；几何 width / height / radius 不进入全局 override。</p>
+          </div>
+          <PallavAgTuner
+            values={pallavOptions}
+            onValuesChange={onPallavOptionsChange}
+            globalOverride={pallavGlobalOverride}
+            onGlobalOverrideChange={onPallavGlobalOverrideChange}
+          />
         </div>
-        <p className="demo-muted">这个示例展示 PallavAg local live-DOM lens；Dialog / Sheet 则走 viewport source + sibling portal 的 external live-DOM 路径。</p>
       </Card>
 
       <Card title="Fields">
@@ -218,14 +361,14 @@ export default function ComponentShowcase({ glassEnabled, onGlassEnabledChange }
           <Dialog>
             <DialogTrigger><Button variant="glass">Dialog</Button></DialogTrigger>
             <DialogContent aria-label="确认操作">
-              <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>Dialog 使用 viewport-sized external live DOM；PallavAg 位移固定为像素级，不再随整页高度放大或向右拉跑。</DialogDescription></DialogHeader>
+              <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>Dialog 使用 viewport-sized external live DOM；打开 PallavAg Live Tuner 的全局 override 后，可以边开 Dialog 边实时调全部 optical 参数。</DialogDescription></DialogHeader>
               <DialogFooter><DialogClose><Button variant="gray">取消</Button></DialogClose><DialogClose><Button>确认</Button></DialogClose></DialogFooter>
             </DialogContent>
           </Dialog>
           <Sheet>
             <SheetTrigger><Button variant="glass">Sheet</Button></SheetTrigger>
             <SheetContent>
-              <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>Sheet 与 source 共用同一个 viewport 坐标根，但 Portal 是 source 的 sibling，因此不会自我折射。</SheetDescription></SheetHeader>
+              <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>Sheet 与 source 共用同一个 viewport 坐标根；实时调参会直接调用当前 external Engine 的 setOptions。</SheetDescription></SheetHeader>
               <ListSection><ListRow disclosure>编辑资料</ListRow><ListRow disclosure>通知设置</ListRow></ListSection>
               <SheetFooter><SheetClose><Button>完成</Button></SheetClose></SheetFooter>
             </SheetContent>

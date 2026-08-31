@@ -1,17 +1,22 @@
 'use client'
 
 import * as React from 'react'
-import { LiquidGlassViewport } from '@pzhown/ui/react'
-import ComponentShowcase from './ComponentShowcase'
+import { LiquidGlassViewport, type LiquidGlassOpticalOverrides } from '@pzhown/ui/react'
+import ComponentShowcase, { PALLAV_TUNER_DEFAULTS } from './ComponentShowcase'
 import FoundationShowcase from './FoundationShowcase'
 
 export default function ComponentsApp() {
   const [glassEnabled, setGlassEnabled] = React.useState(true)
+  const [pallavGlobalOverride, setPallavGlobalOverride] = React.useState(false)
+  const [pallavOptions, setPallavOptions] = React.useState<LiquidGlassOpticalOverrides>(() => ({
+    ...PALLAV_TUNER_DEFAULTS,
+  }))
 
   return (
     <LiquidGlassViewport
       enabled={glassEnabled}
       onEnabledChange={setGlassEnabled}
+      opticalOverrides={pallavGlobalOverride ? pallavOptions : undefined}
       className="components-liquid-viewport"
       sourceClassName="components-liquid-viewport__source"
     >
@@ -25,6 +30,10 @@ export default function ComponentsApp() {
         <ComponentShowcase
           glassEnabled={glassEnabled}
           onGlassEnabledChange={setGlassEnabled}
+          pallavOptions={pallavOptions}
+          onPallavOptionsChange={setPallavOptions}
+          pallavGlobalOverride={pallavGlobalOverride}
+          onPallavGlobalOverrideChange={setPallavGlobalOverride}
         />
 
         <section className="lab-section">

@@ -5,6 +5,7 @@ import { LiquidGlassEngine, type LiquidGlassOptions } from 'liquid-glass-web-rea
 
 export type LiquidGlassSourceRef = React.RefObject<HTMLElement | null>
 export type LiquidGlassPortalRef = React.RefObject<HTMLElement | null>
+export type LiquidGlassOpticalOverrides = Partial<Omit<LiquidGlassOptions, 'width' | 'height' | 'radius'>>
 
 /** Pass PallavAg engine options through without redefining optical semantics. */
 export type ExternalLiquidGlassOptions = Partial<LiquidGlassOptions>
@@ -18,15 +19,19 @@ type ExternalLensRegistration = {
 export interface LiquidGlassContextValue {
   enabled: boolean
   opticalEnabled: boolean
+  opticalOverrides: LiquidGlassOpticalOverrides
   setEnabled: (enabled: boolean) => void
   sourceRef: LiquidGlassSourceRef | null
   portalRef: LiquidGlassPortalRef | null
   registerExternalLens: (target: HTMLElement, options?: ExternalLiquidGlassOptions) => () => void
 }
 
+const EMPTY_OPTICAL_OVERRIDES: LiquidGlassOpticalOverrides = {}
+
 const fallbackContext: LiquidGlassContextValue = {
   enabled: true,
   opticalEnabled: true,
+  opticalOverrides: EMPTY_OPTICAL_OVERRIDES,
   setEnabled: () => undefined,
   sourceRef: null,
   portalRef: null,
@@ -40,6 +45,8 @@ export interface LiquidGlassProviderProps {
   enabled?: boolean
   defaultEnabled?: boolean
   onEnabledChange?: (enabled: boolean) => void
+  /** Optional live overrides for PallavAg optical parameters. Geometry stays owned by the target component. */
+  opticalOverrides?: LiquidGlassOpticalOverrides
   /** External live DOM refracted behind floating glass. */
   sourceRef?: LiquidGlassSourceRef | null
   /** Optional sibling portal host sharing the source coordinate space. */
@@ -66,6 +73,7 @@ export function LiquidGlassProvider({
   enabled: controlledEnabled,
   defaultEnabled = true,
   onEnabledChange,
+  opticalOverrides,
   sourceRef = null,
   portalRef = null,
 }: LiquidGlassProviderProps) {
@@ -73,6 +81,7 @@ export function LiquidGlassProvider({
   const [reducedTransparency, setReducedTransparency] = React.useState(false)
   const enabled = controlledEnabled ?? internalEnabled
   const opticalEnabled = enabled && !reducedTransparency
+  const resolvedOpticalOverrides = opticalOverrides ?? EMPTY_OPTICAL_OVERRIDES
 
   const setEnabled = React.useCallback((next: boolean) => {
     if (controlledEnabled === undefined) setInternalEnabled(next)
@@ -83,6 +92,8 @@ export function LiquidGlassProvider({
   enabledRef.current = opticalEnabled
   const sourceRefRef = React.useRef<LiquidGlassSourceRef | null>(sourceRef)
   sourceRefRef.current = sourceRef
+  const opticalOverridesRef = React.useRef<LiquidGlassOpticalOverrides>(resolvedOpticalOverrides)
+  opticalOverridesRef.current = resolvedOpticalOverrides
 
   const registrationsRef = React.useRef<ExternalLensRegistration[]>([])
   const engineRef = React.useRef<LiquidGlassEngine | null>(null)
@@ -140,6 +151,7 @@ export function LiquidGlassProvider({
       const y = (targetRect.top + targetRect.height / 2 - sourceRect.top) / sourceRect.height
       const options: Partial<LiquidGlassOptions> = {
         ...active.options,
+        ...opticalOverridesRef.current,
         width: targetRect.width,
         height: targetRect.height,
         radius: active.options.radius ?? readRadius(active.target),
@@ -215,6 +227,10 @@ export function LiquidGlassProvider({
   }, [enabled, opticalEnabled, syncExternalLens])
 
   React.useEffect(() => {
+    syncExternalLens()
+  }, [resolvedOpticalOverrides, syncExternalLens])
+
+  React.useEffect(() => {
     const resync = () => syncExternalLens()
     window.addEventListener('resize', resync)
     document.addEventListener('scroll', resync, true)
@@ -231,8 +247,8 @@ export function LiquidGlassProvider({
   }, [destroyExternalEngine, syncExternalLens])
 
   const value = React.useMemo(
-    () => ({ enabled, opticalEnabled, setEnabled, sourceRef, portalRef, registerExternalLens }),
-    [enabled, opticalEnabled, setEnabled, sourceRef, portalRef, registerExternalLens],
+    () => ({ enabled, opticalEnabled, opticalOverrides: resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens }),
+    [enabled, opticalEnabled, resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens],
   )
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
 }

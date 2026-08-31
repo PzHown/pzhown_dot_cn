@@ -112,6 +112,7 @@ export const LiquidGlassSurface = React.forwardRef<
   ref,
 ) {
   const active = useLiquidGlassEnabled(enabled)
+  const { opticalOverrides } = useLiquidGlass()
 
   if (!active) {
     return (
@@ -129,6 +130,7 @@ export const LiquidGlassSurface = React.forwardRef<
     <LiquidGlass
       ref={ref}
       {...opticalPresets[material]}
+      {...opticalOverrides}
       {...props}
       style={style}
       data-liquid-glass-lens="on"
