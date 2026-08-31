@@ -62,13 +62,14 @@ const opticalPresets: Record<
 }
 
 /* External optics use fixed CSS-pixel displacement and PallavAg's own blur.
-   The engine, not CSS backdrop-filter, owns the optical treatment whenever an
-   external lens is actually active. */
+   Small controls intentionally keep blur at 0 so the single active external
+   engine cannot make one sibling control look blurrier than another. Hover,
+   focus and press never change which optical registration is active. */
 const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
   small: {
     displacementPx: 8,
     chromaticAberration: 0.08,
-    blur: 4,
+    blur: 0,
     depth: 7,
     curvature: 0.62,
     glow: 0.08,
@@ -182,25 +183,10 @@ export function ExternalLiquidGlassBackdrop({
     const isGlassControl = target.matches('.ios27-btn--glass')
     if (isGlassControl) target.setAttribute('data-liquid-glass-ready', 'on')
 
-    let unregister = registerExternalLens(target, options)
-    const promote = () => {
-      unregister()
-      unregister = registerExternalLens(target, options)
-    }
-
-    if (isGlassControl) {
-      target.addEventListener('pointerenter', promote)
-      target.addEventListener('pointerdown', promote)
-      target.addEventListener('focusin', promote)
-    }
+    const unregister = registerExternalLens(target, options)
 
     return () => {
-      if (isGlassControl) {
-        target.removeEventListener('pointerenter', promote)
-        target.removeEventListener('pointerdown', promote)
-        target.removeEventListener('focusin', promote)
-        target.removeAttribute('data-liquid-glass-ready')
-      }
+      if (isGlassControl) target.removeAttribute('data-liquid-glass-ready')
       unregister()
     }
   }, [enabled, globalEnabled, material, outsideSourceOnly, radius, registerExternalLens, sourceRef])
