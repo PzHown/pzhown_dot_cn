@@ -42,6 +42,16 @@
 - selected 必须通过 surface/indicator/位置等持续线索表达，不只变文字颜色。
 - iOS 27 Tab Bar 使用 Large Liquid Glass system chrome；selected item 可以有局部 glass indicator，但禁止继续套第二层大面积玻璃。
 
+## Liquid Glass / External Live DOM
+
+- PallavAg 的高层 `<LiquidGlass>` 组件用于 **local lens**：被折射内容是它自己的 children。
+- Portal 浮层需要真正折射背后的页面时，必须使用 PallavAg 的低层 `LiquidGlassEngine`，把 `filtered` 指向 `LiquidGlassProvider.sourceRef.current` 的**外部 live DOM**；禁止只用半透明白底 + `backdrop-filter` 冒充 optical refraction。
+- `sourceRef` 应指向合理尺寸的 app/view shell，不要默认使用超长 `document.body`；Safari/iOS 对超大 SVG filter source 有尺寸限制。
+- 同一个外部 source 只允许一个 active PallavAg Engine。多个浮层同时存在时，最上层/最新激活的 optical lens 获得 Engine，其余浮层保留 iOS 材质层，避免多个实例互相覆盖 `filtered.style.filter`。
+- 位于 source tree 内的 Button / Toolbar / Popover / Dropdown 不得自动把自己注册成 external lens，否则会出现自我过滤。Portal 到 source tree 外的 Dialog / Sheet / ContextMenu / Toast / AlertDialog / Command 才自动启用 external refraction。
+- CSS tint / blur / edge highlight 仍然负责 iOS 材质外观，但不能把真实 displacement 再用过大的 blur 糊掉。
+- 全局 Liquid Glass 关闭、局部 `glass={false}` 或 Reduced Transparency 时，必须销毁 external Engine，并恢复 source 原先的 inline `filter`。
+
 ## ListSection / ListRow
 
 - 常规行高以 `DESIGN.md` 当前 iOS 27 值为准（52px）。
@@ -54,7 +64,8 @@
 - 每个 Overlay 自己拥有 open state、Portal、Escape、外部点击/遮罩行为和 focus return；不要用跨组件 CSS 假装交互完整。
 - Dialog 用于需要聚焦处理的任务，不把普通提示全部弹窗化。
 - Bottom Sheet 使用系统 grabber、安全区和 34px 顶部圆角。
-- Popover / ContextMenu 使用 Medium Liquid Glass，保持与触发点的空间关系。
+- Dialog / Sheet / ContextMenu 等 Portal 浮层在 Provider 提供 `sourceRef` 时优先使用 external live-DOM refraction；没有 source 时使用标准 iOS 材质 fallback。
+- Popover / Dropdown 当前仍位于 source tree 内，使用 Medium Liquid Glass 材质但不对自身 source 启动 external Engine；如果未来改成 Portal，再接 external refraction。
 - 菜单 destructive 项使用系统 Red；disabled 项不保留正常 Hover/Pressed 暗示。
 
 ## Badge / Avatar / Progress / Loading
@@ -78,4 +89,5 @@ Card 不是默认组件。先判断是否真的需要容器：
 - 根目录 `DESIGN.md`：本项目最终规范。
 - iOS 27 Web 基准：https://github.com/seunghan91/ios27-design-system
 - 结构参考：https://github.com/Andersonlimahw/react-cupertino-ui
+- PallavAg live DOM refraction：https://github.com/PallavAg/liquid-glass-web-react
 - Apple HIG Components：https://developer.apple.com/design/human-interface-guidelines/components
