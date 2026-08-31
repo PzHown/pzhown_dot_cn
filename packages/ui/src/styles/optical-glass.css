@@ -5,8 +5,8 @@
 :root{
   --ios27-overlay-glass-strong:rgb(255 255 255 / .38);
   --ios27-overlay-glass-medium:rgb(248 248 250 / .28);
-  --ios27-optical-overlay-glass-strong:rgb(255 255 255 / .18);
-  --ios27-optical-overlay-glass-medium:rgb(255 255 255 / .12);
+  --ios27-optical-overlay-glass-strong:rgb(255 255 255 / .28);
+  --ios27-optical-overlay-glass-medium:rgb(255 255 255 / .16);
   --ios27-overlay-glass-border:rgb(255 255 255 / .72);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .42);
   --ios27-overlay-glass-blur:16px;
@@ -59,7 +59,7 @@
 .ios27-tabbar__platter-content{display:flex;min-height:var(--tabbar-height);align-items:center;justify-content:space-around;padding:4px 8px}
 
 /* Fallback material only. When an external lens is active the optical-specific
-   rules below replace the heavier fallback tint and PallavAg owns the blur. */
+   rules below replace the heavier fallback tint and PallavAg owns the optics. */
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command){
   position:relative;
   background:var(--ios27-overlay-glass-strong);
@@ -74,6 +74,10 @@
   backdrop-filter:blur(12px) saturate(178%) brightness(1.035);
   -webkit-backdrop-filter:blur(12px) saturate(178%) brightness(1.035);
 }
+
+/* Large optical surfaces are deliberately calmer than controls. The stronger
+   neutral tint suppresses page gutters/shadows without using backdrop blur;
+   PallavAg contributes only a restrained refractive rim. */
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command)[data-liquid-glass-optical='on']{
   background:var(--ios27-optical-overlay-glass-strong);
 }
@@ -82,20 +86,19 @@
 }
 
 /* Real optical surfaces do not add a dark drop shadow over their source.
-   PallavAg already provides edge/specular depth; CSS contributes only the
-   subtle inner edge light needed for the iOS material shell. */
+   PallavAg provides edge/specular depth; CSS contributes only the subtle inner
+   edge light needed for the iOS material shell. */
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command,.ios27-popover,.ios27-context-menu,.ios27-dropdown,.ios27-toast)[data-liquid-glass-optical='on']{
   box-shadow:inset 0 1px 0 var(--ios27-overlay-glass-highlight),inset 0 -1px 0 rgb(255 255 255 / .08)!important;
 }
 
-/* Modal darkness belongs to the presentation scrim, not to the glass lens.
-   Keep a very light separation while optical glass is active so the live DOM
-   retains its original luminance and colour behind Dialog/Sheet. */
+/* Modal darkness belongs to presentation, not the lens. Keep it almost neutral
+   while true optical glass is active so background luminance does not collapse. */
 .ios27-overlay:has([data-liquid-glass-optical='on']){
-  background:rgb(0 0 0 / .035);
+  background:rgb(0 0 0 / .02);
 }
 .ios27-command-overlay:has([data-liquid-glass-optical='on']){
-  background:rgb(0 0 0 / .035);
+  background:rgb(0 0 0 / .02);
 }
 
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command,.ios27-popover,.ios27-context-menu,.ios27-dropdown,.ios27-toast)::before{
@@ -164,8 +167,8 @@
   :root:not([data-theme='light']){
     --ios27-overlay-glass-strong:rgb(18 18 20 / .48);
     --ios27-overlay-glass-medium:rgb(18 18 20 / .36);
-    --ios27-optical-overlay-glass-strong:rgb(18 18 20 / .20);
-    --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .15);
+    --ios27-optical-overlay-glass-strong:rgb(18 18 20 / .26);
+    --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .18);
     --ios27-overlay-glass-border:rgb(255 255 255 / .16);
     --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
     --ios27-control-glass-bg:rgb(18 18 20 / .16);
@@ -176,8 +179,8 @@
 [data-theme='dark']{
   --ios27-overlay-glass-strong:rgb(18 18 20 / .48);
   --ios27-overlay-glass-medium:rgb(18 18 20 / .36);
-  --ios27-optical-overlay-glass-strong:rgb(18 18 20 / .20);
-  --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .15);
+  --ios27-optical-overlay-glass-strong:rgb(18 18 20 / .26);
+  --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .18);
   --ios27-overlay-glass-border:rgb(255 255 255 / .16);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
   --ios27-control-glass-bg:rgb(18 18 20 / .16);
