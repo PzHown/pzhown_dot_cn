@@ -12,7 +12,10 @@ type ExternalLensRegistration = {
 }
 
 export interface LiquidGlassContextValue {
+  /** User/application preference. */
   enabled: boolean
+  /** Effective optical state after accessibility preferences are applied. */
+  opticalEnabled: boolean
   setEnabled: (enabled: boolean) => void
   sourceRef: LiquidGlassSourceRef | null
   registerExternalLens: (target: HTMLElement, options?: Partial<LiquidGlassOptions>) => () => void
@@ -20,6 +23,7 @@ export interface LiquidGlassContextValue {
 
 const fallbackContext: LiquidGlassContextValue = {
   enabled: true,
+  opticalEnabled: true,
   setEnabled: () => undefined,
   sourceRef: null,
   registerExternalLens: () => () => undefined,
@@ -63,15 +67,17 @@ export function LiquidGlassProvider({
   sourceRef = null,
 }: LiquidGlassProviderProps) {
   const [internalEnabled, setInternalEnabled] = React.useState(defaultEnabled)
+  const [reducedTransparency, setReducedTransparency] = React.useState(false)
   const enabled = controlledEnabled ?? internalEnabled
+  const opticalEnabled = enabled && !reducedTransparency
 
   const setEnabled = React.useCallback((next: boolean) => {
     if (controlledEnabled === undefined) setInternalEnabled(next)
     onEnabledChange?.(next)
   }, [controlledEnabled, onEnabledChange])
 
-  const enabledRef = React.useRef(enabled)
-  enabledRef.current = enabled
+  const enabledRef = React.useRef(opticalEnabled)
+  enabledRef.current = opticalEnabled
   const sourceRefRef = React.useRef<LiquidGlassSourceRef | null>(sourceRef)
   sourceRefRef.current = sourceRef
 
@@ -166,6 +172,14 @@ export function LiquidGlassProvider({
   }, [syncExternalLens])
 
   React.useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-transparency: reduce)')
+    const update = () => setReducedTransparency(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  React.useEffect(() => {
     const root = document.documentElement
     const previous = root.getAttribute('data-liquid-glass')
     root.setAttribute('data-liquid-glass', enabled ? 'on' : 'off')
@@ -174,7 +188,7 @@ export function LiquidGlassProvider({
       if (previous === null) root.removeAttribute('data-liquid-glass')
       else root.setAttribute('data-liquid-glass', previous)
     }
-  }, [enabled, syncExternalLens])
+  }, [enabled, opticalEnabled, syncExternalLens])
 
   React.useEffect(() => {
     const resync = () => syncExternalLens()
@@ -189,8 +203,8 @@ export function LiquidGlassProvider({
   }, [destroyExternalEngine, syncExternalLens])
 
   const value = React.useMemo(
-    () => ({ enabled, setEnabled, sourceRef, registerExternalLens }),
-    [enabled, setEnabled, sourceRef, registerExternalLens],
+    () => ({ enabled, opticalEnabled, setEnabled, sourceRef, registerExternalLens }),
+    [enabled, opticalEnabled, setEnabled, sourceRef, registerExternalLens],
   )
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
 }
@@ -200,6 +214,6 @@ export function useLiquidGlass() {
 }
 
 export function useLiquidGlassEnabled(localEnabled = true) {
-  const { enabled } = useLiquidGlass()
-  return enabled && localEnabled
+  const { opticalEnabled } = useLiquidGlass()
+  return opticalEnabled && localEnabled
 }
