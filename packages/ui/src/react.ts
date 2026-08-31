@@ -9,6 +9,7 @@ export {
   useLiquidGlassEnabled,
   type ExternalLiquidGlassOptions,
   type LiquidGlassContextValue,
+  type LiquidGlassOpticalOverrides,
   type LiquidGlassPortalRef,
   type LiquidGlassProviderProps,
   type LiquidGlassSourceRef,
