@@ -1,6 +1,6 @@
-/* iOS 27 material fidelity + optional PallavAg optical refraction.
-   Standard components own geometry; Portal glass and explicit glass controls can
-   refract an external live DOM source registered by LiquidGlassProvider. */
+/* iOS 27 material shell + PallavAg optical refraction.
+   When PallavAg is active, the engine owns blur/refraction/dispersion/specular.
+   CSS backdrop-filter is fallback-only and must not stack with real optics. */
 
 :root{
   --ios27-overlay-glass-strong:rgb(255 255 255 / .38);
@@ -20,17 +20,21 @@
 .ios27-btn__content{display:inline-flex;align-items:center;justify-content:center;gap:inherit;min-width:0}
 .ios27-command-overlay{background:rgb(0 0 0 / .16)}
 
-/* A Glass Button/IconButton using the provider's external live DOM becomes a
-   clear control lens. The normal Small Glass token remains the fallback when
-   no external source is registered. */
-.ios27-btn--glass[data-external-liquid-glass='on']{
+/* Active PallavAg surfaces never stack CSS backdrop blur on top of the SVG
+   optical pass. The engine's blur option is the single source of optical blur. */
+[data-liquid-glass-optical='on']{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* A Glass Button/IconButton with a live external source becomes a clear
+   optical control lens. Small Glass remains the fallback when no engine runs. */
+.ios27-btn--glass[data-liquid-glass-optical='on']{
   background:var(--ios27-control-glass-bg);
   border-color:var(--ios27-control-glass-border);
   box-shadow:0 6px 18px rgb(0 0 0 / .10),inset 0 1px 0 var(--ios27-control-glass-highlight),inset 0 -1px 0 rgb(255 255 255 / .12);
-  backdrop-filter:blur(10px) saturate(175%) brightness(1.035);
-  -webkit-backdrop-filter:blur(10px) saturate(175%) brightness(1.035);
 }
-.ios27-btn--glass[data-external-liquid-glass='on']::before{
+.ios27-btn--glass[data-liquid-glass-optical='on']::before{
   content:'';
   position:absolute;
   inset:0;
@@ -47,9 +51,8 @@
 .ios27-tabbar__platter{display:block;padding:0;background:var(--glass-large-bg);backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%)}
 .ios27-tabbar__platter-content{display:flex;min-height:var(--tabbar-height);align-items:center;justify-content:space-around;padding:4px 8px}
 
-/* External displacement is the primary optical signal on Portal surfaces.
-   These tints stay translucent and the CSS blur is intentionally moderate so
-   the refracted live DOM is still visible through the material. */
+/* Fallback material only. When an external lens is active the rule above
+   disables backdrop-filter and PallavAg options own the optical appearance. */
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command){
   position:relative;
   background:var(--ios27-overlay-glass-strong);
@@ -92,11 +95,9 @@
 
 .ios27-tooltip{background:color-mix(in srgb,var(--glass-small-bg) 78%,transparent);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%)}
 
-/* PallavAg local lens: source and lens live in the same component subtree. */
 .ios27-optical-lens{position:relative;isolation:isolate}
 .ios27-optical-lens.is-disabled{filter:none!important}
 
-/* Local opt-out. */
 :is(.ios27-toolbar,.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu)[data-glass='off'],
 .ios27-tabbar__platter[data-glass='off']{
   background:var(--bg-secondary)!important;
@@ -106,8 +107,6 @@
 }
 :is(.ios27-dialog,.ios27-sheet,.ios27-popover,.ios27-context-menu)[data-glass='off']::before{display:none!important}
 
-/* Global opt-out. LiquidGlassProvider syncs this to documentElement so Portal
-   overlays and normal descendants follow one switch. */
 [data-liquid-glass='off'] .ios27-btn--glass{
   background:var(--fill-secondary)!important;
   border-color:transparent!important;
