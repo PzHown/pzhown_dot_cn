@@ -37,7 +37,7 @@ export interface LiquidGlassProviderProps {
    * Keep this to a reasonably sized app/view shell rather than document.body;
    * Safari limits the source footprint an SVG filter can process reliably.
    */
-  sourceRef?: LiquidGlassSourceRef
+  sourceRef?: LiquidGlassSourceRef | null
 }
 
 function readRadius(target: HTMLElement) {
@@ -101,7 +101,8 @@ export function LiquidGlassProvider({
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null
       const source = sourceRefRef.current?.current ?? null
-      const active = registrationsRef.current.at(-1)
+      const registrations = registrationsRef.current
+      const active = registrations[registrations.length - 1]
       if (!enabledRef.current || !source || !active || !active.target.isConnected) {
         destroyExternalEngine()
         return
