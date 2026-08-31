@@ -5,9 +5,12 @@ import {
   LiquidGlass,
   type LiquidGlassHandle,
   type LiquidGlassProps,
-  type LiquidGlassOptions,
 } from 'liquid-glass-web-react'
-import { useLiquidGlass, useLiquidGlassEnabled } from '../liquid-glass-provider'
+import {
+  type ExternalLiquidGlassOptions,
+  useLiquidGlass,
+  useLiquidGlassEnabled,
+} from '../liquid-glass-provider'
 import { cx } from './shared'
 
 export type LiquidGlassMaterial = 'small' | 'medium' | 'large'
@@ -58,12 +61,13 @@ const opticalPresets: Record<
   },
 }
 
-/* External sources are usually much larger than a local lens container, so the
-   strength is intentionally lower: PallavAg expresses strength relative to the
-   filtered source footprint, not the lens width. */
-const externalOpticalPresets: Record<LiquidGlassMaterial, Partial<LiquidGlassOptions>> = {
+/* External optics use a fixed CSS-pixel displacement. PallavAg's native
+   `strength` scales against the filtered source diagonal, which makes long
+   pages pull Dialog/Sheet pixels sideways. The provider normalizes these
+   pixel values back to the engine's source-relative strength. */
+const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
   small: {
-    strength: 0.018,
+    displacementPx: 8,
     chromaticAberration: 0.08,
     blur: 0,
     depth: 7,
@@ -73,7 +77,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, Partial<LiquidGlassOpt
     specular: 0.78,
   },
   medium: {
-    strength: 0.026,
+    displacementPx: 11,
     chromaticAberration: 0.12,
     blur: 0,
     depth: 10,
@@ -83,7 +87,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, Partial<LiquidGlassOpt
     specular: 0.9,
   },
   large: {
-    strength: 0.032,
+    displacementPx: 14,
     chromaticAberration: 0.14,
     blur: 0,
     depth: 12,
@@ -151,7 +155,7 @@ export interface ExternalLiquidGlassBackdropProps {
  *
  * Important: the glass surface itself must not be a descendant of `sourceRef`.
  * Filtering a source that contains the lens also refracts the lens/control and
- * creates the duplicated / drifting geometry seen in self-filtering setups.
+ * creates duplicated / drifting geometry.
  */
 export function ExternalLiquidGlassBackdrop({
   material = 'medium',
@@ -174,7 +178,7 @@ export function ExternalLiquidGlassBackdrop({
     }
     if (outsideSourceOnly && !target.isConnected) return
 
-    const options: Partial<LiquidGlassOptions> = {
+    const options: ExternalLiquidGlassOptions = {
       ...externalOpticalPresets[material],
       ...(radius === undefined ? {} : { radius }),
     }
@@ -215,8 +219,6 @@ export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivEl
 /**
  * Standard component bridge to the external optical path. It activates only
  * when the component is rendered outside the provider's filtered source tree.
- * That rule applies to Portal overlays and to Glass Buttons/IconButtons placed
- * on a dedicated control layer above a sibling live-DOM source.
  */
 export function LiquidGlassBackdrop({ material = 'medium' }: LiquidGlassBackdropProps) {
   return <ExternalLiquidGlassBackdrop material={material} radius={material === 'small' ? 'auto' : undefined} outsideSourceOnly />

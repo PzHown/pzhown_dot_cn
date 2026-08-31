@@ -4,11 +4,17 @@ import * as React from 'react'
 import { LiquidGlassEngine, type LiquidGlassOptions } from 'liquid-glass-web-react'
 
 export type LiquidGlassSourceRef = React.RefObject<HTMLElement | null>
+export type LiquidGlassPortalRef = React.RefObject<HTMLElement | null>
+
+export interface ExternalLiquidGlassOptions extends Partial<LiquidGlassOptions> {
+  /** Desired displacement amplitude in CSS pixels, independent of source size. */
+  displacementPx?: number
+}
 
 type ExternalLensRegistration = {
   id: symbol
   target: HTMLElement
-  options: Partial<LiquidGlassOptions>
+  options: ExternalLiquidGlassOptions
 }
 
 export interface LiquidGlassContextValue {
@@ -18,7 +24,9 @@ export interface LiquidGlassContextValue {
   opticalEnabled: boolean
   setEnabled: (enabled: boolean) => void
   sourceRef: LiquidGlassSourceRef | null
-  registerExternalLens: (target: HTMLElement, options?: Partial<LiquidGlassOptions>) => () => void
+  /** Optional sibling portal layer sharing the source coordinate space. */
+  portalRef: LiquidGlassPortalRef | null
+  registerExternalLens: (target: HTMLElement, options?: ExternalLiquidGlassOptions) => () => void
 }
 
 const fallbackContext: LiquidGlassContextValue = {
@@ -26,6 +34,7 @@ const fallbackContext: LiquidGlassContextValue = {
   opticalEnabled: true,
   setEnabled: () => undefined,
   sourceRef: null,
+  portalRef: null,
   registerExternalLens: () => () => undefined,
 }
 
@@ -41,6 +50,11 @@ export interface LiquidGlassProviderProps {
    * The source box must spatially cover every external lens that uses it.
    */
   sourceRef?: LiquidGlassSourceRef | null
+  /**
+   * Optional sibling portal host for Dialog/Sheet. When present, overlays are
+   * rendered outside the filtered source but inside the same coordinate root.
+   */
+  portalRef?: LiquidGlassPortalRef | null
 }
 
 function readRadius(target: HTMLElement) {
@@ -58,13 +72,22 @@ function sourceCoversTarget(source: DOMRect, target: DOMRect) {
   )
 }
 
+function normalizedStrengthForPixels(displacementPx: number, source: DOMRect) {
+  const diagonal = Math.hypot(source.width, source.height)
+  if (diagonal <= 0) return 0
+  // PallavAg resolves strength against the filtered source diagonal on every
+  // platform. Convert a stable CSS-pixel displacement back to its normalized
+  // strength so long pages cannot amplify Dialog/Sheet refraction sideways.
+  return (Math.max(0, displacementPx) * Math.SQRT2) / diagonal
+}
+
 /**
  * Global Liquid Glass switch plus a single external live-DOM optical engine.
  *
  * PallavAg measures `setPosition()` in the filtered element's own 0..1 box.
  * External targets therefore only activate when the filtered source fully
- * covers their viewport rect. This prevents clamped coordinates and partial
- * SVG filter regions from appearing as a lens shifted to an edge.
+ * covers their viewport rect. The optional portalRef lets overlays live in a
+ * sibling layer with the exact same coordinate root instead of document.body.
  */
 export function LiquidGlassProvider({
   children,
@@ -72,6 +95,7 @@ export function LiquidGlassProvider({
   defaultEnabled = true,
   onEnabledChange,
   sourceRef = null,
+  portalRef = null,
 }: LiquidGlassProviderProps) {
   const [internalEnabled, setInternalEnabled] = React.useState(defaultEnabled)
   const [reducedTransparency, setReducedTransparency] = React.useState(false)
@@ -128,10 +152,8 @@ export function LiquidGlassProvider({
         return
       }
 
-      // PallavAg clamps setPosition to 0..1 of the filtered box. If the target
-      // extends outside that box, the lens can only be drawn at the nearest
-      // source edge and visually appears to 'run' sideways. Never activate in
-      // that geometry; stable iOS material is a safer fallback.
+      // PallavAg clamps setPosition to 0..1 of the filtered box. Never run a
+      // partial lens because it can only be pushed to the nearest source edge.
       if (!sourceCoversTarget(sourceRect, targetRect)) {
         destroyExternalEngine()
         return
@@ -139,8 +161,13 @@ export function LiquidGlassProvider({
 
       const x = (targetRect.left + targetRect.width / 2 - sourceRect.left) / sourceRect.width
       const y = (targetRect.top + targetRect.height / 2 - sourceRect.top) / sourceRect.height
+      const { displacementPx, ...engineOptions } = active.options
+      const strength = displacementPx === undefined
+        ? engineOptions.strength
+        : normalizedStrengthForPixels(displacementPx, sourceRect)
       const options: Partial<LiquidGlassOptions> = {
-        ...active.options,
+        ...engineOptions,
+        ...(strength === undefined ? {} : { strength }),
         width: targetRect.width,
         height: targetRect.height,
         radius: active.options.radius ?? readRadius(active.target),
@@ -180,7 +207,7 @@ export function LiquidGlassProvider({
     })
   }, [destroyExternalEngine])
 
-  const registerExternalLens = React.useCallback((target: HTMLElement, options: Partial<LiquidGlassOptions> = {}) => {
+  const registerExternalLens = React.useCallback((target: HTMLElement, options: ExternalLiquidGlassOptions = {}) => {
     const registration: ExternalLensRegistration = { id: Symbol('liquid-glass-lens'), target, options }
     registrationsRef.current.push(registration)
     syncExternalLens()
@@ -213,8 +240,6 @@ export function LiquidGlassProvider({
     const resync = () => syncExternalLens()
     window.addEventListener('resize', resync)
     document.addEventListener('scroll', resync, true)
-    // Dialog/Sheet presentation uses transforms. ResizeObserver does not fire
-    // for transform-only animation, so remeasure once the visual box settles.
     document.addEventListener('animationend', resync, true)
     document.addEventListener('transitionend', resync, true)
     return () => {
@@ -228,10 +253,48 @@ export function LiquidGlassProvider({
   }, [destroyExternalEngine, syncExternalLens])
 
   const value = React.useMemo(
-    () => ({ enabled, opticalEnabled, setEnabled, sourceRef, registerExternalLens }),
-    [enabled, opticalEnabled, setEnabled, sourceRef, registerExternalLens],
+    () => ({ enabled, opticalEnabled, setEnabled, sourceRef, portalRef, registerExternalLens }),
+    [enabled, opticalEnabled, setEnabled, sourceRef, portalRef, registerExternalLens],
   )
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
+}
+
+export interface LiquidGlassViewportProps
+  extends Omit<LiquidGlassProviderProps, 'children' | 'sourceRef' | 'portalRef'>,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  children: React.ReactNode
+  sourceClassName?: string
+  portalClassName?: string
+}
+
+/**
+ * Viewport-sized source + sibling portal layer. Dialog/Sheet should use this
+ * arrangement for external refraction so source and overlay share one box
+ * while the overlay itself never becomes part of the filtered live DOM.
+ */
+export function LiquidGlassViewport({
+  children,
+  className,
+  sourceClassName,
+  portalClassName,
+  ...providerProps
+}: LiquidGlassViewportProps) {
+  const sourceRef = React.useRef<HTMLDivElement>(null)
+  const portalRef = React.useRef<HTMLDivElement>(null)
+  const rootClassName = ['ios27-liquid-glass-viewport', className].filter(Boolean).join(' ')
+  const sourceClasses = ['ios27-liquid-glass-viewport__source', sourceClassName].filter(Boolean).join(' ')
+  const portalClasses = ['ios27-liquid-glass-viewport__portals', portalClassName].filter(Boolean).join(' ')
+
+  return (
+    <LiquidGlassProvider {...providerProps} sourceRef={sourceRef} portalRef={portalRef}>
+      <div className={rootClassName}>
+        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-source="viewport">
+          {children}
+        </div>
+        <div ref={portalRef} className={portalClasses} data-liquid-glass-portals="viewport" />
+      </div>
+    </LiquidGlassProvider>
+  )
 }
 
 export function useLiquidGlass() {
