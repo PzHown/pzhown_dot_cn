@@ -35,13 +35,13 @@ type PallavOptics = Pick<
 >
 
 /**
- * PallavAg upstream DEFAULT_OPTIONS. Keep these values in sync with
- * liquid-glass-web-react instead of inventing a second optical model here.
+ * PallavAg upstream DEFAULT_OPTIONS as the optical baseline. The project
+ * intentionally overrides only `blur` to 3.0 for all real optical profiles.
  */
 const PALLAV_DEFAULT: PallavOptics = {
   strength: 0.1,
   chromaticAberration: 0.2,
-  blur: 0,
+  blur: 3.0,
   depth: 10,
   curvature: 0.65,
   splay: 1,
