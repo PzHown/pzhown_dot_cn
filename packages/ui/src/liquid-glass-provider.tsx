@@ -38,8 +38,7 @@ export interface LiquidGlassProviderProps {
   onEnabledChange?: (enabled: boolean) => void
   /**
    * External live DOM that PallavAg should refract behind floating glass.
-   * Keep this to a reasonably sized app/view shell rather than document.body;
-   * Safari limits the source footprint an SVG filter can process reliably.
+   * The source box must spatially cover every external lens that uses it.
    */
   sourceRef?: LiquidGlassSourceRef | null
 }
@@ -49,15 +48,23 @@ function readRadius(target: HTMLElement) {
   return Number.isFinite(value) ? value : 0
 }
 
+function sourceCoversTarget(source: DOMRect, target: DOMRect) {
+  const tolerance = 1
+  return (
+    target.left >= source.left - tolerance &&
+    target.top >= source.top - tolerance &&
+    target.right <= source.right + tolerance &&
+    target.bottom <= source.bottom + tolerance
+  )
+}
+
 /**
  * Global Liquid Glass switch plus a single external live-DOM optical engine.
  *
- * PallavAg's low-level LiquidGlassEngine intentionally allows `container` and
- * `filtered` to be different elements. We use the provider's `sourceRef` as
- * `filtered`, while floating components merely register their own DOM box as
- * the active lens geometry. The most recently mounted floating lens wins;
- * other glass surfaces keep their CSS material instead of competing for the
- * same source element's `style.filter`.
+ * PallavAg measures `setPosition()` in the filtered element's own 0..1 box.
+ * External targets therefore only activate when the filtered source fully
+ * covers their viewport rect. This prevents clamped coordinates and partial
+ * SVG filter regions from appearing as a lens shifted to an edge.
  */
 export function LiquidGlassProvider({
   children,
@@ -116,7 +123,19 @@ export function LiquidGlassProvider({
 
       const sourceRect = source.getBoundingClientRect()
       const targetRect = active.target.getBoundingClientRect()
-      if (sourceRect.width <= 0 || sourceRect.height <= 0 || targetRect.width <= 0 || targetRect.height <= 0) return
+      if (sourceRect.width <= 0 || sourceRect.height <= 0 || targetRect.width <= 0 || targetRect.height <= 0) {
+        destroyExternalEngine()
+        return
+      }
+
+      // PallavAg clamps setPosition to 0..1 of the filtered box. If the target
+      // extends outside that box, the lens can only be drawn at the nearest
+      // source edge and visually appears to 'run' sideways. Never activate in
+      // that geometry; stable iOS material is a safer fallback.
+      if (!sourceCoversTarget(sourceRect, targetRect)) {
+        destroyExternalEngine()
+        return
+      }
 
       const x = (targetRect.left + targetRect.width / 2 - sourceRect.left) / sourceRect.width
       const y = (targetRect.top + targetRect.height / 2 - sourceRect.top) / sourceRect.height
@@ -194,9 +213,15 @@ export function LiquidGlassProvider({
     const resync = () => syncExternalLens()
     window.addEventListener('resize', resync)
     document.addEventListener('scroll', resync, true)
+    // Dialog/Sheet presentation uses transforms. ResizeObserver does not fire
+    // for transform-only animation, so remeasure once the visual box settles.
+    document.addEventListener('animationend', resync, true)
+    document.addEventListener('transitionend', resync, true)
     return () => {
       window.removeEventListener('resize', resync)
       document.removeEventListener('scroll', resync, true)
+      document.removeEventListener('animationend', resync, true)
+      document.removeEventListener('transitionend', resync, true)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       destroyExternalEngine()
     }
