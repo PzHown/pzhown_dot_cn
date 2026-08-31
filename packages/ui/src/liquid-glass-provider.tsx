@@ -177,11 +177,8 @@ export function LiquidGlassProvider({
         defsHost.style.position = 'absolute'
         defsHost.style.inset = '0'
         defsHost.style.pointerEvents = 'none'
-        if (container !== source) {
-          container.appendChild(defsHost)
-        } else {
-          document.body.appendChild(defsHost)
-        }
+        if (container !== source) container.appendChild(defsHost)
+        else document.body.appendChild(defsHost)
         ownsDefsHost = true
       }
 
@@ -208,10 +205,7 @@ export function LiquidGlassProvider({
         engineSourceRef.current = source
         engineDefsHostRef.current = defsHost
         ownsDefsHostRef.current = ownsDefsHost
-        engineRef.current = new LiquidGlassEngine(
-          { container, filtered: source, defsHost },
-          options,
-        )
+        engineRef.current = new LiquidGlassEngine({ container, filtered: source, defsHost }, options)
       } else {
         engineRef.current.setOptions(options)
       }
@@ -291,8 +285,58 @@ export function LiquidGlassProvider({
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
 }
 
+type HostShellProps = Omit<LiquidGlassProviderProps, 'children' | 'containerRef' | 'sourceRef' | 'defsHostRef' | 'portalRef'>
+
+export interface LiquidGlassStageProps
+  extends HostShellProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'onChange'> {
+  /** Live DOM that PallavAg refracts. */
+  source: React.ReactNode
+  /** Chrome/controls rendered above the filtered source and outside its filter tree. */
+  children: React.ReactNode
+  sourceClassName?: string
+  overlayClassName?: string
+}
+
+/**
+ * Bounded PallavAg-style host. Mirrors the upstream React wrapper hierarchy:
+ * container -> filtered live DOM + defsHost + overlay/chrome sibling.
+ */
+export function LiquidGlassStage({
+  source,
+  children,
+  className,
+  sourceClassName,
+  overlayClassName,
+  ...providerProps
+}: LiquidGlassStageProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const sourceRef = React.useRef<HTMLDivElement>(null)
+  const defsHostRef = React.useRef<HTMLDivElement>(null)
+  const overlayRef = React.useRef<HTMLDivElement>(null)
+  const rootClassName = ['ios27-liquid-glass-stage', className].filter(Boolean).join(' ')
+  const sourceClasses = ['ios27-liquid-glass-stage__source', sourceClassName].filter(Boolean).join(' ')
+  const overlayClasses = ['ios27-liquid-glass-stage__overlay', overlayClassName].filter(Boolean).join(' ')
+
+  return (
+    <LiquidGlassProvider
+      {...providerProps}
+      containerRef={containerRef}
+      sourceRef={sourceRef}
+      defsHostRef={defsHostRef}
+      portalRef={overlayRef}
+    >
+      <div ref={containerRef} className={rootClassName} data-liquid-glass-container="stage">
+        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-filtered="stage">{source}</div>
+        <div ref={defsHostRef} className="ios27-liquid-glass-stage__defs" data-liquid-glass-defs="stage" aria-hidden="true" />
+        <div ref={overlayRef} className={overlayClasses} data-liquid-glass-overlay="stage">{children}</div>
+      </div>
+    </LiquidGlassProvider>
+  )
+}
+
 export interface LiquidGlassViewportProps
-  extends Omit<LiquidGlassProviderProps, 'children' | 'containerRef' | 'sourceRef' | 'defsHostRef' | 'portalRef'>,
+  extends HostShellProps,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   children: React.ReactNode
   sourceClassName?: string
@@ -300,7 +344,7 @@ export interface LiquidGlassViewportProps
 }
 
 /**
- * PallavAg-compatible external host hierarchy:
+ * Viewport-sized PallavAg-style host for Portal overlays:
  * container -> filtered live DOM + defsHost + sibling portal/chrome layer.
  */
 export function LiquidGlassViewport({
@@ -327,9 +371,7 @@ export function LiquidGlassViewport({
       portalRef={portalRef}
     >
       <div ref={containerRef} className={rootClassName} data-liquid-glass-container="viewport">
-        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-filtered="viewport">
-          {children}
-        </div>
+        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-filtered="viewport">{children}</div>
         <div ref={defsHostRef} className="ios27-liquid-glass-viewport__defs" data-liquid-glass-defs="viewport" aria-hidden="true" />
         <div ref={portalRef} className={portalClasses} data-liquid-glass-portals="viewport" />
       </div>
