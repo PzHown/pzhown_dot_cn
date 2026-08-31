@@ -40,31 +40,33 @@ const opticalPresets: Record<
     specular: 0.8,
   },
   medium: {
-    strength: 0.065,
-    chromaticAberration: 0.12,
-    blur: 8,
-    depth: 10,
-    curvature: 0.65,
-    glow: 0.1,
-    edgeHighlight: 0.26,
-    specular: 0.9,
+    strength: 0.035,
+    chromaticAberration: 0.05,
+    blur: 3,
+    depth: 7,
+    curvature: 0.38,
+    glow: 0.06,
+    edgeHighlight: 0.2,
+    specular: 0.55,
   },
   large: {
-    strength: 0.08,
-    chromaticAberration: 0.15,
-    blur: 12,
-    depth: 12,
-    curvature: 0.7,
-    glow: 0.12,
-    edgeHighlight: 0.3,
-    specular: 1,
+    strength: 0.018,
+    chromaticAberration: 0.02,
+    blur: 2,
+    depth: 5,
+    curvature: 0.2,
+    glow: 0.035,
+    edgeHighlight: 0.14,
+    specular: 0.35,
   },
 }
 
-/* External optics use fixed CSS-pixel displacement and PallavAg's own blur.
-   Small controls intentionally keep blur at 0 so the single active external
-   engine cannot make one sibling control look blurrier than another. Hover,
-   focus and press never change which optical registration is active. */
+/* External optics are intentionally role-sensitive. Small controls may show a
+   visible liquid edge; medium/large surfaces are restrained. PallavAg's map has
+   a flat centre and ramps displacement across `depth`, so large overlays use a
+   narrow edge band, very low displacement and almost no blur. This prevents
+   page gutters, card shadows and separators from being smeared into dark bands
+   across Dialog/Sheet while keeping a real refractive rim. */
 const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
   small: {
     displacementPx: 8,
@@ -77,24 +79,34 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOpt
     specular: 0.78,
   },
   medium: {
-    displacementPx: 11,
-    chromaticAberration: 0.12,
-    blur: 8,
-    depth: 10,
-    curvature: 0.7,
-    glow: 0.1,
-    edgeHighlight: 0.28,
-    specular: 0.9,
+    displacementPx: 5,
+    chromaticAberration: 0.035,
+    blur: 2,
+    depth: 6,
+    curvature: 0.3,
+    splay: 0.35,
+    glow: 0.05,
+    glowSpread: 0.45,
+    glowExponent: 1.7,
+    edgeHighlight: 0.18,
+    edgeWidth: 2,
+    edgeExponent: 1.9,
+    specular: 0.48,
   },
   large: {
-    displacementPx: 14,
-    chromaticAberration: 0.14,
-    blur: 12,
-    depth: 12,
-    curvature: 0.74,
-    glow: 0.11,
-    edgeHighlight: 0.3,
-    specular: 0.95,
+    displacementPx: 3,
+    chromaticAberration: 0.015,
+    blur: 2,
+    depth: 5,
+    curvature: 0.18,
+    splay: 0.2,
+    glow: 0.035,
+    glowSpread: 0.35,
+    glowExponent: 1.8,
+    edgeHighlight: 0.14,
+    edgeWidth: 1.5,
+    edgeExponent: 2.1,
+    specular: 0.32,
   },
 }
 
