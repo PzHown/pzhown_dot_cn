@@ -139,6 +139,8 @@ export interface ExternalLiquidGlassBackdropProps {
   material?: LiquidGlassMaterial
   enabled?: boolean
   radius?: number | 'auto'
+  /** Only activate when the lens surface is rendered outside the source tree. */
+  outsideSourceOnly?: boolean
 }
 
 /**
@@ -150,18 +152,21 @@ export function ExternalLiquidGlassBackdrop({
   material = 'medium',
   enabled = true,
   radius,
+  outsideSourceOnly = false,
 }: ExternalLiquidGlassBackdropProps) {
   const anchorRef = React.useRef<HTMLSpanElement>(null)
   const { enabled: globalEnabled, sourceRef, registerExternalLens } = useLiquidGlass()
 
   React.useLayoutEffect(() => {
     const target = anchorRef.current?.parentElement
-    if (!enabled || !globalEnabled || !sourceRef?.current || !target) return
+    const source = sourceRef?.current
+    if (!enabled || !globalEnabled || !source || !target) return
+    if (outsideSourceOnly && source.contains(target)) return
     return registerExternalLens(target, {
       ...externalOpticalPresets[material],
-      ...(radius === undefined ? null : { radius }),
+      ...(radius === undefined ? {} : { radius }),
     })
-  }, [enabled, globalEnabled, material, radius, registerExternalLens, sourceRef])
+  }, [enabled, globalEnabled, material, outsideSourceOnly, radius, registerExternalLens, sourceRef])
 
   return <span ref={anchorRef} className="ios27-external-glass-anchor" aria-hidden="true" />
 }
@@ -170,7 +175,11 @@ export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivEl
   material?: LiquidGlassMaterial
 }
 
-/** Legacy no-render shim; standard non-optical iOS 27 materials draw in CSS. */
-export function LiquidGlassBackdrop(_props: LiquidGlassBackdropProps) {
-  return null
+/**
+ * Compatibility path used by existing components. It turns into real external
+ * refraction only for Portal surfaces rendered outside the provider source;
+ * in-tree controls keep their normal iOS material and never self-filter.
+ */
+export function LiquidGlassBackdrop({ material = 'medium' }: LiquidGlassBackdropProps) {
+  return <ExternalLiquidGlassBackdrop material={material} outsideSourceOnly />
 }
