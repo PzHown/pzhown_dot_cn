@@ -49,7 +49,8 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 自定义非系统色优先 OKLCH/Oklab，并同时验证浅色、深色和高对比环境。
 - 渐变使用 Oklab/Oklch；需要柔和起止时使用 smootherstep，但 Gradient 属于独立 Effects，不是 iOS 27 组件默认装饰。
 - Liquid Glass 用于 System Chrome、浮层与必要控制层；Card、文章、Table、长列表内容面优先 Grouped Surface。
-- **Standard Liquid Glass != Optical Lens**：Large / Medium / Small 默认按 iOS 27 原始 tint + backdrop blur + shadow 实现；PallavAg displacement 是 opt-in 特效。
+- **Standard Liquid Glass != Optical Lens**：Large / Medium / Small 默认按 iOS 27 原始 tint + material shell 实现；PallavAg displacement 是 opt-in optical pass。
+- **真实 optical active 时禁止再叠 CSS `backdrop-filter`**。`blur / strength / chromaticAberration / depth / curvature / splay / glow / edgeHighlight / specular` 必须通过 PallavAg 参数调整；CSS 只负责 tint、border、shadow、文字和无 optical source 时的稳定 fallback。
 - External PallavAg displacement 必须按**固定 CSS 像素强度**归一化，不能直接让 `strength` 随 filtered source 对角线放大；否则长页面会把 Dialog / Sheet 的折射横向拉跑。
 - Dialog / Sheet 的 external source 与 portal layer 必须共享同一 viewport coordinate root，但 portal layer 必须是 source 的 sibling，不能成为 filtered source 的后代。
 - Small Glass 在浅色下允许接近不透明；不要为了“看见折射”擅改为另一套透明度。
@@ -76,6 +77,7 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 是否严格使用 `DESIGN.md` 当前 iOS 27 系统色、几何和材质？
 - 是否出现另一套自造 token 或“泛 glassmorphism”？
 - 是否误把 PallavAg 的默认 lens 参数当成 iOS 27 官方材质？
+- 真正运行 PallavAg 的组件是否还叠了 `backdrop-filter`？如果是，必须删除并改对应 optical 参数。
 - Dialog / Sheet 的 source 与 portal 是否同坐标根？是否出现 source 尺寸越大、折射位移越强的错误？
 - 去掉边框和 Glass 后层级是否仍清楚？
 - **Grayscale Test**：转灰度后标题、正文、导航、主要操作和状态是否仍清楚？
