@@ -32,7 +32,7 @@ const opticalPresets: Record<
   small: {
     strength: 0.045,
     chromaticAberration: 0.08,
-    blur: 0,
+    blur: 4,
     depth: 8,
     curvature: 0.58,
     glow: 0.08,
@@ -42,7 +42,7 @@ const opticalPresets: Record<
   medium: {
     strength: 0.065,
     chromaticAberration: 0.12,
-    blur: 0,
+    blur: 8,
     depth: 10,
     curvature: 0.65,
     glow: 0.1,
@@ -52,7 +52,7 @@ const opticalPresets: Record<
   large: {
     strength: 0.08,
     chromaticAberration: 0.15,
-    blur: 0,
+    blur: 12,
     depth: 12,
     curvature: 0.7,
     glow: 0.12,
@@ -61,15 +61,14 @@ const opticalPresets: Record<
   },
 }
 
-/* External optics use a fixed CSS-pixel displacement. PallavAg's native
-   `strength` scales against the filtered source diagonal, which makes long
-   pages pull Dialog/Sheet pixels sideways. The provider normalizes these
-   pixel values back to the engine's source-relative strength. */
+/* External optics use fixed CSS-pixel displacement and PallavAg's own blur.
+   The engine, not CSS backdrop-filter, owns the optical treatment whenever an
+   external lens is actually active. */
 const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
   small: {
     displacementPx: 8,
     chromaticAberration: 0.08,
-    blur: 0,
+    blur: 4,
     depth: 7,
     curvature: 0.62,
     glow: 0.08,
@@ -79,7 +78,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOpt
   medium: {
     displacementPx: 11,
     chromaticAberration: 0.12,
-    blur: 0,
+    blur: 8,
     depth: 10,
     curvature: 0.7,
     glow: 0.1,
@@ -89,7 +88,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOpt
   large: {
     displacementPx: 14,
     chromaticAberration: 0.14,
-    blur: 0,
+    blur: 12,
     depth: 12,
     curvature: 0.74,
     glow: 0.11,
@@ -172,10 +171,7 @@ export function ExternalLiquidGlassBackdrop({
     if (!enabled || !globalEnabled || !source || !target) return
 
     const insideSource = source.contains(target)
-    if (insideSource) {
-      target.removeAttribute('data-external-liquid-glass')
-      return
-    }
+    if (insideSource) return
     if (outsideSourceOnly && !target.isConnected) return
 
     const options: ExternalLiquidGlassOptions = {
@@ -185,7 +181,6 @@ export function ExternalLiquidGlassBackdrop({
 
     let unregister = registerExternalLens(target, options)
     const isGlassControl = target.matches('.ios27-btn--glass')
-    if (isGlassControl) target.setAttribute('data-external-liquid-glass', 'on')
 
     const promote = () => {
       unregister()
@@ -203,7 +198,6 @@ export function ExternalLiquidGlassBackdrop({
         target.removeEventListener('pointerenter', promote)
         target.removeEventListener('pointerdown', promote)
         target.removeEventListener('focusin', promote)
-        target.removeAttribute('data-external-liquid-glass')
       }
       unregister()
     }
