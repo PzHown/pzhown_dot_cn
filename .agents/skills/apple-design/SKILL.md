@@ -36,7 +36,7 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 4. 组件外观与 anatomy 读取 `references/components.md`。
 5. Web/CSS 实现读取 `references/web-implementation.md`。
 6. 如果 iOS27 上游参考与旧仓库 CSS/旧组件冲突，以上游 + `DESIGN.md` 为准，不恢复旧兼容层。
-7. 若需求明确要求真实折射：局部 lens 使用 `LiquidGlassSurface`；Dialog / Sheet 这类 Portal 浮层优先使用 `LiquidGlassViewport` 的 **viewport-sized source + sibling portal layer**。不得把 PallavAg lens 当普通 backdrop 塞进任意长页面 DOM。
+7. 若需求明确要求真实折射，先按 PallavAg 原生 host 模型组织 DOM：`container -> filtered live DOM + defsHost + overlay/chrome sibling`。局部 lens 使用 `LiquidGlassSurface`；有独立背景与控制层的 bounded region 使用 `LiquidGlassStage`；Dialog / Sheet 这类 Portal 浮层使用 `LiquidGlassViewport`。不得把 PallavAg lens 当普通 backdrop 塞进任意长页面 DOM，也不得把 defsHost 随意挂到与 container 无关的 body 层级。
 8. 完成后做 Grayscale、Light/Dark、Reduced Transparency、Reduced Motion 与输入能力审查。
 
 ## 视觉不变量
@@ -51,8 +51,9 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - Liquid Glass 用于 System Chrome、浮层与必要控制层；Card、文章、Table、长列表内容面优先 Grouped Surface。
 - **Standard Liquid Glass != Optical Lens**：Large / Medium / Small 默认按 iOS 27 原始 tint + material shell 实现；PallavAg displacement 是 opt-in optical pass。
 - **真实 optical active 时禁止再叠 CSS `backdrop-filter`**。`blur / strength / chromaticAberration / depth / curvature / splay / glow / edgeHighlight / specular` 必须通过 PallavAg 参数调整；CSS 只负责 tint、border、shadow、文字和无 optical source 时的稳定 fallback。
-- External PallavAg displacement 必须按**固定 CSS 像素强度**归一化，不能直接让 `strength` 随 filtered source 对角线放大；否则长页面会把 Dialog / Sheet 的折射横向拉跑。
-- Dialog / Sheet 的 external source 与 portal layer 必须共享同一 viewport coordinate root，但 portal layer 必须是 source 的 sibling，不能成为 filtered source 的后代。
+- **PallavAg 参数语义保持原生**：external Engine 直接使用上游 `strength` / `blur` / `depth` 等语义，不再创建 `displacementPx` 或其他第二套换算模型。需要降低大面积浮层折射时，使用上游推荐 profile / strength，并优先缩小 filtered source footprint，而不是改写参数含义。
+- **PallavAg host 层级保持原生**：`container` 负责坐标与 chrome；`filtered` 是唯一接收 `style.filter` 的 live DOM；`defsHost` 与 filtered 同属 container；overlay / portal / shadow chrome 必须在 filtered 之外。Lens 坐标按 filtered box 计算。
+- Dialog / Sheet 的 external source 与 portal layer 必须共享同一 viewport container coordinate root，但 portal layer 必须是 filtered source 的 sibling，不能成为 filtered source 的后代。
 - Small Glass 在浅色下允许接近不透明；不要为了“看见折射”擅改为另一套透明度。
 - Sheet / Alert / Context Menu 等高可读性浮层优先保证可读性，不以 optical 强度压过内容。
 - 禁止无意义 glass-on-glass。
@@ -68,8 +69,9 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 使用 surface、position、indicator、opacity、motion 等状态差异，不粗暴用重边框表达所有 hovered / pressed / selected。
 - Focus 必须清楚可见，不能为了“像原生截图”隐藏键盘导航状态。
 - 小视觉控件可以通过不可见 hit area 扩展触控命中区，不要求视觉高度统一 44px。
-- `LiquidGlassSurface` 只用于显式 local lens / selection / 特殊 optical object，其 source 是自身容器内 live DOM。
-- `LiquidGlassViewport` 是 Dialog / Sheet external refraction 的标准容器：source layer 固定为 viewport box 并负责滚动，portal layer 与它同尺寸且为 sibling；不要用超长 `document.body` 或任意内容 grid 直接充当这类浮层的 source。
+- `LiquidGlassSurface` 只用于显式 local lens / selection / 特殊 optical object，其内部结构由 PallavAg 高层 `<LiquidGlass>` 自己拥有。
+- `LiquidGlassStage` 用于 bounded external refraction：container、filtered source、defsHost、overlay/chrome 是同一局部坐标根下的 sibling 层。
+- `LiquidGlassViewport` 是 Dialog / Sheet external refraction 的 viewport 版本：filtered source 固定为 viewport box 并负责滚动，defsHost 与 portal/chrome layer 都是其 sibling；不要用超长 `document.body` 或任意内容 grid 直接充当这类浮层的 filtered source。
 
 ## 视觉审查
 
@@ -78,7 +80,8 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 是否出现另一套自造 token 或“泛 glassmorphism”？
 - 是否误把 PallavAg 的默认 lens 参数当成 iOS 27 官方材质？
 - 真正运行 PallavAg 的组件是否还叠了 `backdrop-filter`？如果是，必须删除并改对应 optical 参数。
-- Dialog / Sheet 的 source 与 portal 是否同坐标根？是否出现 source 尺寸越大、折射位移越强的错误？
+- PallavAg host 是否满足 `container -> filtered + defsHost + overlay/chrome`？是否只有 filtered 接收 SVG filter？defsHost 是否错误脱离 container？
+- Dialog / Sheet 的 filtered source 与 portal 是否同坐标根？是否使用 PallavAg 原生 strength 语义，并保持 source footprint 在合理范围？
 - 去掉边框和 Glass 后层级是否仍清楚？
 - **Grayscale Test**：转灰度后标题、正文、导航、主要操作和状态是否仍清楚？
 - 辅助文字是否因为“做灰”而低于可读对比度？
