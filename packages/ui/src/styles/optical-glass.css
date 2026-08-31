@@ -14,6 +14,7 @@
 .ios27-optical-content{position:relative;z-index:1}
 .ios27-optical-glass__backdrop{display:none!important}
 .ios27-btn__content{display:inline-flex;align-items:center;justify-content:center;gap:inherit;min-width:0}
+.ios27-command-overlay{background:rgb(0 0 0 / .16)}
 
 .ios27-toolbar{padding-inline:0;overflow:hidden;background:var(--glass-large-bg);backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%)}
 .ios27-toolbar__content{display:flex;width:100%;min-height:inherit;align-items:center;justify-content:space-between;gap:12px;padding-inline:16px}
