@@ -69,6 +69,25 @@ const refractionBackdrop = (
   </div>
 )
 
+function ExternalGlassControlsDemo({ enabled }: { enabled: boolean }) {
+  const sourceRef = React.useRef<HTMLDivElement>(null)
+  return (
+    <LiquidGlassProvider enabled={enabled} sourceRef={sourceRef}>
+      <div className="demo-external-glass-controls">
+        <div ref={sourceRef} className="demo-external-glass-controls__source" aria-hidden="true">
+          <span>LIVE DOM</span>
+          <i />
+          <b>REFRACTION</b>
+        </div>
+        <div className="demo-external-glass-controls__layer">
+          <Button variant="glass">External Glass</Button>
+          <IconButton icon={MoreHorizontal} label="更多" variant="glass" />
+        </div>
+      </div>
+    </LiquidGlassProvider>
+  )
+}
+
 export default function ComponentShowcase() {
   const [segment, setSegment] = React.useState('all')
   const [tab, setTab] = React.useState('home')
@@ -100,7 +119,7 @@ export default function ComponentShowcase() {
             <Button>继续</Button>
             <Button variant="gray">次要操作</Button>
             <Button variant="tinted">Tinted</Button>
-            <Button variant="glass">Liquid Glass</Button>
+            <Button variant="glass">Small Glass fallback</Button>
             <Button variant="plain">文字操作</Button>
             <Button variant="destructive">删除</Button>
           </div>
@@ -115,7 +134,8 @@ export default function ComponentShowcase() {
             <IconButton icon={MoreHorizontal} label="更多" variant="glass" />
             <IconButton icon={UserRound} label="账户" size="large" variant="tinted" />
           </div>
-          <p className="demo-muted">文字 Button 使用 capsule；IconButton 是 28 / 36 / 50px 正圆，图标统一来自 Lucide。</p>
+          <ExternalGlassControlsDemo enabled={glassEnabled} />
+          <p className="demo-muted">真正的 external Glass Button 必须位于 filtered source 之外：背景 live DOM 是 source layer，胶囊/圆形按钮在独立 control layer。按钮如果属于 source 自己，只使用 Small Glass fallback，绝不自我折射。</p>
         </Card>
 
         <Card title="PallavAg Optical Lens">
@@ -135,7 +155,7 @@ export default function ComponentShowcase() {
               </div>
             </LiquidGlassSurface>
           </div>
-          <p className="demo-muted">这个示例仍展示 PallavAg 的 local live-DOM lens；Dialog / Sheet / Context Menu 则改用 Provider 的 external live-DOM source。</p>
+          <p className="demo-muted">这个示例仍展示 PallavAg 的 local live-DOM lens；Dialog / Sheet / Context Menu 则使用 Provider 的 external live-DOM source。</p>
         </Card>
 
         <Card title="Fields">
