@@ -11,9 +11,9 @@
   --ios27-overlay-glass-border:rgb(255 255 255 / .72);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .42);
   --ios27-overlay-glass-blur:var(--ios27-backdrop-blur);
-  --ios27-control-glass-bg:rgb(255 255 255 / .14);
-  --ios27-control-glass-border:rgb(255 255 255 / .72);
-  --ios27-control-glass-highlight:rgb(255 255 255 / .52);
+  --ios27-control-glass-bg:rgb(247 247 247 / .72);
+  --ios27-control-glass-border:rgb(255 255 255 / .82);
+  --ios27-control-glass-highlight:rgb(255 255 255 / .62);
 }
 
 .ios27-optical-host{position:relative;isolation:isolate}
@@ -46,16 +46,18 @@
   -webkit-backdrop-filter:none!important;
 }
 
-/* External-ready Glass controls use a clear shell with edge light only.
-   Do not add a black outer box-shadow: it visually darkens the live DOM and
-   can be mistaken for a PallavAg optical artifact. */
+/* External controls keep the iOS Small Glass material shell instead of turning
+   into a nearly transparent outline. Ready-but-inactive controls use the 4px
+   CSS fallback; the active control keeps the same tint while PallavAg owns blur. */
 .ios27-btn--glass[data-liquid-glass-ready='on'],
 .ios27-btn--glass[data-liquid-glass-optical='on']{
   background:var(--ios27-control-glass-bg);
   border-color:var(--ios27-control-glass-border);
-  box-shadow:inset 0 1px 0 var(--ios27-control-glass-highlight),inset 0 -1px 0 rgb(255 255 255 / .10);
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
+  box-shadow:inset 0 1px 0 var(--ios27-control-glass-highlight),inset 0 -1px 0 rgb(255 255 255 / .16);
+}
+.ios27-btn--glass[data-liquid-glass-ready='on']:not([data-liquid-glass-optical='on']){
+  backdrop-filter:blur(var(--ios27-backdrop-blur)) saturate(140%);
+  -webkit-backdrop-filter:blur(var(--ios27-backdrop-blur)) saturate(140%);
 }
 .ios27-btn--glass[data-liquid-glass-ready='on']::before,
 .ios27-btn--glass[data-liquid-glass-optical='on']::before{
@@ -64,7 +66,7 @@
   inset:0;
   border-radius:inherit;
   pointer-events:none;
-  background:linear-gradient(150deg,rgb(255 255 255 / .18),transparent 42%,rgb(255 255 255 / .025) 72%,transparent);
+  background:linear-gradient(150deg,rgb(255 255 255 / .24),transparent 42%,rgb(255 255 255 / .045) 72%,transparent);
 }
 
 .ios27-toolbar{padding-inline:0;overflow:hidden;background:var(--glass-large-bg);backdrop-filter:blur(var(--ios27-backdrop-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--ios27-backdrop-blur)) saturate(150%)}
@@ -188,9 +190,9 @@
     --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .18);
     --ios27-overlay-glass-border:rgb(255 255 255 / .16);
     --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
-    --ios27-control-glass-bg:rgb(18 18 20 / .16);
-    --ios27-control-glass-border:rgb(255 255 255 / .18);
-    --ios27-control-glass-highlight:rgb(255 255 255 / .20);
+    --ios27-control-glass-bg:rgb(18 18 20 / .52);
+    --ios27-control-glass-border:rgb(255 255 255 / .22);
+    --ios27-control-glass-highlight:rgb(255 255 255 / .24);
   }
 }
 [data-theme='dark']{
@@ -200,9 +202,9 @@
   --ios27-optical-overlay-glass-medium:rgb(18 18 20 / .18);
   --ios27-overlay-glass-border:rgb(255 255 255 / .16);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
-  --ios27-control-glass-bg:rgb(18 18 20 / .16);
-  --ios27-control-glass-border:rgb(255 255 255 / .18);
-  --ios27-control-glass-highlight:rgb(255 255 255 / .20);
+  --ios27-control-glass-bg:rgb(18 18 20 / .52);
+  --ios27-control-glass-border:rgb(255 255 255 / .22);
+  --ios27-control-glass-highlight:rgb(255 255 255 / .24);
 }
 
 @media(prefers-reduced-transparency:reduce){
