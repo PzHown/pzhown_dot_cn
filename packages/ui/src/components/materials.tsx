@@ -135,18 +135,30 @@ export const LiquidGlassSurface = React.forwardRef<
   )
 })
 
+export type ExternalLiquidGlassSourcePolicy = boolean | 'except-glass-controls'
+
 export interface ExternalLiquidGlassBackdropProps {
   material?: LiquidGlassMaterial
   enabled?: boolean
   radius?: number | 'auto'
-  /** Only activate when the lens surface is rendered outside the source tree. */
-  outsideSourceOnly?: boolean
+  /**
+   * `true` only activates outside the source tree. `except-glass-controls`
+   * keeps that protection for normal in-tree surfaces while allowing iOS 27
+   * glass Buttons/IconButtons to refract the provider source as a control lens.
+   */
+  outsideSourceOnly?: ExternalLiquidGlassSourcePolicy
 }
 
 /**
- * Registers the parent floating surface as a PallavAg lens over the external
- * live DOM supplied to LiquidGlassProvider.sourceRef. Nothing is cloned or
- * snapshotted: the provider's actual DOM element receives the SVG filter.
+ * Registers the parent floating/control surface as a PallavAg lens over the
+ * external live DOM supplied to LiquidGlassProvider.sourceRef. Nothing is
+ * cloned or snapshotted: the provider's actual DOM element receives the SVG
+ * displacement filter.
+ *
+ * A provider source can only have one active PallavAg engine in the current
+ * architecture. Glass controls therefore promote themselves when hovered,
+ * focused or pressed; the most recently interacted control gets the optical
+ * lens while the remaining controls retain their iOS 27 glass material.
  */
 export function ExternalLiquidGlassBackdrop({
   material = 'medium',
@@ -161,11 +173,40 @@ export function ExternalLiquidGlassBackdrop({
     const target = anchorRef.current?.parentElement
     const source = sourceRef?.current
     if (!enabled || !globalEnabled || !source || !target) return
-    if (outsideSourceOnly && source.contains(target)) return
-    return registerExternalLens(target, {
+
+    const insideSource = source.contains(target)
+    const isGlassControl = target.matches('.ios27-btn--glass')
+    const allowInsideSource = outsideSourceOnly === 'except-glass-controls' && isGlassControl
+    if (insideSource && outsideSourceOnly && !allowInsideSource) return
+
+    const options: Partial<LiquidGlassOptions> = {
       ...externalOpticalPresets[material],
       ...(radius === undefined ? {} : { radius }),
-    })
+    }
+
+    let unregister = registerExternalLens(target, options)
+    if (isGlassControl) target.setAttribute('data-external-liquid-glass', 'on')
+
+    const promote = () => {
+      unregister()
+      unregister = registerExternalLens(target, options)
+    }
+
+    if (isGlassControl) {
+      target.addEventListener('pointerenter', promote)
+      target.addEventListener('pointerdown', promote)
+      target.addEventListener('focusin', promote)
+    }
+
+    return () => {
+      if (isGlassControl) {
+        target.removeEventListener('pointerenter', promote)
+        target.removeEventListener('pointerdown', promote)
+        target.removeEventListener('focusin', promote)
+        target.removeAttribute('data-external-liquid-glass')
+      }
+      unregister()
+    }
   }, [enabled, globalEnabled, material, outsideSourceOnly, radius, registerExternalLens, sourceRef])
 
   return <span ref={anchorRef} className="ios27-external-glass-anchor" aria-hidden="true" />
@@ -176,10 +217,11 @@ export interface LiquidGlassBackdropProps extends React.HTMLAttributes<HTMLDivEl
 }
 
 /**
- * Compatibility path used by existing components. It turns into real external
- * refraction only for Portal surfaces rendered outside the provider source;
- * in-tree controls keep their normal iOS material and never self-filter.
+ * Compatibility path used by standard components. Portal surfaces can refract
+ * the external live DOM as before; in-tree components stay protected from
+ * self-filtering except glass Buttons/IconButtons, which are explicit optical
+ * control lenses and promote on interaction.
  */
 export function LiquidGlassBackdrop({ material = 'medium' }: LiquidGlassBackdropProps) {
-  return <ExternalLiquidGlassBackdrop material={material} outsideSourceOnly />
+  return <ExternalLiquidGlassBackdrop material={material} radius={material === 'small' ? 'auto' : undefined} outsideSourceOnly="except-glass-controls" />
 }
