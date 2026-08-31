@@ -64,9 +64,9 @@ const opticalPresets: Record<
 /* External optics are intentionally role-sensitive. Small controls may show a
    visible liquid edge; medium/large surfaces are restrained. PallavAg's map has
    a flat centre and ramps displacement across `depth`, so large overlays use a
-   narrow edge band, very low displacement and almost no blur. This prevents
-   page gutters, card shadows and separators from being smeared into dark bands
-   across Dialog/Sheet while keeping a real refractive rim. */
+   narrow edge band, very low displacement and no full-surface Gaussian blur.
+   This prevents page gutters, card shadows and separators from being smeared
+   into dark bands across Dialog/Sheet while keeping a real refractive rim. */
 const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOptions> = {
   small: {
     displacementPx: 8,
@@ -81,7 +81,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOpt
   medium: {
     displacementPx: 5,
     chromaticAberration: 0.035,
-    blur: 2,
+    blur: 1,
     depth: 6,
     curvature: 0.3,
     splay: 0.35,
@@ -96,7 +96,7 @@ const externalOpticalPresets: Record<LiquidGlassMaterial, ExternalLiquidGlassOpt
   large: {
     displacementPx: 3,
     chromaticAberration: 0.015,
-    blur: 2,
+    blur: 0,
     depth: 5,
     curvature: 0.18,
     splay: 0.2,
