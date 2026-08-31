@@ -117,10 +117,16 @@ const refractionBackdrop = (
   </div>
 )
 
-function ExternalGlassControlsDemo({ enabled }: { enabled: boolean }) {
+function ExternalGlassControlsDemo({
+  enabled,
+  opticalOverrides,
+}: {
+  enabled: boolean
+  opticalOverrides?: LiquidGlassOpticalOverrides
+}) {
   const sourceRef = React.useRef<HTMLDivElement>(null)
   return (
-    <LiquidGlassProvider enabled={enabled} sourceRef={sourceRef}>
+    <LiquidGlassProvider enabled={enabled} sourceRef={sourceRef} opticalOverrides={opticalOverrides}>
       <div className="demo-external-glass-controls">
         <div ref={sourceRef} className="demo-external-glass-controls__source" aria-hidden="true">
           <span>LIVE DOM</span>
@@ -255,7 +261,10 @@ export default function ComponentShowcase({
           <IconButton icon={MoreHorizontal} label="更多" variant="glass" />
           <IconButton icon={UserRound} label="账户" size="large" variant="tinted" />
         </div>
-        <ExternalGlassControlsDemo enabled={glassEnabled} />
+        <ExternalGlassControlsDemo
+          enabled={glassEnabled}
+          opticalOverrides={pallavGlobalOverride ? pallavOptions : undefined}
+        />
         <p className="demo-muted">真正的 external Glass Button 必须位于 filtered source 之外：背景 live DOM 是 source layer，胶囊/圆形按钮在独立 control layer。按钮如果属于 source 自己，只使用 Small Glass fallback，绝不自我折射。</p>
       </Card>
 
