@@ -116,7 +116,7 @@ export function LiquidGlassProvider({
   const engineContainerRef = React.useRef<HTMLElement | null>(null)
   const engineSourceRef = React.useRef<HTMLElement | null>(null)
   const engineDefsHostRef = React.useRef<HTMLElement | null>(null)
-  const ownsDefsHostRef = React.useRef(false)
+  const fallbackDefsHostRef = React.useRef<HTMLDivElement | null>(null)
   const activeTargetRef = React.useRef<HTMLElement | null>(null)
   const previousFilterRef = React.useRef('')
   const resizeObserverRef = React.useRef<ResizeObserver | null>(null)
@@ -136,11 +136,9 @@ export function LiquidGlassProvider({
     engineRef.current?.destroy()
     engineRef.current = null
     if (engineSourceRef.current) engineSourceRef.current.style.filter = previousFilterRef.current
-    if (ownsDefsHostRef.current) engineDefsHostRef.current?.remove()
     engineContainerRef.current = null
     engineSourceRef.current = null
     engineDefsHostRef.current = null
-    ownsDefsHostRef.current = false
   }, [clearActiveTarget])
 
   const syncExternalLens = React.useCallback(() => {
@@ -168,18 +166,20 @@ export function LiquidGlassProvider({
       }
 
       const container = containerRefRef.current?.current ?? source.parentElement ?? source
-      let defsHost = defsHostRefRef.current?.current ?? (ownsDefsHostRef.current ? engineDefsHostRef.current : null)
-      let ownsDefsHost = Boolean(defsHost && ownsDefsHostRef.current && defsHost === engineDefsHostRef.current)
+      let defsHost = defsHostRefRef.current?.current ?? fallbackDefsHostRef.current
       if (!defsHost) {
-        defsHost = document.createElement('div')
-        defsHost.setAttribute('aria-hidden', 'true')
-        defsHost.dataset.liquidGlassDefs = ''
-        defsHost.style.position = 'absolute'
-        defsHost.style.inset = '0'
-        defsHost.style.pointerEvents = 'none'
-        if (container !== source) container.appendChild(defsHost)
-        else document.body.appendChild(defsHost)
-        ownsDefsHost = true
+        const fallbackDefsHost = document.createElement('div')
+        fallbackDefsHost.setAttribute('aria-hidden', 'true')
+        fallbackDefsHost.dataset.liquidGlassDefs = ''
+        fallbackDefsHost.style.position = 'absolute'
+        fallbackDefsHost.style.inset = '0'
+        fallbackDefsHost.style.pointerEvents = 'none'
+        fallbackDefsHostRef.current = fallbackDefsHost
+        defsHost = fallbackDefsHost
+      }
+      if (defsHost === fallbackDefsHostRef.current) {
+        const expectedParent = container !== source ? container : document.body
+        if (defsHost.parentElement !== expectedParent) expectedParent.appendChild(defsHost)
       }
 
       const x = (targetRect.left + targetRect.width / 2 - sourceRect.left) / sourceRect.width
@@ -204,7 +204,6 @@ export function LiquidGlassProvider({
         engineContainerRef.current = container
         engineSourceRef.current = source
         engineDefsHostRef.current = defsHost
-        ownsDefsHostRef.current = ownsDefsHost
         engineRef.current = new LiquidGlassEngine({ container, filtered: source, defsHost }, options)
       } else {
         engineRef.current.setOptions(options)
@@ -275,6 +274,8 @@ export function LiquidGlassProvider({
       document.removeEventListener('transitionend', resync, true)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       destroyExternalEngine()
+      fallbackDefsHostRef.current?.remove()
+      fallbackDefsHostRef.current = null
     }
   }, [destroyExternalEngine, syncExternalLens])
 
@@ -385,5 +386,4 @@ export function useLiquidGlass() {
 
 export function useLiquidGlassEnabled(localEnabled = true) {
   const { opticalEnabled } = useLiquidGlass()
-  return opticalEnabled && localEnabled
 }
