@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useLiquidGlass } from '../liquid-glass-provider'
 import { LiquidGlassBackdrop } from './materials'
 import { Portal, composeHandlers, cx, useControllableState, useEscape } from './shared'
 
@@ -48,6 +49,7 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
 
 export function DialogContent({ className, children, closeOnOverlay = true, glass = true, ...props }: DialogContentProps) {
   const context = React.useContext(DialogContext)
+  const { portalRef } = useLiquidGlass()
   if (!context) throw new Error('DialogContent must be used inside Dialog')
   useEscape(context.open, () => context.setOpen(false))
   const contentRef = React.useRef<HTMLDivElement>(null)
@@ -58,9 +60,10 @@ export function DialogContent({ className, children, closeOnOverlay = true, glas
     return () => previous?.focus?.()
   }, [context.open])
   if (!context.open) return null
+  const portalContainer = portalRef?.current ?? null
   return (
-    <Portal>
-      <div className="ios27-overlay" data-slot="dialog-overlay" onMouseDown={(event) => {
+    <Portal container={portalContainer}>
+      <div className={cx('ios27-overlay', portalContainer && 'ios27-overlay--scoped')} data-slot="dialog-overlay" onMouseDown={(event) => {
         if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
       }}>
         <div
@@ -108,12 +111,14 @@ export function SheetTrigger({ children }: { children: React.ReactElement }) {
 export interface SheetContentProps extends React.HTMLAttributes<HTMLDivElement> { side?: 'bottom' | 'left' | 'right'; glass?: boolean }
 export function SheetContent({ side = 'bottom', glass = true, className, children, ...props }: SheetContentProps) {
   const context = React.useContext(SheetContext)
+  const { portalRef } = useLiquidGlass()
   if (!context) throw new Error('SheetContent must be used inside Sheet')
   useEscape(context.open, () => context.setOpen(false))
   if (!context.open) return null
+  const portalContainer = portalRef?.current ?? null
   return (
-    <Portal>
-      <div className="ios27-overlay ios27-sheet-overlay" data-slot="sheet-overlay" onMouseDown={(event) => event.target === event.currentTarget && context.setOpen(false)}>
+    <Portal container={portalContainer}>
+      <div className={cx('ios27-overlay', 'ios27-sheet-overlay', portalContainer && 'ios27-overlay--scoped')} data-slot="sheet-overlay" onMouseDown={(event) => event.target === event.currentTarget && context.setOpen(false)}>
         <div
           {...props}
           role="dialog"
@@ -121,7 +126,7 @@ export function SheetContent({ side = 'bottom', glass = true, className, childre
           data-side={side}
           data-slot="sheet-content"
           data-glass={glass ? 'large' : 'off'}
-          className={cx('ios27-sheet', 'ios27-optical-host', className)}
+          className={cx('ios27-sheet', 'ios27-optical-host', portalContainer && 'ios27-sheet--scoped', className)}
         >
           {glass ? <LiquidGlassBackdrop material="large" /> : null}
           <div className="ios27-sheet__body ios27-optical-content">
