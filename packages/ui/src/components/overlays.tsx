@@ -73,7 +73,7 @@ export function DialogContent({ className, children, closeOnOverlay = true, glas
           data-glass={glass ? 'large' : 'off'}
           className={cx('ios27-dialog', 'ios27-optical-host', className)}
         >
-          <LiquidGlassBackdrop material="large" />
+          {glass ? <LiquidGlassBackdrop material="large" /> : null}
           <div className="ios27-dialog__body ios27-optical-content">{children}</div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export function SheetContent({ side = 'bottom', glass = true, className, childre
           data-glass={glass ? 'large' : 'off'}
           className={cx('ios27-sheet', 'ios27-optical-host', className)}
         >
-          <LiquidGlassBackdrop material="large" />
+          {glass ? <LiquidGlassBackdrop material="large" /> : null}
           <div className="ios27-sheet__body ios27-optical-content">
             {side === 'bottom' ? <div className="ios27-sheet__grabber" aria-hidden="true" /> : null}
             {children}
@@ -177,7 +177,7 @@ export function PopoverContent({ className, children, glass = true, ...props }: 
   }, [context])
   return context.open ? (
     <div {...props} role="dialog" data-slot="popover-content" data-glass={glass ? 'medium' : 'off'} className={cx('ios27-popover', 'ios27-optical-host', className)}>
-      <LiquidGlassBackdrop material="medium" />
+      {glass ? <LiquidGlassBackdrop material="medium" /> : null}
       <div className="ios27-popover__body ios27-optical-content">{children}</div>
     </div>
   ) : null
@@ -212,7 +212,7 @@ export function ContextMenu({ items, children, glass = true, className, onContex
             style={{ left: point.x, top: point.y }}
             onPointerDown={(event) => event.stopPropagation()}
           >
-            <LiquidGlassBackdrop material="medium" />
+            {glass ? <LiquidGlassBackdrop material="medium" /> : null}
             <div className="ios27-context-menu__content ios27-optical-content">
               {items.map((item, index) => <button key={index} type="button" role="menuitem" disabled={item.disabled} data-destructive={item.destructive || undefined} onClick={() => { item.onSelect?.(); setPoint(null) }}><span>{item.label}</span>{item.shortcut ? <span className="ios27-context-menu__shortcut">{item.shortcut}</span> : null}</button>)}
             </div>

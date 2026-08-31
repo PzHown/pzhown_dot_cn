@@ -161,7 +161,7 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 旧 shadcn、aria-nova、Base UI 组件实现和用于修补它们的主题覆盖层全部退役。新组件必须从自身 DOM、状态和 CSS 开始符合 iOS 27，而不是先生成通用 Web 组件，再靠全局 CSS 把它“改得像 iOS”。
 
-`liquid-glass-web-react`（PallavAg）是**可选光学引擎**。它负责 live-DOM displacement、chromatic aberration 与 specular edge，但不定义 Button / Toolbar / TabBar / Sheet 等标准组件的默认外观。标准组件仍严格使用 `ios27-design-system` 的 tint、blur、shadow、radius 与 geometry。
+`liquid-glass-web-react`（PallavAg）是**光学引擎**。它负责 live-DOM displacement、chromatic aberration 与 specular edge，但不定义 Button / Toolbar / TabBar / Sheet 等标准组件的几何、色彩与交互状态。标准组件的 geometry、tint、typography、spacing 和 state 仍严格服从本文件与 `ios27-design-system`。
 
 项目原有两项视觉能力继续保留，但与组件体系解耦：**Progressive Blur** 用于滚动边缘和上下文过渡；**Oklab / smootherstep Gradient** 用于感知连续的渐变。
 
@@ -169,10 +169,10 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 1. **视觉**：`seunghan91/ios27-design-system`。
 2. **组件结构参考**：`react-cupertino-ui`，仅 anatomy/state reference。
-3. **真实折射**：`PallavAg/liquid-glass-web-react`，仅 opt-in optical lens。
+3. **真实折射**：`PallavAg/liquid-glass-web-react`，支持 local lens 与 external live-DOM source 两种模式。
 4. **项目实现**：`@pzhown/ui` 自己拥有 DOM、API、状态、可访问性和最终 CSS。
 
-任何第三方光学库都不得覆盖第 1 条。
+任何第三方光学库都不得覆盖第 1 条；同样，单纯 CSS `backdrop-filter` 也不得冒充已经实现真实 optical refraction。
 
 ## Colors
 
@@ -212,30 +212,35 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 ### Standard iOS 27 Liquid Glass
 
-默认组件使用 `ios27-design-system` 的材料配方，不使用 displacement engine 模拟“更真实”的另一套外观。
+标准材质的色彩、层级、边缘与几何以 `ios27-design-system` 为基准；真实位移折射是附加的 optical pass，不反向定义组件形态。
 
-- **Large Glass**：浅色 `rgba(250,250,250,.70)`，深色 `rgba(0,0,0,.80)`，`40px` backdrop blur；用于 Toolbar、TabBar、Navigation Chrome。
-- **Medium Glass**：浅色 `rgba(245,245,245,.60)`，深色 `rgba(0,0,0,.60)`，`40px` backdrop blur；用于 Popover 等中型浮层。
-- **Small Glass**：浅色 `#F7F7F7` + `0.5px #DDD`，深色 `rgba(0,0,0,.60)` + 微弱白色内边缘，`40px` blur；用于小型 Glass Button / compact control。
-- **Thick Material**：系统浮层使用 `material-thick` 语义，浅色/深色按系统材质 opacity，`100px` blur；用于 Sheet、Alert/AlertDialog、Context Menu、Command Palette 与需要稳定可读性的厚浮层。
+- **Large Glass**：浅色 `rgba(250,250,250,.70)`，深色 `rgba(0,0,0,.80)`，用于 Toolbar、TabBar、Navigation Chrome。
+- **Medium Glass**：浅色 `rgba(245,245,245,.60)`，深色 `rgba(0,0,0,.60)`，用于 Popover 等中型浮层。
+- **Small Glass**：浅色 `#F7F7F7` + `0.5px #DDD`，深色 `rgba(0,0,0,.60)` + 微弱白色内边缘，用于小型 Glass Button / compact control。
+- **Portal Overlay Glass**：Dialog、Sheet、AlertDialog、ContextMenu、Toast、Command 等需要让背景真实可感知时，材质层保持透明 tint / moderate blur / edge highlight，并在 Provider 提供 external source 时叠加 PallavAg displacement。不能再用 0.84 级不透明 Thick Material 把真实折射完全遮掉。
+- **Stable Material fallback**：没有 external source、Glass 被关闭、Reduced Transparency 或需要最高可读性时，回退到稳定的系统 Surface / Material。
 
-标准 iOS 27 Liquid Glass 本身允许 Small 在浅色下接近不透明。这不是 bug，也不应为了“看到折射”擅自把它改成另一套透明度。
+### Real Optical Refraction: Local + External
 
-### Optional Real Optical Lens
+PallavAg 在本项目有两条明确路径：
 
-`LiquidGlassSurface` 使用 `liquid-glass-web-react`：
+1. **Local lens**：`LiquidGlassSurface` 使用高层 `<LiquidGlass>`，其 children 是被折射的 live DOM，适合演示、selection lens、局部特殊视觉对象。
+2. **External live-DOM lens**：`LiquidGlassProvider sourceRef={ref}` 指向实际 app/view shell；Portal 浮层通过底层 `LiquidGlassEngine` 把 `filtered` 指向 `sourceRef.current`，因此被折射的是**浮层外部、真正位于其背后的页面 DOM**，不是复制图、截图或浮层自己的 children。
 
-- 对**自身容器内的 live DOM**应用生成式 displacement map + SVG `feDisplacementMap`。
-- 支持 `strength`、`chromaticAberration`、`depth`、`curvature`、`glow`、`edgeHighlight`、`specular` 等参数。
-- 仅用于明确需要真实镜片/折射的局部交互、演示、selection lens 或特殊视觉对象。
-- 不作为 Button / Toolbar / TabBar / Dialog / Sheet 的默认 backdrop 实现。
-- 不把光学库的默认 shadow、radius、色彩当成 iOS 27 token。
-- Safari / Firefox / Chromium 都走上游支持路径；iOS 的 SVG filter region 由上游引擎处理。
-- Safari 对超大 filter source 和 `<video>` 有 WebKit 限制，避免把整个长页面包进一个 lens source。
+External 模式规则：
+
+- `sourceRef` 应指向合理尺寸的 app/view shell，避免默认把超长 `document.body` 作为 SVG filter source；Safari/iOS 对超大 source footprint 有限制。
+- 同一个 external source 只允许一个 active PallavAg Engine，因为 Engine 会写入 `filtered.style.filter`。多个玻璃浮层同时存在时，最新/最上层 optical lens 获得 Engine，其余保持标准 iOS 材质层。
+- 位于 source tree 内的 Button、Toolbar、TabBar、Popover、Dropdown 等不得自动注册 external lens，避免自我过滤。Portal 到 source tree 外的 Dialog、Sheet、ContextMenu、Toast、AlertDialog、Command 等可以自动注册。
+- Lens 的位置与尺寸来自实际浮层 `getBoundingClientRect()`，映射到 external source 的坐标空间；窗口 resize、滚动和 target/source resize 后必须重新同步。
+- External engine 被关闭或销毁时必须恢复 source 原先的 inline `filter`，不能污染业务页面。
+- 全局 Liquid Glass 关闭、局部 `glass={false}`、Provider 卸载或 `prefers-reduced-transparency: reduce` 时都必须停止真实 optical engine。
+- CSS tint、moderate blur、shadow、edge highlight 仍负责 iOS 材质观感，但 blur 不得大到把 displacement 再次糊没。
+- Safari / Firefox / Chromium 走 PallavAg 上游支持路径；iOS 的 SVG filter region 由上游引擎处理。Safari `<video>` 仍受 WebKit SVG filter 限制。
 
 ### Accessibility
 
-- Reduce Transparency 时关闭透明材质并回退到稳定的 Grouped / Secondary Surface。
+- Reduce Transparency 时关闭透明材质、停止 local/external optical engine，并回退到稳定的 Grouped / Secondary Surface。
 - Reduce Motion 时关闭非必要的 spring / scale / morph。
 - Glass 不能削弱内容对比度、Focus、点击命中区或可读性。
 
@@ -257,24 +262,22 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 
 组件源码必须自己拥有 anatomy 与状态，不再依赖跨组件修补 CSS。
 
-- **Button**：视觉高度 28 / 36 / 50px，默认全部是 Capsule；`variant` 只改变颜色/材质层级，不改变胶囊几何。`variant="glass"` 使用标准 Small iOS 27 Liquid Glass，不默认启用 PallavAg displacement。
+- **Button**：视觉高度 28 / 36 / 50px，默认全部是 Capsule；`variant` 只改变颜色/材质层级，不改变胶囊几何。`variant="glass"` 使用标准 Small iOS 27 Liquid Glass；位于 external source 内时不自我过滤。
 - **IconButton**：28 / 36 / 50px 正圆，Lucide 图标居中，必须有可访问名称。
 - **TextField / SearchBar**：36px 基础字段几何，Focus 使用系统 Blue ring；普通输入面不启用 displacement。
 - **Switch**：51×31px，开启使用系统 Green。
 - **Checkbox / Radio / Slider / SegmentedControl**：原生表单语义优先，状态视觉按系统 Tint；SegmentedControl 的可点击项使用 capsule indicator。
 - **ListSection / ListRow**：52px 常规行，0.5px inset separator；内容列表保持 Grouped Surface。
-- **Toolbar / TabBar**：标准 Large iOS 27 Liquid Glass。TabBar selected item 可形成局部 indicator，但不叠加第二套大面积 glass。
-- **Dialog / Sheet**：高可读性浮层；Sheet/确认类浮层优先 Thick Material，保留 Portal、Escape、遮罩和 focus restore。
-- **Popover**：Medium Liquid Glass。
-- **ContextMenu / DropdownMenu**：Thick Material；菜单内容可读性优先于“看见背景”。
+- **Toolbar / TabBar**：标准 Large iOS 27 Liquid Glass；在 source tree 内保持系统材质，不为每个 chrome 启动独立 external Engine。
+- **Dialog / Sheet**：Portal 浮层；Provider 有 `sourceRef` 且 Glass 开启时优先 external live-DOM refraction，并保留 Escape、遮罩和 focus restore。无 source/关闭 Glass 时使用稳定 Material fallback。
+- **Popover / DropdownMenu**：当前位于 source tree 内，使用 Medium/stable iOS 材质，不自我过滤；未来若 Portal 化再接 external refraction。
+- **ContextMenu / Toast / AlertDialog / CommandPalette**：Portal 浮层；存在 external source 时允许成为 active external optical lens，同时必须优先保证可读性与键盘行为。
 - **Tooltip**：Small Liquid Glass；不得承载完成任务必需的信息。
-- **Toast**：Thick Material；反馈层不能因为过度透明降低可读性。
-- **AlertDialog**：高风险确认使用 Thick Material；低风险可逆操作优先执行 + Undo。
 - **Tabs / Breadcrumb / Sidebar**：System Surface / Regular Material，不启用 displacement。
-- **CommandPalette**：Thick Material；搜索、Arrow Keys、Enter 与 Escape 必须可用。
 - **FormField / Combobox / DatePicker / DateRangePicker**：原生语义和字段关联优先；Combobox 列表使用稳定 Material，不在频繁输入时启用 displacement。
 - **DataTable / Pagination / EmptyState**：Grouped Surface，不做 glass-on-glass。
-- **LiquidGlassSurface**：唯一公开的真实折射低层 primitive；只在显式需要 optical lens 时使用。
+- **LiquidGlassSurface**：公开的 local real-refraction primitive；仅在明确需要自身 children 作为 optical source 时使用。
+- **LiquidGlassProvider + sourceRef**：公开的 external live-DOM optical source contract；Portal glass 通过它折射实际页面 DOM。
 - **Progressive Blur / Gradient**：Effects，不是普通组件皮肤，也不参与 PallavAg displacement。
 
 新业务只从 `@pzhown/ui/react` 使用新核心组件。缺少组件时按本 DESIGN.md 和仓库 Skills 新建，不从旧目录恢复。
@@ -282,14 +285,16 @@ PzHown 的 UI 从零重建为 **iOS 27 Web Design System**。视觉唯一基准�
 ## Do's and Don'ts
 
 - Do：以 `ios27-design-system` token、materials 和组件规格为视觉事实来源。
-- Do：把 PallavAg 当**可选光学引擎**，而不是 iOS 27 视觉主题。
+- Do：把 PallavAg 当光学引擎，而不是第二套 iOS 主题。
+- Do：需要 Portal 浮层真实折射背景时，引用 Provider 的 external live DOM source，而不是只加 `backdrop-filter`。
 - Do：标准 Action Button 默认使用 capsule，IconButton 使用 circle；不要再回到 10/12/14px 的通用 Web 圆角矩形。
-- Do：标准组件先匹配 iOS 27 tint / blur / shadow / radius，再讨论是否额外需要真实 lens。
 - Do：可以研究 `react-cupertino-ui` 的结构，但必须映射回本项目自己的语义、状态与样式。
 - Do：优先系统语义色、Grouped Surface、清晰 spacing 和状态反馈。
 - Do：为 keyboard、pointer、touch、Reduced Motion、Reduced Transparency 提供完整路径。
-- Don't：为了“真实折射”修改 iOS 27 官方参考中的 Small/Medium/Large tint 值。
-- Don't：把 `LiquidGlassSurface` 绝对定位到每个 Button/Toolbar 背后冒充 backdrop；PallavAg lens 的 source 必须是它自身容器内的 live DOM。
+- Don't：让多个 PallavAg Engine 同时覆盖同一个 external source 的 `style.filter`。
+- Don't：让 source tree 内的普通 Button / Toolbar / Popover 自动 external self-filter。
+- Don't：把超长 `document.body` 无条件作为 external source；优先用合理尺寸的 app/view shell。
+- Don't：用过大的 CSS blur 把已经生成的 displacement 再次糊掉。
 - Don't：恢复旧 `components.css / ios-theme.css / form-controls.css / liquid-glass*.css` 覆盖链。
 - Don't：把每个 Card、正文容器、表单组都做成玻璃。
 - Don't：用 viewport 宽度推断鼠标或触控能力。

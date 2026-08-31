@@ -75,10 +75,15 @@ export default function ComponentShowcase() {
   const [slider, setSlider] = React.useState(64)
   const [search, setSearch] = React.useState('')
   const [glassEnabled, setGlassEnabled] = React.useState(true)
+  const glassSourceRef = React.useRef<HTMLDivElement>(null)
 
   return (
-    <LiquidGlassProvider enabled={glassEnabled} onEnabledChange={setGlassEnabled}>
-      <div className="pzhown-ios27 ios27-demo-grid">
+    <LiquidGlassProvider
+      enabled={glassEnabled}
+      onEnabledChange={setGlassEnabled}
+      sourceRef={glassSourceRef}
+    >
+      <div ref={glassSourceRef} className="pzhown-ios27 ios27-demo-grid" data-liquid-glass-source="demo">
         <Card title="Appearance">
           <div className="demo-stack">
             <Switch
@@ -86,7 +91,7 @@ export default function ComponentShowcase() {
               onCheckedChange={setGlassEnabled}
               label="全局 Liquid Glass"
             />
-            <p className="demo-muted">关闭后，所有 iOS 27 Glass Surface 与 PallavAg Optical Lens 会统一降级到普通 System Surface；组件仍可通过 glass=false 单独关闭。</p>
+            <p className="demo-muted">开启时，Portal 浮层直接引用这个展示区的 live DOM 作为 PallavAg filtered source；关闭后 optical engine 与透明材质一起退回普通 System Surface。</p>
           </div>
         </Card>
 
@@ -110,7 +115,7 @@ export default function ComponentShowcase() {
             <IconButton icon={MoreHorizontal} label="更多" variant="glass" />
             <IconButton icon={UserRound} label="账户" size="large" variant="tinted" />
           </div>
-          <p className="demo-muted">IconButton 参考 iOS 26/27 的圆形独立控制：28 / 36 / 50px 正圆，图标统一来自 Lucide。</p>
+          <p className="demo-muted">文字 Button 使用 capsule；IconButton 是 28 / 36 / 50px 正圆，图标统一来自 Lucide。</p>
         </Card>
 
         <Card title="PallavAg Optical Lens">
@@ -130,7 +135,7 @@ export default function ComponentShowcase() {
               </div>
             </LiquidGlassSurface>
           </div>
-          <p className="demo-muted">PallavAg 对容器内的 live DOM 做 SVG displacement；全局 Liquid Glass 关闭时不运行折射引擎。标准 iOS 27 组件仍使用系统 tint + blur + shadow 材质。</p>
+          <p className="demo-muted">这个示例仍展示 PallavAg 的 local live-DOM lens；Dialog / Sheet / Context Menu 则改用 Provider 的 external live-DOM source。</p>
         </Card>
 
         <Card title="Fields">
@@ -195,21 +200,21 @@ export default function ComponentShowcase() {
             <Dialog>
               <DialogTrigger><Button variant="glass">Dialog</Button></DialogTrigger>
               <DialogContent aria-label="确认操作">
-                <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>标准 iOS 27 Thick Material 对话框；可通过 glass=false 局部关闭。</DialogDescription></DialogHeader>
+                <DialogHeader><DialogTitle>确认操作</DialogTitle><DialogDescription>这里的折射源是浮层外部的展示区 live DOM，不再只是半透明白底 + backdrop blur。</DialogDescription></DialogHeader>
                 <DialogFooter><DialogClose><Button variant="gray">取消</Button></DialogClose><DialogClose><Button>确认</Button></DialogClose></DialogFooter>
               </DialogContent>
             </Dialog>
             <Sheet>
               <SheetTrigger><Button variant="glass">Sheet</Button></SheetTrigger>
               <SheetContent>
-                <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>34px 顶部圆角、系统 Grabber 与 iOS 27 Thick Material。</SheetDescription></SheetHeader>
+                <SheetHeader><SheetTitle>底部工作表</SheetTitle><SheetDescription>Sheet 同样由 external live DOM 驱动 optical refraction。</SheetDescription></SheetHeader>
                 <ListSection><ListRow disclosure>编辑资料</ListRow><ListRow disclosure>通知设置</ListRow></ListSection>
                 <SheetFooter><SheetClose><Button>完成</Button></SheetClose></SheetFooter>
               </SheetContent>
             </Sheet>
             <Popover>
               <PopoverTrigger><Button variant="glass">Popover</Button></PopoverTrigger>
-              <PopoverContent><strong>Popover</strong><p className="demo-muted">Medium Liquid Glass；同样支持 glass=false。</p></PopoverContent>
+              <PopoverContent><strong>Popover</strong><p className="demo-muted">Popover 仍位于 source tree 内，因此使用 iOS 材质而不自我过滤。</p></PopoverContent>
             </Popover>
           </div>
           <ContextMenu items={[{ label: '复制' }, { label: '分享…' }, { label: '删除', destructive: true }]}>

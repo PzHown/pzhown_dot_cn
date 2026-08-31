@@ -1,18 +1,19 @@
-/* iOS 27 material fidelity + optional PallavAg optical lens.
-   Standard components own their geometry; this file owns shared glass material
-   behaviour and the global/local glass switches. */
+/* iOS 27 material fidelity + optional PallavAg optical refraction.
+   Standard components own geometry; Portal glass can refract an external live
+   DOM source registered by LiquidGlassProvider. */
 
 :root{
-  --ios27-overlay-glass-strong:rgb(255 255 255 / .46);
-  --ios27-overlay-glass-medium:rgb(248 248 250 / .36);
+  --ios27-overlay-glass-strong:rgb(255 255 255 / .38);
+  --ios27-overlay-glass-medium:rgb(248 248 250 / .28);
   --ios27-overlay-glass-border:rgb(255 255 255 / .72);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .42);
-  --ios27-overlay-glass-blur:30px;
+  --ios27-overlay-glass-blur:16px;
 }
 
 .ios27-optical-host{position:relative;isolation:isolate}
 .ios27-optical-content{position:relative;z-index:1}
 .ios27-optical-glass__backdrop{display:none!important}
+.ios27-external-glass-anchor{position:absolute;top:0;left:0;width:0;height:0;overflow:hidden;pointer-events:none}
 .ios27-btn__content{display:inline-flex;align-items:center;justify-content:center;gap:inherit;min-width:0}
 .ios27-command-overlay{background:rgb(0 0 0 / .16)}
 
@@ -24,22 +25,22 @@
 .ios27-tabbar__platter{display:block;padding:0;background:var(--glass-large-bg);backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--glass-large-shadow-blur)) saturate(150%)}
 .ios27-tabbar__platter-content{display:flex;min-height:var(--tabbar-height);align-items:center;justify-content:space-around;padding:4px 8px}
 
-/* Visible iOS-style overlay glass. A Thick Material fallback was too opaque at
-   0.84 and read as a white card. Strong overlays keep more tint; contextual
-   overlays are clearer so the backdrop remains perceptible. */
+/* External displacement is the primary optical signal on Portal surfaces.
+   These tints stay translucent and the CSS blur is intentionally moderate so
+   the refracted live DOM is still visible through the material. */
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command){
   position:relative;
   background:var(--ios27-overlay-glass-strong);
   border-color:var(--ios27-overlay-glass-border);
-  backdrop-filter:blur(var(--ios27-overlay-glass-blur)) saturate(175%) brightness(1.04);
-  -webkit-backdrop-filter:blur(var(--ios27-overlay-glass-blur)) saturate(175%) brightness(1.04);
+  backdrop-filter:blur(var(--ios27-overlay-glass-blur)) saturate(172%) brightness(1.035);
+  -webkit-backdrop-filter:blur(var(--ios27-overlay-glass-blur)) saturate(172%) brightness(1.035);
 }
 :is(.ios27-popover,.ios27-context-menu,.ios27-dropdown,.ios27-toast){
   position:relative;
   background:var(--ios27-overlay-glass-medium);
   border-color:var(--ios27-overlay-glass-border);
-  backdrop-filter:blur(26px) saturate(180%) brightness(1.04);
-  -webkit-backdrop-filter:blur(26px) saturate(180%) brightness(1.04);
+  backdrop-filter:blur(12px) saturate(178%) brightness(1.035);
+  -webkit-backdrop-filter:blur(12px) saturate(178%) brightness(1.035);
 }
 :is(.ios27-dialog,.ios27-sheet,.ios27-alert-dialog,.ios27-command,.ios27-popover,.ios27-context-menu,.ios27-dropdown,.ios27-toast)::before{
   content:'';
@@ -48,7 +49,7 @@
   z-index:0;
   border-radius:inherit;
   pointer-events:none;
-  background:linear-gradient(155deg,rgb(255 255 255 / .20),transparent 34%,rgb(255 255 255 / .045) 70%,transparent);
+  background:linear-gradient(155deg,rgb(255 255 255 / .22),transparent 34%,rgb(255 255 255 / .04) 70%,transparent);
   box-shadow:inset 0 1px 0 var(--ios27-overlay-glass-highlight),inset 0 -1px 0 rgb(255 255 255 / .10);
 }
 :is(.ios27-dialog__body,.ios27-sheet__body,.ios27-alert-dialog__body,.ios27-command__content,.ios27-popover__body,.ios27-context-menu__content,.ios27-dropdown__content,.ios27-toast__content){position:relative;z-index:1}
@@ -67,10 +68,9 @@
 .ios27-context-menu{display:block;padding:0}
 .ios27-context-menu__content{display:grid;padding:6px}
 
-.ios27-tooltip{background:color-mix(in srgb,var(--glass-small-bg) 78%,transparent);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%)}
+.ios27-tooltip{background:color-mix(in srgb,var(--glass-small-bg) 78%,transparent);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%)}
 
-/* PallavAg live-DOM lens. Its source is the content inside the component, not an
-   arbitrary backdrop behind a Button/Toolbar. */
+/* PallavAg local lens: source and lens live in the same component subtree. */
 .ios27-optical-lens{position:relative;isolation:isolate}
 .ios27-optical-lens.is-disabled{filter:none!important}
 
@@ -109,15 +109,15 @@
 
 @media (prefers-color-scheme:dark){
   :root:not([data-theme='light']){
-    --ios27-overlay-glass-strong:rgb(18 18 20 / .56);
-    --ios27-overlay-glass-medium:rgb(18 18 20 / .44);
+    --ios27-overlay-glass-strong:rgb(18 18 20 / .48);
+    --ios27-overlay-glass-medium:rgb(18 18 20 / .36);
     --ios27-overlay-glass-border:rgb(255 255 255 / .16);
     --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
   }
 }
 [data-theme='dark']{
-  --ios27-overlay-glass-strong:rgb(18 18 20 / .56);
-  --ios27-overlay-glass-medium:rgb(18 18 20 / .44);
+  --ios27-overlay-glass-strong:rgb(18 18 20 / .48);
+  --ios27-overlay-glass-medium:rgb(18 18 20 / .36);
   --ios27-overlay-glass-border:rgb(255 255 255 / .16);
   --ios27-overlay-glass-highlight:rgb(255 255 255 / .16);
 }
