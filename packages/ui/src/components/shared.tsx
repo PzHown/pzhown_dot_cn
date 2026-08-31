@@ -29,11 +29,11 @@ export function useControllableState<T>({
   return [current, set] as const
 }
 
-export function Portal({ children }: { children: React.ReactNode }) {
+export function Portal({ children, container }: { children: React.ReactNode; container?: Element | null }) {
   const [mounted, setMounted] = React.useState(false)
   React.useEffect(() => setMounted(true), [])
   if (!mounted || typeof document === 'undefined') return null
-  return createPortal(children, document.body)
+  return createPortal(children, container ?? document.body)
 }
 
 export function useEscape(enabled: boolean, onEscape: () => void) {
