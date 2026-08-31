@@ -168,8 +168,8 @@ export function LiquidGlassProvider({
       }
 
       const container = containerRefRef.current?.current ?? source.parentElement ?? source
-      let defsHost = defsHostRefRef.current?.current ?? null
-      let ownsDefsHost = false
+      let defsHost = defsHostRefRef.current?.current ?? (ownsDefsHostRef.current ? engineDefsHostRef.current : null)
+      let ownsDefsHost = Boolean(defsHost && ownsDefsHostRef.current && defsHost === engineDefsHostRef.current)
       if (!defsHost) {
         defsHost = document.createElement('div')
         defsHost.setAttribute('aria-hidden', 'true')
@@ -213,7 +213,6 @@ export function LiquidGlassProvider({
           options,
         )
       } else {
-        if (ownsDefsHost) defsHost.remove()
         engineRef.current.setOptions(options)
       }
       engineRef.current.setPosition(x, y)
