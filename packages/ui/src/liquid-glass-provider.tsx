@@ -3,7 +3,9 @@
 import * as React from 'react'
 import { LiquidGlassEngine, type LiquidGlassOptions } from 'liquid-glass-web-react'
 
+export type LiquidGlassContainerRef = React.RefObject<HTMLElement | null>
 export type LiquidGlassSourceRef = React.RefObject<HTMLElement | null>
+export type LiquidGlassDefsHostRef = React.RefObject<HTMLElement | null>
 export type LiquidGlassPortalRef = React.RefObject<HTMLElement | null>
 export type LiquidGlassOpticalOverrides = Partial<Omit<LiquidGlassOptions, 'width' | 'height' | 'radius'>>
 
@@ -21,7 +23,9 @@ export interface LiquidGlassContextValue {
   opticalEnabled: boolean
   opticalOverrides: LiquidGlassOpticalOverrides
   setEnabled: (enabled: boolean) => void
+  containerRef: LiquidGlassContainerRef | null
   sourceRef: LiquidGlassSourceRef | null
+  defsHostRef: LiquidGlassDefsHostRef | null
   portalRef: LiquidGlassPortalRef | null
   registerExternalLens: (target: HTMLElement, options?: ExternalLiquidGlassOptions) => () => void
 }
@@ -33,7 +37,9 @@ const fallbackContext: LiquidGlassContextValue = {
   opticalEnabled: true,
   opticalOverrides: EMPTY_OPTICAL_OVERRIDES,
   setEnabled: () => undefined,
+  containerRef: null,
   sourceRef: null,
+  defsHostRef: null,
   portalRef: null,
   registerExternalLens: () => () => undefined,
 }
@@ -47,9 +53,13 @@ export interface LiquidGlassProviderProps {
   onEnabledChange?: (enabled: boolean) => void
   /** Optional live overrides for PallavAg optical parameters. Geometry stays owned by the target component. */
   opticalOverrides?: LiquidGlassOpticalOverrides
-  /** External live DOM refracted behind floating glass. */
+  /** PallavAg host container. Overlay/chrome coordinates are relative to this element. */
+  containerRef?: LiquidGlassContainerRef | null
+  /** External live DOM wrapper that receives PallavAg's SVG filter. */
   sourceRef?: LiquidGlassSourceRef | null
-  /** Optional sibling portal host sharing the source coordinate space. */
+  /** Empty sibling host where PallavAg renders its SVG defs. */
+  defsHostRef?: LiquidGlassDefsHostRef | null
+  /** Optional sibling portal/chrome host sharing the container coordinate space. */
   portalRef?: LiquidGlassPortalRef | null
 }
 
@@ -74,7 +84,9 @@ export function LiquidGlassProvider({
   defaultEnabled = true,
   onEnabledChange,
   opticalOverrides,
+  containerRef = null,
   sourceRef = null,
+  defsHostRef = null,
   portalRef = null,
 }: LiquidGlassProviderProps) {
   const [internalEnabled, setInternalEnabled] = React.useState(defaultEnabled)
@@ -90,16 +102,22 @@ export function LiquidGlassProvider({
 
   const enabledRef = React.useRef(opticalEnabled)
   enabledRef.current = opticalEnabled
+  const containerRefRef = React.useRef<LiquidGlassContainerRef | null>(containerRef)
+  containerRefRef.current = containerRef
   const sourceRefRef = React.useRef<LiquidGlassSourceRef | null>(sourceRef)
   sourceRefRef.current = sourceRef
+  const defsHostRefRef = React.useRef<LiquidGlassDefsHostRef | null>(defsHostRef)
+  defsHostRefRef.current = defsHostRef
   const opticalOverridesRef = React.useRef<LiquidGlassOpticalOverrides>(resolvedOpticalOverrides)
   opticalOverridesRef.current = resolvedOpticalOverrides
 
   const registrationsRef = React.useRef<ExternalLensRegistration[]>([])
   const engineRef = React.useRef<LiquidGlassEngine | null>(null)
+  const engineContainerRef = React.useRef<HTMLElement | null>(null)
   const engineSourceRef = React.useRef<HTMLElement | null>(null)
+  const engineDefsHostRef = React.useRef<HTMLElement | null>(null)
+  const ownsDefsHostRef = React.useRef(false)
   const activeTargetRef = React.useRef<HTMLElement | null>(null)
-  const defsHostRef = React.useRef<HTMLDivElement | null>(null)
   const previousFilterRef = React.useRef('')
   const resizeObserverRef = React.useRef<ResizeObserver | null>(null)
   const observedTargetRef = React.useRef<HTMLElement | null>(null)
@@ -118,9 +136,11 @@ export function LiquidGlassProvider({
     engineRef.current?.destroy()
     engineRef.current = null
     if (engineSourceRef.current) engineSourceRef.current.style.filter = previousFilterRef.current
+    if (ownsDefsHostRef.current) engineDefsHostRef.current?.remove()
+    engineContainerRef.current = null
     engineSourceRef.current = null
-    defsHostRef.current?.remove()
-    defsHostRef.current = null
+    engineDefsHostRef.current = null
+    ownsDefsHostRef.current = false
   }, [clearActiveTarget])
 
   const syncExternalLens = React.useCallback(() => {
@@ -147,6 +167,24 @@ export function LiquidGlassProvider({
         return
       }
 
+      const container = containerRefRef.current?.current ?? source.parentElement ?? source
+      let defsHost = defsHostRefRef.current?.current ?? null
+      let ownsDefsHost = false
+      if (!defsHost) {
+        defsHost = document.createElement('div')
+        defsHost.setAttribute('aria-hidden', 'true')
+        defsHost.dataset.liquidGlassDefs = ''
+        defsHost.style.position = 'absolute'
+        defsHost.style.inset = '0'
+        defsHost.style.pointerEvents = 'none'
+        if (container !== source) {
+          container.appendChild(defsHost)
+        } else {
+          document.body.appendChild(defsHost)
+        }
+        ownsDefsHost = true
+      }
+
       const x = (targetRect.left + targetRect.width / 2 - sourceRect.left) / sourceRect.width
       const y = (targetRect.top + targetRect.height / 2 - sourceRect.top) / sourceRect.height
       const options: Partial<LiquidGlassOptions> = {
@@ -157,25 +195,25 @@ export function LiquidGlassProvider({
         radius: active.options.radius ?? readRadius(active.target),
       }
 
-      if (!engineRef.current || engineSourceRef.current !== source) {
+      const hostChanged =
+        !engineRef.current ||
+        engineContainerRef.current !== container ||
+        engineSourceRef.current !== source ||
+        engineDefsHostRef.current !== defsHost
+
+      if (hostChanged) {
         destroyExternalEngine()
-        const defsHost = document.createElement('div')
-        defsHost.setAttribute('aria-hidden', 'true')
-        defsHost.dataset.liquidGlassDefs = ''
-        defsHost.style.position = 'fixed'
-        defsHost.style.width = '0'
-        defsHost.style.height = '0'
-        defsHost.style.overflow = 'hidden'
-        defsHost.style.pointerEvents = 'none'
-        document.body.appendChild(defsHost)
-        defsHostRef.current = defsHost
         previousFilterRef.current = source.style.filter
+        engineContainerRef.current = container
         engineSourceRef.current = source
+        engineDefsHostRef.current = defsHost
+        ownsDefsHostRef.current = ownsDefsHost
         engineRef.current = new LiquidGlassEngine(
-          { container: source, filtered: source, defsHost },
+          { container, filtered: source, defsHost },
           options,
         )
       } else {
+        if (ownsDefsHost) defsHost.remove()
         engineRef.current.setOptions(options)
       }
       engineRef.current.setPosition(x, y)
@@ -189,7 +227,8 @@ export function LiquidGlassProvider({
       if (observedTargetRef.current !== active.target) {
         resizeObserverRef.current?.disconnect()
         const observer = new ResizeObserver(() => syncExternalLens())
-        observer.observe(source)
+        observer.observe(container)
+        if (source !== container) observer.observe(source)
         observer.observe(active.target)
         resizeObserverRef.current = observer
         observedTargetRef.current = active.target
@@ -247,20 +286,24 @@ export function LiquidGlassProvider({
   }, [destroyExternalEngine, syncExternalLens])
 
   const value = React.useMemo(
-    () => ({ enabled, opticalEnabled, opticalOverrides: resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens }),
-    [enabled, opticalEnabled, resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens],
+    () => ({ enabled, opticalEnabled, opticalOverrides: resolvedOpticalOverrides, setEnabled, containerRef, sourceRef, defsHostRef, portalRef, registerExternalLens }),
+    [enabled, opticalEnabled, resolvedOpticalOverrides, setEnabled, containerRef, sourceRef, defsHostRef, portalRef, registerExternalLens],
   )
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
 }
 
 export interface LiquidGlassViewportProps
-  extends Omit<LiquidGlassProviderProps, 'children' | 'sourceRef' | 'portalRef'>,
+  extends Omit<LiquidGlassProviderProps, 'children' | 'containerRef' | 'sourceRef' | 'defsHostRef' | 'portalRef'>,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   children: React.ReactNode
   sourceClassName?: string
   portalClassName?: string
 }
 
+/**
+ * PallavAg-compatible external host hierarchy:
+ * container -> filtered live DOM + defsHost + sibling portal/chrome layer.
+ */
 export function LiquidGlassViewport({
   children,
   className,
@@ -268,18 +311,27 @@ export function LiquidGlassViewport({
   portalClassName,
   ...providerProps
 }: LiquidGlassViewportProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null)
   const sourceRef = React.useRef<HTMLDivElement>(null)
+  const defsHostRef = React.useRef<HTMLDivElement>(null)
   const portalRef = React.useRef<HTMLDivElement>(null)
   const rootClassName = ['ios27-liquid-glass-viewport', className].filter(Boolean).join(' ')
   const sourceClasses = ['ios27-liquid-glass-viewport__source', sourceClassName].filter(Boolean).join(' ')
   const portalClasses = ['ios27-liquid-glass-viewport__portals', portalClassName].filter(Boolean).join(' ')
 
   return (
-    <LiquidGlassProvider {...providerProps} sourceRef={sourceRef} portalRef={portalRef}>
-      <div className={rootClassName}>
-        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-source="viewport">
+    <LiquidGlassProvider
+      {...providerProps}
+      containerRef={containerRef}
+      sourceRef={sourceRef}
+      defsHostRef={defsHostRef}
+      portalRef={portalRef}
+    >
+      <div ref={containerRef} className={rootClassName} data-liquid-glass-container="viewport">
+        <div ref={sourceRef} className={sourceClasses} data-liquid-glass-filtered="viewport">
           {children}
         </div>
+        <div ref={defsHostRef} className="ios27-liquid-glass-viewport__defs" data-liquid-glass-defs="viewport" aria-hidden="true" />
         <div ref={portalRef} className={portalClasses} data-liquid-glass-portals="viewport" />
       </div>
     </LiquidGlassProvider>
