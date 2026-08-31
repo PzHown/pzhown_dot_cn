@@ -6,10 +6,8 @@ import { LiquidGlassEngine, type LiquidGlassOptions } from 'liquid-glass-web-rea
 export type LiquidGlassSourceRef = React.RefObject<HTMLElement | null>
 export type LiquidGlassPortalRef = React.RefObject<HTMLElement | null>
 
-export interface ExternalLiquidGlassOptions extends Partial<LiquidGlassOptions> {
-  /** Desired displacement amplitude in CSS pixels, independent of source size. */
-  displacementPx?: number
-}
+/** Pass PallavAg engine options through without redefining optical semantics. */
+export type ExternalLiquidGlassOptions = Partial<LiquidGlassOptions>
 
 type ExternalLensRegistration = {
   id: symbol
@@ -61,12 +59,6 @@ function sourceCoversTarget(source: DOMRect, target: DOMRect) {
     target.right <= source.right + tolerance &&
     target.bottom <= source.bottom + tolerance
   )
-}
-
-function normalizedStrengthForPixels(displacementPx: number, source: DOMRect) {
-  const diagonal = Math.hypot(source.width, source.height)
-  if (diagonal <= 0) return 0
-  return (Math.max(0, displacementPx) * Math.SQRT2) / diagonal
 }
 
 export function LiquidGlassProvider({
@@ -146,13 +138,8 @@ export function LiquidGlassProvider({
 
       const x = (targetRect.left + targetRect.width / 2 - sourceRect.left) / sourceRect.width
       const y = (targetRect.top + targetRect.height / 2 - sourceRect.top) / sourceRect.height
-      const { displacementPx, ...engineOptions } = active.options
-      const strength = displacementPx === undefined
-        ? engineOptions.strength
-        : normalizedStrengthForPixels(displacementPx, sourceRect)
       const options: Partial<LiquidGlassOptions> = {
-        ...engineOptions,
-        ...(strength === undefined ? {} : { strength }),
+        ...active.options,
         width: targetRect.width,
         height: targetRect.height,
         radius: active.options.radius ?? readRadius(active.target),
