@@ -36,7 +36,7 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 4. 组件外观与 anatomy 读取 `references/components.md`。
 5. Web/CSS 实现读取 `references/web-implementation.md`。
 6. 如果 iOS27 上游参考与旧仓库 CSS/旧组件冲突，以上游 + `DESIGN.md` 为准，不恢复旧兼容层。
-7. 若需求明确要求真实折射，再考虑 `LiquidGlassSurface`；不得把 PallavAg lens 当普通 backdrop 塞进所有组件。
+7. 若需求明确要求真实折射：局部 lens 使用 `LiquidGlassSurface`；Dialog / Sheet 这类 Portal 浮层优先使用 `LiquidGlassViewport` 的 **viewport-sized source + sibling portal layer**。不得把 PallavAg lens 当普通 backdrop 塞进任意长页面 DOM。
 8. 完成后做 Grayscale、Light/Dark、Reduced Transparency、Reduced Motion 与输入能力审查。
 
 ## 视觉不变量
@@ -50,8 +50,10 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 渐变使用 Oklab/Oklch；需要柔和起止时使用 smootherstep，但 Gradient 属于独立 Effects，不是 iOS 27 组件默认装饰。
 - Liquid Glass 用于 System Chrome、浮层与必要控制层；Card、文章、Table、长列表内容面优先 Grouped Surface。
 - **Standard Liquid Glass != Optical Lens**：Large / Medium / Small 默认按 iOS 27 原始 tint + backdrop blur + shadow 实现；PallavAg displacement 是 opt-in 特效。
+- External PallavAg displacement 必须按**固定 CSS 像素强度**归一化，不能直接让 `strength` 随 filtered source 对角线放大；否则长页面会把 Dialog / Sheet 的折射横向拉跑。
+- Dialog / Sheet 的 external source 与 portal layer 必须共享同一 viewport coordinate root，但 portal layer 必须是 source 的 sibling，不能成为 filtered source 的后代。
 - Small Glass 在浅色下允许接近不透明；不要为了“看见折射”擅改为另一套透明度。
-- Sheet / Alert / Context Menu 等高可读性浮层优先 Thick Material，而不是无条件套 Large Optical Glass。
+- Sheet / Alert / Context Menu 等高可读性浮层优先保证可读性，不以 optical 强度压过内容。
 - 禁止无意义 glass-on-glass。
 - Progressive Blur 不进入长文核心背景，也不替代 Liquid Glass；只用于边缘、上下文和空间过渡。
 - 阴影用于高度和分离，不作为所有组件默认装饰。
@@ -65,7 +67,8 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 使用 surface、position、indicator、opacity、motion 等状态差异，不粗暴用重边框表达所有 hovered / pressed / selected。
 - Focus 必须清楚可见，不能为了“像原生截图”隐藏键盘导航状态。
 - 小视觉控件可以通过不可见 hit area 扩展触控命中区，不要求视觉高度统一 44px。
-- `LiquidGlassSurface` 只用于显式 lens/selection/特殊 optical object；其 source 是自身容器内 live DOM，不是任意组件背后的通用 backdrop。
+- `LiquidGlassSurface` 只用于显式 local lens / selection / 特殊 optical object，其 source 是自身容器内 live DOM。
+- `LiquidGlassViewport` 是 Dialog / Sheet external refraction 的标准容器：source layer 固定为 viewport box 并负责滚动，portal layer 与它同尺寸且为 sibling；不要用超长 `document.body` 或任意内容 grid 直接充当这类浮层的 source。
 
 ## 视觉审查
 
@@ -73,6 +76,7 @@ description: 为 pzhown_dot_cn 提供 Apple / iOS 27 Web 视觉语言规范。�
 - 是否严格使用 `DESIGN.md` 当前 iOS 27 系统色、几何和材质？
 - 是否出现另一套自造 token 或“泛 glassmorphism”？
 - 是否误把 PallavAg 的默认 lens 参数当成 iOS 27 官方材质？
+- Dialog / Sheet 的 source 与 portal 是否同坐标根？是否出现 source 尺寸越大、折射位移越强的错误？
 - 去掉边框和 Glass 后层级是否仍清楚？
 - **Grayscale Test**：转灰度后标题、正文、导航、主要操作和状态是否仍清楚？
 - 辅助文字是否因为“做灰”而低于可读对比度？
