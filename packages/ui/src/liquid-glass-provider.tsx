@@ -26,10 +26,12 @@ export interface LiquidGlassContextValue {
   registerExternalLens: (target: HTMLElement, options?: ExternalLiquidGlassOptions) => () => void
 }
 
+const EMPTY_OPTICAL_OVERRIDES: LiquidGlassOpticalOverrides = {}
+
 const fallbackContext: LiquidGlassContextValue = {
   enabled: true,
   opticalEnabled: true,
-  opticalOverrides: {},
+  opticalOverrides: EMPTY_OPTICAL_OVERRIDES,
   setEnabled: () => undefined,
   sourceRef: null,
   portalRef: null,
@@ -71,7 +73,7 @@ export function LiquidGlassProvider({
   enabled: controlledEnabled,
   defaultEnabled = true,
   onEnabledChange,
-  opticalOverrides = {},
+  opticalOverrides,
   sourceRef = null,
   portalRef = null,
 }: LiquidGlassProviderProps) {
@@ -79,6 +81,7 @@ export function LiquidGlassProvider({
   const [reducedTransparency, setReducedTransparency] = React.useState(false)
   const enabled = controlledEnabled ?? internalEnabled
   const opticalEnabled = enabled && !reducedTransparency
+  const resolvedOpticalOverrides = opticalOverrides ?? EMPTY_OPTICAL_OVERRIDES
 
   const setEnabled = React.useCallback((next: boolean) => {
     if (controlledEnabled === undefined) setInternalEnabled(next)
@@ -89,8 +92,8 @@ export function LiquidGlassProvider({
   enabledRef.current = opticalEnabled
   const sourceRefRef = React.useRef<LiquidGlassSourceRef | null>(sourceRef)
   sourceRefRef.current = sourceRef
-  const opticalOverridesRef = React.useRef<LiquidGlassOpticalOverrides>(opticalOverrides)
-  opticalOverridesRef.current = opticalOverrides
+  const opticalOverridesRef = React.useRef<LiquidGlassOpticalOverrides>(resolvedOpticalOverrides)
+  opticalOverridesRef.current = resolvedOpticalOverrides
 
   const registrationsRef = React.useRef<ExternalLensRegistration[]>([])
   const engineRef = React.useRef<LiquidGlassEngine | null>(null)
@@ -225,7 +228,7 @@ export function LiquidGlassProvider({
 
   React.useEffect(() => {
     syncExternalLens()
-  }, [opticalOverrides, syncExternalLens])
+  }, [resolvedOpticalOverrides, syncExternalLens])
 
   React.useEffect(() => {
     const resync = () => syncExternalLens()
@@ -244,8 +247,8 @@ export function LiquidGlassProvider({
   }, [destroyExternalEngine, syncExternalLens])
 
   const value = React.useMemo(
-    () => ({ enabled, opticalEnabled, opticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens }),
-    [enabled, opticalEnabled, opticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens],
+    () => ({ enabled, opticalEnabled, opticalOverrides: resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens }),
+    [enabled, opticalEnabled, resolvedOpticalOverrides, setEnabled, sourceRef, portalRef, registerExternalLens],
   )
   return <LiquidGlassContext.Provider value={value}>{children}</LiquidGlassContext.Provider>
 }
