@@ -179,9 +179,10 @@ export function ExternalLiquidGlassBackdrop({
       ...(radius === undefined ? {} : { radius }),
     }
 
-    let unregister = registerExternalLens(target, options)
     const isGlassControl = target.matches('.ios27-btn--glass')
+    if (isGlassControl) target.setAttribute('data-liquid-glass-ready', 'on')
 
+    let unregister = registerExternalLens(target, options)
     const promote = () => {
       unregister()
       unregister = registerExternalLens(target, options)
@@ -198,6 +199,7 @@ export function ExternalLiquidGlassBackdrop({
         target.removeEventListener('pointerenter', promote)
         target.removeEventListener('pointerdown', promote)
         target.removeEventListener('focusin', promote)
+        target.removeAttribute('data-liquid-glass-ready')
       }
       unregister()
     }
