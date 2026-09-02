@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { LiquidGlassBackdrop } from './materials'
 import { Portal, composeHandlers, cx, useControllableState, useEscape } from './shared'
 
@@ -52,12 +53,25 @@ export function TooltipTrigger({ children }: { children: React.ReactElement }) {
 export function TooltipContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const context = React.useContext(TooltipContext)
   if (!context) throw new Error('TooltipContent must be used inside Tooltip')
-  if (!context.open) return null
+  const reduceMotion = useReducedMotion()
   return (
-    <div {...props} id={context.contentId} role="tooltip" className={cx('ios27-tooltip', 'ios27-optical-host', className)}>
-      <LiquidGlassBackdrop material="small" />
-      <div className="ios27-tooltip__content ios27-optical-content">{children}</div>
-    </div>
+    <AnimatePresence initial={false}>
+      {context.open ? (
+        <motion.div
+          {...props}
+          id={context.contentId}
+          role="tooltip"
+          className={cx('ios27-tooltip', 'ios27-optical-host', className)}
+          initial={reduceMotion ? false : { opacity: 0, y: 3, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 2, scale: 0.985 }}
+          transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 560, damping: 40, mass: 0.65 }}
+        >
+          <LiquidGlassBackdrop material="small" />
+          <div className="ios27-tooltip__content ios27-optical-content">{children}</div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   )
 }
 
@@ -106,6 +120,7 @@ export function DropdownMenuContent({ className, children, ...props }: React.HTM
   const context = React.useContext(DropdownMenuContext)
   if (!context) throw new Error('DropdownMenuContent must be used inside DropdownMenu')
   const contentRef = React.useRef<HTMLDivElement>(null)
+  const reduceMotion = useReducedMotion()
   useEscape(context.open, () => context.setOpen(false))
   React.useEffect(() => {
     if (!context.open) return
@@ -129,12 +144,24 @@ export function DropdownMenuContent({ className, children, ...props }: React.HTM
       document.removeEventListener('keydown', handleKey)
     }
   }, [context])
-  if (!context.open) return null
   return (
-    <div {...props} ref={contentRef} role="menu" className={cx('ios27-dropdown', 'ios27-optical-host', className)}>
-      <LiquidGlassBackdrop material="medium" />
-      <div className="ios27-dropdown__content ios27-optical-content">{children}</div>
-    </div>
+    <AnimatePresence initial={false}>
+      {context.open ? (
+        <motion.div
+          {...props}
+          ref={contentRef}
+          role="menu"
+          className={cx('ios27-dropdown', 'ios27-optical-host', className)}
+          initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -2, scale: 0.985 }}
+          transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 540, damping: 40, mass: 0.68 }}
+        >
+          <LiquidGlassBackdrop material="medium" />
+          <div className="ios27-dropdown__content ios27-optical-content">{children}</div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   )
 }
 
@@ -247,13 +274,16 @@ function ToastViewport({ toasts, dismiss }: { toasts: ToastRecord[]; dismiss: (i
   return (
     <Portal>
       <div className="ios27-toast-viewport" aria-live="polite" aria-relevant="additions removals">
-        {toasts.map((toast) => <ToastItem key={toast.id} toast={toast} dismiss={dismiss} />)}
+        <AnimatePresence initial={false}>
+          {toasts.map((toast) => <ToastItem key={toast.id} toast={toast} dismiss={dismiss} />)}
+        </AnimatePresence>
       </div>
     </Portal>
   )
 }
 
 function ToastItem({ toast, dismiss }: { toast: ToastRecord; dismiss: (id: number) => void }) {
+  const reduceMotion = useReducedMotion()
   React.useEffect(() => {
     const duration = toast.duration ?? 4200
     if (duration <= 0) return
@@ -261,7 +291,16 @@ function ToastItem({ toast, dismiss }: { toast: ToastRecord; dismiss: (id: numbe
     return () => window.clearTimeout(timer)
   }, [dismiss, toast.duration, toast.id])
   return (
-    <div role={toast.variant === 'destructive' ? 'alert' : 'status'} data-variant={toast.variant ?? 'default'} className="ios27-toast ios27-optical-host">
+    <motion.div
+      role={toast.variant === 'destructive' ? 'alert' : 'status'}
+      data-variant={toast.variant ?? 'default'}
+      className="ios27-toast ios27-optical-host"
+      layout={!reduceMotion}
+      initial={reduceMotion ? false : { opacity: 0, y: -10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.985 }}
+      transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 460, damping: 36, mass: 0.78 }}
+    >
       <LiquidGlassBackdrop material="medium" />
       <div className="ios27-toast__content ios27-optical-content">
         <div className="ios27-toast__copy">
@@ -271,7 +310,7 @@ function ToastItem({ toast, dismiss }: { toast: ToastRecord; dismiss: (id: numbe
         {toast.actionLabel ? <button type="button" className="ios27-toast__action" onClick={() => { toast.onAction?.(); dismiss(toast.id) }}>{toast.actionLabel}</button> : null}
         <button type="button" className="ios27-toast__close" aria-label="关闭通知" onClick={() => dismiss(toast.id)}>×</button>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -306,6 +345,7 @@ export interface AlertDialogContentProps extends React.HTMLAttributes<HTMLDivEle
 export function AlertDialogContent({ className, children, closeOnOverlay = false, ...props }: AlertDialogContentProps) {
   const context = React.useContext(AlertDialogContext)
   if (!context) throw new Error('AlertDialogContent must be used inside AlertDialog')
+  const reduceMotion = useReducedMotion()
   useEscape(context.open, () => context.setOpen(false))
   const contentRef = React.useRef<HTMLDivElement>(null)
   React.useEffect(() => {
@@ -314,17 +354,39 @@ export function AlertDialogContent({ className, children, closeOnOverlay = false
     queueMicrotask(() => contentRef.current?.focus())
     return () => previous?.focus?.()
   }, [context.open])
-  if (!context.open) return null
   return (
     <Portal>
-      <div className="ios27-overlay" data-slot="alert-dialog-overlay" onMouseDown={(event) => {
-        if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
-      }}>
-        <div {...props} ref={contentRef} role="alertdialog" aria-modal="true" tabIndex={-1} className={cx('ios27-alert-dialog', 'ios27-optical-host', className)}>
-          <LiquidGlassBackdrop material="large" />
-          <div className="ios27-alert-dialog__body ios27-optical-content">{children}</div>
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {context.open ? (
+          <motion.div
+            className="ios27-overlay"
+            data-slot="alert-dialog-overlay"
+            onMouseDown={(event) => {
+              if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0.08 : 0.16, ease: 'easeOut' }}
+          >
+            <motion.div
+              {...props}
+              ref={contentRef}
+              role="alertdialog"
+              aria-modal="true"
+              tabIndex={-1}
+              className={cx('ios27-alert-dialog', 'ios27-optical-host', className)}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985, y: 4 }}
+              transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 430, damping: 34, mass: 0.8 }}
+            >
+              <LiquidGlassBackdrop material="large" />
+              <div className="ios27-alert-dialog__body ios27-optical-content">{children}</div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </Portal>
   )
 }
