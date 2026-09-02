@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useLiquidGlass } from '../liquid-glass-provider'
 import { LiquidGlassBackdrop } from './materials'
 import { Portal, composeHandlers, cx, useControllableState, useEscape } from './shared'
@@ -51,6 +52,7 @@ export function DialogContent({ className, children, closeOnOverlay = true, glas
   const context = React.useContext(DialogContext)
   const { portalRef } = useLiquidGlass()
   if (!context) throw new Error('DialogContent must be used inside Dialog')
+  const reduceMotion = useReducedMotion()
   useEscape(context.open, () => context.setOpen(false))
   const contentRef = React.useRef<HTMLDivElement>(null)
   React.useEffect(() => {
@@ -59,27 +61,42 @@ export function DialogContent({ className, children, closeOnOverlay = true, glas
     queueMicrotask(() => contentRef.current?.focus())
     return () => previous?.focus?.()
   }, [context.open])
-  if (!context.open) return null
   const portalContainer = portalRef?.current ?? null
   return (
     <Portal container={portalContainer}>
-      <div className={cx('ios27-overlay', portalContainer && 'ios27-overlay--scoped')} data-slot="dialog-overlay" onMouseDown={(event) => {
-        if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
-      }}>
-        <div
-          {...props}
-          ref={contentRef}
-          role="dialog"
-          aria-modal="true"
-          tabIndex={-1}
-          data-slot="dialog-content"
-          data-glass={glass ? 'large' : 'off'}
-          className={cx('ios27-dialog', 'ios27-optical-host', className)}
-        >
-          {glass ? <LiquidGlassBackdrop material="large" /> : null}
-          <div className="ios27-dialog__body ios27-optical-content">{children}</div>
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {context.open ? (
+          <motion.div
+            className={cx('ios27-overlay', portalContainer && 'ios27-overlay--scoped')}
+            data-slot="dialog-overlay"
+            onMouseDown={(event) => {
+              if (closeOnOverlay && event.target === event.currentTarget) context.setOpen(false)
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0.08 : 0.16, ease: 'easeOut' }}
+          >
+            <motion.div
+              {...props}
+              ref={contentRef}
+              role="dialog"
+              aria-modal="true"
+              tabIndex={-1}
+              data-slot="dialog-content"
+              data-glass={glass ? 'large' : 'off'}
+              className={cx('ios27-dialog', 'ios27-optical-host', className)}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985, y: 4 }}
+              transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 430, damping: 34, mass: 0.8 }}
+            >
+              {glass ? <LiquidGlassBackdrop material="large" /> : null}
+              <div className="ios27-dialog__body ios27-optical-content">{children}</div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </Portal>
   )
 }
@@ -113,28 +130,45 @@ export function SheetContent({ side = 'bottom', glass = true, className, childre
   const context = React.useContext(SheetContext)
   const { portalRef } = useLiquidGlass()
   if (!context) throw new Error('SheetContent must be used inside Sheet')
+  const reduceMotion = useReducedMotion()
   useEscape(context.open, () => context.setOpen(false))
-  if (!context.open) return null
   const portalContainer = portalRef?.current ?? null
+  const hiddenOffset = side === 'bottom' ? { y: 40 } : side === 'left' ? { x: -40 } : { x: 40 }
   return (
     <Portal container={portalContainer}>
-      <div className={cx('ios27-overlay', 'ios27-sheet-overlay', portalContainer && 'ios27-overlay--scoped')} data-slot="sheet-overlay" onMouseDown={(event) => event.target === event.currentTarget && context.setOpen(false)}>
-        <div
-          {...props}
-          role="dialog"
-          aria-modal="true"
-          data-side={side}
-          data-slot="sheet-content"
-          data-glass={glass ? 'large' : 'off'}
-          className={cx('ios27-sheet', 'ios27-optical-host', portalContainer && 'ios27-sheet--scoped', className)}
-        >
-          {glass ? <LiquidGlassBackdrop material="large" /> : null}
-          <div className="ios27-sheet__body ios27-optical-content">
-            {side === 'bottom' ? <div className="ios27-sheet__grabber" aria-hidden="true" /> : null}
-            {children}
-          </div>
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {context.open ? (
+          <motion.div
+            className={cx('ios27-overlay', 'ios27-sheet-overlay', portalContainer && 'ios27-overlay--scoped')}
+            data-slot="sheet-overlay"
+            onMouseDown={(event) => event.target === event.currentTarget && context.setOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0.08 : 0.16, ease: 'easeOut' }}
+          >
+            <motion.div
+              {...props}
+              role="dialog"
+              aria-modal="true"
+              data-side={side}
+              data-slot="sheet-content"
+              data-glass={glass ? 'large' : 'off'}
+              className={cx('ios27-sheet', 'ios27-optical-host', portalContainer && 'ios27-sheet--scoped', className)}
+              initial={reduceMotion ? false : { opacity: 0, ...hiddenOffset }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, ...hiddenOffset }}
+              transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 360, damping: 34, mass: 0.88 }}
+            >
+              {glass ? <LiquidGlassBackdrop material="large" /> : null}
+              <div className="ios27-sheet__body ios27-optical-content">
+                {side === 'bottom' ? <div className="ios27-sheet__grabber" aria-hidden="true" /> : null}
+                {children}
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </Portal>
   )
 }
@@ -171,6 +205,7 @@ export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement
 export function PopoverContent({ className, children, glass = true, ...props }: PopoverContentProps) {
   const context = React.useContext(PopoverContext)
   if (!context) throw new Error('PopoverContent must be used inside Popover')
+  const reduceMotion = useReducedMotion()
   useEscape(context.open, () => context.setOpen(false))
   React.useEffect(() => {
     if (!context.open) return
@@ -180,18 +215,33 @@ export function PopoverContent({ className, children, glass = true, ...props }: 
     document.addEventListener('pointerdown', handle)
     return () => document.removeEventListener('pointerdown', handle)
   }, [context])
-  return context.open ? (
-    <div {...props} role="dialog" data-slot="popover-content" data-glass={glass ? 'medium' : 'off'} className={cx('ios27-popover', 'ios27-optical-host', className)}>
-      {glass ? <LiquidGlassBackdrop material="medium" /> : null}
-      <div className="ios27-popover__body ios27-optical-content">{children}</div>
-    </div>
-  ) : null
+  return (
+    <AnimatePresence initial={false}>
+      {context.open ? (
+        <motion.div
+          {...props}
+          role="dialog"
+          data-slot="popover-content"
+          data-glass={glass ? 'medium' : 'off'}
+          className={cx('ios27-popover', 'ios27-optical-host', className)}
+          initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -2, scale: 0.985 }}
+          transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 520, damping: 38, mass: 0.7 }}
+        >
+          {glass ? <LiquidGlassBackdrop material="medium" /> : null}
+          <div className="ios27-popover__body ios27-optical-content">{children}</div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  )
 }
 
 type ContextMenuItem = { label: React.ReactNode; onSelect?: () => void; disabled?: boolean; destructive?: boolean; shortcut?: React.ReactNode }
 export interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> { items: ContextMenuItem[]; glass?: boolean }
 export function ContextMenu({ items, children, glass = true, className, onContextMenu, ...props }: ContextMenuProps) {
   const [point, setPoint] = React.useState<{ x: number; y: number } | null>(null)
+  const reduceMotion = useReducedMotion()
   useEscape(Boolean(point), () => setPoint(null))
   React.useEffect(() => {
     if (!point) return
@@ -208,22 +258,28 @@ export function ContextMenu({ items, children, glass = true, className, onContex
         event.preventDefault()
         setPoint({ x: event.clientX, y: event.clientY })
       }}>{children}</div>
-      {point ? (
-        <Portal>
-          <div
-            className="ios27-context-menu ios27-optical-host"
-            data-glass={glass ? 'medium' : 'off'}
-            role="menu"
-            style={{ left: point.x, top: point.y }}
-            onPointerDown={(event) => event.stopPropagation()}
-          >
-            {glass ? <LiquidGlassBackdrop material="medium" /> : null}
-            <div className="ios27-context-menu__content ios27-optical-content">
-              {items.map((item, index) => <button key={index} type="button" role="menuitem" disabled={item.disabled} data-destructive={item.destructive || undefined} onClick={() => { item.onSelect?.(); setPoint(null) }}><span>{item.label}</span>{item.shortcut ? <span className="ios27-context-menu__shortcut">{item.shortcut}</span> : null}</button>)}
-            </div>
-          </div>
-        </Portal>
-      ) : null}
+      <Portal>
+        <AnimatePresence initial={false}>
+          {point ? (
+            <motion.div
+              className="ios27-context-menu ios27-optical-host"
+              data-glass={glass ? 'medium' : 'off'}
+              role="menu"
+              style={{ left: point.x, top: point.y }}
+              onPointerDown={(event) => event.stopPropagation()}
+              initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -2, scale: 0.985 }}
+              transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 540, damping: 40, mass: 0.68 }}
+            >
+              {glass ? <LiquidGlassBackdrop material="medium" /> : null}
+              <div className="ios27-context-menu__content ios27-optical-content">
+                {items.map((item, index) => <button key={index} type="button" role="menuitem" disabled={item.disabled} data-destructive={item.destructive || undefined} onClick={() => { item.onSelect?.(); setPoint(null) }}><span>{item.label}</span>{item.shortcut ? <span className="ios27-context-menu__shortcut">{item.shortcut}</span> : null}</button>)}
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </Portal>
     </>
   )
 }
