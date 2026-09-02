@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { cx, useControllableState } from './shared'
 
 // Form field
@@ -87,6 +88,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
   const rootRef = React.useRef<HTMLDivElement>(null)
   const localInputRef = React.useRef<HTMLInputElement>(null)
   const listId = React.useId()
+  const reduceMotion = useReducedMotion()
   React.useImperativeHandle(forwardedRef, () => localInputRef.current as HTMLInputElement)
   React.useEffect(() => {
     if (!open) setQuery(selectedOption?.label ?? '')
@@ -141,27 +143,37 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
           <button type="button" className="ios27-combobox__clear" aria-label="清除选择" disabled={disabled} onClick={() => { setSelected(''); setQuery(''); onClear?.(); localInputRef.current?.focus() }}>×</button>
         ) : <span className="ios27-combobox__chevron" aria-hidden="true">⌄</span>}
       </div>
-      {open ? (
-        <div id={listId} role="listbox" className="ios27-combobox__list">
-          {filtered.length ? filtered.map((option, index) => (
-            <button
-              key={option.value}
-              type="button"
-              id={`${listId}-${index}`}
-              role="option"
-              aria-selected={selected === option.value}
-              disabled={option.disabled}
-              data-active={active === index || undefined}
-              className="ios27-combobox__option"
-              onMouseEnter={() => setActive(index)}
-              onClick={() => select(option)}
-            >
-              <span className="ios27-combobox__option-copy"><strong>{option.label}</strong>{option.description ? <small>{option.description}</small> : null}</span>
-              {selected === option.value ? <span className="ios27-combobox__check" aria-hidden="true">✓</span> : null}
-            </button>
-          )) : <div className="ios27-combobox__empty">{emptyText}</div>}
-        </div>
-      ) : null}
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            id={listId}
+            role="listbox"
+            className="ios27-combobox__list"
+            initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -2, scale: 0.99 }}
+            transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 520, damping: 38, mass: 0.7 }}
+          >
+            {filtered.length ? filtered.map((option, index) => (
+              <button
+                key={option.value}
+                type="button"
+                id={`${listId}-${index}`}
+                role="option"
+                aria-selected={selected === option.value}
+                disabled={option.disabled}
+                data-active={active === index || undefined}
+                className="ios27-combobox__option"
+                onMouseEnter={() => setActive(index)}
+                onClick={() => select(option)}
+              >
+                <span className="ios27-combobox__option-copy"><strong>{option.label}</strong>{option.description ? <small>{option.description}</small> : null}</span>
+                {selected === option.value ? <span className="ios27-combobox__check" aria-hidden="true">✓</span> : null}
+              </button>
+            )) : <div className="ios27-combobox__empty">{emptyText}</div>}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 })
