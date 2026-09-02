@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { LiquidGlassBackdrop } from './materials'
 import { Portal, cx, useControllableState, useEscape } from './shared'
 
@@ -238,6 +239,7 @@ export function CommandPalette({
   const [query, setQuery] = React.useState('')
   const [active, setActive] = React.useState(0)
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const reduceMotion = useReducedMotion()
   useEscape(current, () => setCurrent(false))
   const filtered = React.useMemo(() => {
     const normalized = query.trim().toLowerCase()
@@ -251,7 +253,6 @@ export function CommandPalette({
     queueMicrotask(() => inputRef.current?.focus())
   }, [current])
   React.useEffect(() => setActive((value) => Math.min(value, Math.max(0, filtered.length - 1))), [filtered.length])
-  if (!current) return null
   const select = (item: CommandPaletteItem | undefined) => {
     if (!item || item.disabled) return
     item.onSelect?.()
@@ -259,48 +260,68 @@ export function CommandPalette({
   }
   return (
     <Portal>
-      <div className="ios27-command-overlay" onMouseDown={(event) => event.target === event.currentTarget && setCurrent(false)}>
-        <div className="ios27-command ios27-optical-host" role="dialog" aria-modal="true" aria-label={title}>
-          <LiquidGlassBackdrop material="large" />
-          <div className="ios27-command__content ios27-optical-content">
-            <div className="ios27-command__search">
-              <span aria-hidden="true">⌕</span>
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(event) => { setQuery(event.target.value); setActive(0) }}
-                placeholder={placeholder}
-                aria-label={placeholder}
-                onKeyDown={(event) => {
-                  if (event.key === 'ArrowDown') { event.preventDefault(); setActive((value) => filtered.length ? (value + 1) % filtered.length : 0) }
-                  if (event.key === 'ArrowUp') { event.preventDefault(); setActive((value) => filtered.length ? (value - 1 + filtered.length) % filtered.length : 0) }
-                  if (event.key === 'Enter') { event.preventDefault(); select(filtered[active]) }
-                }}
-              />
-              <kbd>Esc</kbd>
-            </div>
-            <div className="ios27-command__list" role="listbox" aria-label="命令">
-              {filtered.length ? filtered.map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="option"
-                  aria-selected={active === index}
-                  disabled={item.disabled}
-                  data-active={active === index || undefined}
-                  className="ios27-command__item"
-                  onMouseEnter={() => setActive(index)}
-                  onClick={() => select(item)}
-                >
-                  {item.icon ? <span className="ios27-command__icon" aria-hidden="true">{item.icon}</span> : null}
-                  <span className="ios27-command__copy"><strong>{item.label}</strong>{item.description ? <small>{item.description}</small> : null}</span>
-                  {item.shortcut ? <span className="ios27-command__shortcut">{item.shortcut}</span> : null}
-                </button>
-              )) : <div className="ios27-command__empty">{emptyText}</div>}
-            </div>
-          </div>
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {current ? (
+          <motion.div
+            className="ios27-command-overlay"
+            onMouseDown={(event) => event.target === event.currentTarget && setCurrent(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0.08 : 0.16, ease: 'easeOut' }}
+          >
+            <motion.div
+              className="ios27-command ios27-optical-host"
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              initial={reduceMotion ? false : { opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.985 }}
+              transition={reduceMotion ? { duration: 0.08 } : { type: 'spring', stiffness: 460, damping: 36, mass: 0.78 }}
+            >
+              <LiquidGlassBackdrop material="large" />
+              <div className="ios27-command__content ios27-optical-content">
+                <div className="ios27-command__search">
+                  <span aria-hidden="true">⌕</span>
+                  <input
+                    ref={inputRef}
+                    value={query}
+                    onChange={(event) => { setQuery(event.target.value); setActive(0) }}
+                    placeholder={placeholder}
+                    aria-label={placeholder}
+                    onKeyDown={(event) => {
+                      if (event.key === 'ArrowDown') { event.preventDefault(); setActive((value) => filtered.length ? (value + 1) % filtered.length : 0) }
+                      if (event.key === 'ArrowUp') { event.preventDefault(); setActive((value) => filtered.length ? (value - 1 + filtered.length) % filtered.length : 0) }
+                      if (event.key === 'Enter') { event.preventDefault(); select(filtered[active]) }
+                    }}
+                  />
+                  <kbd>Esc</kbd>
+                </div>
+                <div className="ios27-command__list" role="listbox" aria-label="命令">
+                  {filtered.length ? filtered.map((item, index) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="option"
+                      aria-selected={active === index}
+                      disabled={item.disabled}
+                      data-active={active === index || undefined}
+                      className="ios27-command__item"
+                      onMouseEnter={() => setActive(index)}
+                      onClick={() => select(item)}
+                    >
+                      {item.icon ? <span className="ios27-command__icon" aria-hidden="true">{item.icon}</span> : null}
+                      <span className="ios27-command__copy"><strong>{item.label}</strong>{item.description ? <small>{item.description}</small> : null}</span>
+                      {item.shortcut ? <span className="ios27-command__shortcut">{item.shortcut}</span> : null}
+                    </button>
+                  )) : <div className="ios27-command__empty">{emptyText}</div>}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </Portal>
   )
 }
